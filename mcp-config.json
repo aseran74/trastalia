@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "MongoDB": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@mongodb-js/mongodb-mcp-server"
+      ],
+      "env": {
+        "MDB_MCP_API_CLIENT_ID": "ipztqgwp",
+        "MDB_MCP_API_CLIENT_SECRET": "b72dc085-75a3-4064-947a-bed99b4a07ac",
+        "MDB_MCP_CONNECTION_STRING": "mongodb+srv://alvaroserr:alvaro123@cluster0.8xqjq.mongodb.net/trastalia?retryWrites=true&w=majority&appName=Cluster0"
+      }
+    }
+  }
+}

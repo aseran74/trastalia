@@ -1,0 +1,104 @@
+[
+  {
+    "name": "Administrador",
+    "email": "admin@tailadmin.com",
+    "password": "$2b$12$WTsCIEEePloA6Rwp9aKH7.F5X8Lr.Tu11zhNSJyZ87fdTxIF68Y7W",
+    "role": "admin",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757948251806",
+    "createdAt": "2025-09-15T14:57:31.806Z",
+    "updatedAt": "2025-09-15T16:33:24.715Z",
+    "lastLogin": "2025-09-15T16:33:24.714Z"
+  },
+  {
+    "name": "Usuario Demo",
+    "email": "user@tailadmin.com",
+    "password": "$2b$12$sYXBP8j2iHMHWDsdoYZX6.mGD4HihOSmH2G6.CEcmQ8kK5k7Joiwa",
+    "role": "user",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757948251809",
+    "createdAt": "2025-09-15T14:57:31.809Z",
+    "updatedAt": "2025-09-15T14:57:31.809Z"
+  },
+  {
+    "name": "Moderador",
+    "email": "moderator@tailadmin.com",
+    "password": "$2b$12$EPVJVQmLwuF0C5N5A7Xla.m29hkYEL0HRJbzi2YuTetQHyT8jIp6m",
+    "role": "moderator",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757948251811",
+    "createdAt": "2025-09-15T14:57:31.811Z",
+    "updatedAt": "2025-09-15T14:57:31.811Z"
+  },
+  {
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "$2b$12$GkYtknTjLNvgox3VUzk8cuMtMhoHh/UVrUtFEUB2EqgCITzPziGmO",
+    "role": "user",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757954001361",
+    "createdAt": "2025-09-15T16:33:21.361Z",
+    "updatedAt": "2025-09-15T16:33:21.361Z"
+  },
+  {
+    "name": "Alvaro Serrano",
+    "email": "alvaroserr@gmail.com",
+    "password": "$2b$12$9lNmtVLWi9UclmO0u2CsCec7YLjIKM7E3OcvoHn9Elw4KKz5yT9D6",
+    "role": "user",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757954104918",
+    "createdAt": "2025-09-15T16:35:04.918Z",
+    "updatedAt": "2025-09-15T16:35:04.918Z"
+  },
+  {
+    "name": "Test Atlas User",
+    "email": "testatlas@example.com",
+    "password": "$2b$12$kMDAq1R7f23.NW.xO3R2Aer5NY1PZqiJc4kwnrMVBwp6LqsoW2SQ2",
+    "role": "user",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757954516359",
+    "createdAt": "2025-09-15T16:41:56.359Z",
+    "updatedAt": "2025-09-15T16:42:01.696Z",
+    "lastLogin": "2025-09-15T16:42:01.695Z"
+  },
+  {
+    "name": "Usuario Atlas",
+    "email": "atlas@example.com",
+    "password": "$2b$12$U/l8/zYO6qXabyL3dJzA9uIxRvInMrjBOLH7zMj61503kT3rTSMxe",
+    "role": "user",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757955161720",
+    "createdAt": "2025-09-15T16:52:41.720Z",
+    "updatedAt": "2025-09-15T16:52:56.158Z",
+    "lastLogin": "2025-09-15T16:52:56.157Z"
+  },
+  {
+    "name": "Usuario Atlas",
+    "email": "atlas@trastalia.com",
+    "password": "$2b$12$dCdr5KSoncKnPKmO9rehO.By9.VEYhFahwiKqlY97stMubTWiP27C",
+    "role": "user",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757956484384",
+    "createdAt": "2025-09-15T17:14:44.384Z",
+    "updatedAt": "2025-09-15T17:14:44.384Z"
+  },
+  {
+    "name": "Usuario Final",
+    "email": "final@trastalia.com",
+    "password": "$2b$12$X4Lgdyv5/vmD8XBcQ3AUzOGhszmzoWcT9vbDkx4MkmmiKphrvcKIG",
+    "role": "user",
+    "avatar": "",
+    "isActive": true,
+    "_id": "1757956651321",
+    "createdAt": "2025-09-15T17:17:31.321Z",
+    "updatedAt": "2025-09-15T17:17:31.321Z"
+  }
+]
