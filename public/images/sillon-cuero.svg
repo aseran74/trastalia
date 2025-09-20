@@ -1,0 +1,8 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f3f4f6"/>
+  <rect x="80" y="100" width="240" height="120" fill="#1f2937" rx="15"/>
+  <rect x="100" y="80" width="200" height="20" fill="#374151" rx="10"/>
+  <rect x="90" y="220" width="220" height="15" fill="#4b5563" rx="7"/>
+  <text x="200" y="170" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Sillón de Cuero</text>
+  <text x="200" y="185" font-family="Arial" font-size="10" fill="#9ca3af" text-anchor="middle">Negro Reclinable</text>
+</svg>
