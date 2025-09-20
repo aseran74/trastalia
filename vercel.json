@@ -30,5 +30,6 @@
     "server/working-server.cjs": {
       "maxDuration": 30
     }
-  }
+  },
+  "buildCommand": "npm run vercel-build"
 }
