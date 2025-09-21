@@ -19,4 +19,7 @@ app.use(pinia)
 app.use(router)
 app.use(VueApexCharts)
 
+// Configurar el título de la página
+document.title = 'Trastalia - Nueva manera de vender artículos de segunda mano'
+
 app.mount('#app')
