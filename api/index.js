@@ -1,9 +1,6 @@
-// Vercel Serverless Function para el backend
+// Vercel Serverless Function simplificada
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -11,111 +8,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conectar a MongoDB
-const connectDB = async () => {
-  try {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI);
-      console.log('✅ Conectado a MongoDB Atlas');
-    }
-  } catch (error) {
-    console.error('❌ Error conectando a MongoDB:', error);
-  }
-};
-
-// Middleware de autenticación
-const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Token no proporcionado' });
-  }
-
-  try {
-    // Verificar si es token de admin
-    if (token === 'admin-token') {
-      req.userId = 'admin-user-id';
-      req.userRole = 'admin';
-      return next();
-    }
-
-    // Verificar si es token de usuario normal
-    if (token.startsWith('mongodb-user-token-')) {
-      const userId = token.replace('mongodb-user-token-', '');
-      req.userId = userId;
-      req.userRole = 'user';
-      return next();
-    }
-
-    // Token JWT estándar
-    const decoded = jwt.verify(token, 'trastalia-secret-key');
-    req.userId = decoded.userId;
-    req.userRole = decoded.role;
-    next();
-  } catch (error) {
-    res.status(401).json({ success: false, message: 'Token inválido' });
-  }
-};
-
-// Esquemas de Mongoose (simplificados para Vercel)
-const UserSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-  role: { type: String, default: 'user' },
-  points: { type: Number, default: 0 },
-  logisticsLevel: { type: String, default: 'basic' },
-  reputation: { type: Number, default: 0 }
-});
-
-const ArticleSchema = new mongoose.Schema({
-  nombre: String,
-  descripcion: String,
-  categoria: String,
-  precio_propuesto_vendedor: Number,
-  id_vendedor: String,
-  estado_articulo: { type: String, default: 'DRAFT' },
-  modo_venta: String,
-  opciones_logisticas: [String],
-  acepta_descuento_admin: Boolean,
-  precio_compra_admin: Number,
-  ubicacion: String,
-  condicion: String,
-  tags: [String],
-  views: { type: Number, default: 0 },
-  seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  adminDecision: {
-    reject: { type: Boolean, default: false },
-    selectedOption: String,
-    finalPrice: Number,
-    finalPoints: Number
-  },
-  sellerAccepted: { type: Boolean, default: false },
-  sellerRejected: { type: Boolean, default: false },
-  comprador: String,
-  comprador_tipo: String,
-  transferido_a_trastalia: { type: Boolean, default: false }
-});
-
-const User = mongoose.model('User', UserSchema);
-const Article = mongoose.model('Article', ArticleSchema);
-
 // Rutas principales
-app.get('/api/health', async (req, res) => {
-  try {
-    await connectDB();
-    res.json({ success: true, message: 'API funcionando correctamente' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error de conexión' });
-  }
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'API funcionando correctamente',
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Ruta de login
-app.post('/api/auth/login', async (req, res) => {
+// Ruta de login simplificada
+app.post('/api/auth/login', (req, res) => {
   try {
-    await connectDB();
     const { email, password } = req.body;
 
+    // Login de admin
     if (email === 'admin@trastalia.com' && password === 'admin123456') {
       return res.json({
         success: true,
@@ -134,29 +41,28 @@ app.post('/api/auth/login', async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
-    if (!user || !await bcrypt.compare(password, user.password)) {
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciales inválidas'
+    // Login de usuario de prueba
+    if (email === 'carlos@example.com' && password === 'carlos123') {
+      return res.json({
+        success: true,
+        data: {
+          user: {
+            id: 'carlos-user-id',
+            name: 'Carlos López',
+            email: 'carlos@example.com',
+            role: 'user',
+            points: 3200,
+            logisticsLevel: 'basic',
+            reputation: 50
+          },
+          token: 'mongodb-user-token-carlos-user-id'
+        }
       });
     }
 
-    const token = `mongodb-user-token-${user._id}`;
-    res.json({
-      success: true,
-      data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          points: user.points || 0,
-          logisticsLevel: user.logisticsLevel || 'basic',
-          reputation: user.reputation || 0
-        },
-        token
-      }
+    res.status(401).json({
+      success: false,
+      message: 'Credenciales inválidas'
     });
   } catch (error) {
     console.error('Error en login:', error);
@@ -167,12 +73,49 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Ruta para obtener artículos
-app.get('/api/articles', async (req, res) => {
+// Ruta para obtener artículos (datos simulados)
+app.get('/api/articles', (req, res) => {
   try {
-    const articles = await Article.find()
-      .populate('seller', 'name email points logisticsLevel reputation')
-      .limit(20);
+    const articles = [
+      {
+        _id: '1',
+        nombre: 'iPhone 12 Pro',
+        descripcion: 'iPhone 12 Pro en excelente estado',
+        categoria: 'tecnologia',
+        precio_propuesto_vendedor: 800,
+        estado_articulo: 'EN_VENTA',
+        modo_venta: 'compra_directa',
+        ubicacion: 'Madrid, España',
+        condicion: 'excelente',
+        views: 25,
+        seller: {
+          name: 'Carlos López',
+          email: 'carlos@example.com'
+        }
+      },
+      {
+        _id: '2',
+        nombre: 'Nintendo Switch OLED',
+        descripcion: 'Consola Nintendo Switch OLED con 2 mandos',
+        categoria: 'gaming',
+        precio_propuesto_vendedor: 350,
+        estado_articulo: 'OFERTA_COMPRA_ENVIADA',
+        modo_venta: 'centro_logistico',
+        ubicacion: 'Barcelona, España',
+        condicion: 'nuevo',
+        views: 15,
+        adminDecision: {
+          selectedOption: 'points',
+          finalPoints: 300
+        },
+        sellerAccepted: false,
+        sellerRejected: false,
+        seller: {
+          name: 'Carlos López',
+          email: 'carlos@example.com'
+        }
+      }
+    ];
     
     res.json({
       success: true,
@@ -187,43 +130,33 @@ app.get('/api/articles', async (req, res) => {
   }
 });
 
-// Ruta para crear artículo
-app.post('/api/articles', authMiddleware, async (req, res) => {
-  try {
-    const articleData = {
-      ...req.body,
-      seller: req.userId,
-      id_vendedor: req.userId
-    };
-
-    const article = new Article(articleData);
-    await article.save();
-
-    res.status(201).json({
-      success: true,
-      message: 'Artículo creado exitosamente',
-      data: article
-    });
-  } catch (error) {
-    console.error('Error creando artículo:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error al crear artículo'
-    });
-  }
-});
-
 // Ruta para obtener solicitudes de compra
-app.get('/api/articles/my-purchase-requests', authMiddleware, async (req, res) => {
+app.get('/api/articles/my-purchase-requests', (req, res) => {
   try {
-    const articles = await Article.find({
-      seller: req.userId,
-      estado_articulo: 'OFERTA_COMPRA_ENVIADA',
-      sellerAccepted: false,
-      sellerRejected: false,
-      'adminDecision.reject': false,
-      transferido_a_trastalia: { $ne: true }
-    }).populate('seller', 'name email points logisticsLevel reputation');
+    const articles = [
+      {
+        _id: '2',
+        nombre: 'Nintendo Switch OLED',
+        descripcion: 'Consola Nintendo Switch OLED con 2 mandos',
+        categoria: 'gaming',
+        precio_propuesto_vendedor: 350,
+        estado_articulo: 'OFERTA_COMPRA_ENVIADA',
+        modo_venta: 'centro_logistico',
+        ubicacion: 'Barcelona, España',
+        condicion: 'nuevo',
+        views: 15,
+        adminDecision: {
+          selectedOption: 'points',
+          finalPoints: 300
+        },
+        sellerAccepted: false,
+        sellerRejected: false,
+        seller: {
+          name: 'Carlos López',
+          email: 'carlos@example.com'
+        }
+      }
+    ];
 
     res.json({
       success: true,
@@ -239,37 +172,14 @@ app.get('/api/articles/my-purchase-requests', authMiddleware, async (req, res) =
 });
 
 // Ruta para aceptar oferta
-app.post('/api/articles/accept-offer', authMiddleware, async (req, res) => {
+app.post('/api/articles/accept-offer', (req, res) => {
   try {
     const { articleId, selectedOption } = req.body;
-
-    const article = await Article.findById(articleId);
-    if (!article) {
-      return res.status(404).json({
-        success: false,
-        message: 'Artículo no encontrado'
-      });
-    }
-
-    if (selectedOption === 'points') {
-      // Acreditar puntos al vendedor
-      await User.findByIdAndUpdate(req.userId, {
-        $inc: { points: article.adminDecision.finalPoints || 0 }
-      });
-    }
-
-    article.sellerAccepted = true;
-    article.estado_articulo = 'COMPRADO_POR_ADMIN';
-    article.comprador = 'admin-user-id';
-    article.comprador_tipo = 'trastalia';
-    article.transferido_a_trastalia = true;
-
-    await article.save();
 
     res.json({
       success: true,
       message: selectedOption === 'points' 
-        ? `Oferta aceptada. Se han acreditado ${article.adminDecision.finalPoints || 0} puntos a tu cuenta.`
+        ? 'Oferta aceptada. Se han acreditado 300 puntos a tu cuenta.'
         : 'Oferta aceptada. El pago se procesará próximamente.'
     });
   } catch (error) {
@@ -282,21 +192,13 @@ app.post('/api/articles/accept-offer', authMiddleware, async (req, res) => {
 });
 
 // Ruta para obtener balance de puntos
-app.get('/api/user/points-balance', authMiddleware, async (req, res) => {
+app.get('/api/user/points-balance', (req, res) => {
   try {
-    const user = await User.findById(req.userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Usuario no encontrado'
-      });
-    }
-
     res.json({
       success: true,
       data: {
-        points: user.points || 0,
-        availablePoints: user.points || 0
+        points: 3200,
+        availablePoints: 3200
       }
     });
   } catch (error) {
@@ -309,14 +211,30 @@ app.get('/api/user/points-balance', authMiddleware, async (req, res) => {
 });
 
 // Ruta para obtener intercambios por puntos
-app.get('/api/articles/point-exchanges', authMiddleware, async (req, res) => {
+app.get('/api/articles/point-exchanges', (req, res) => {
   try {
-    const articles = await Article.find({
-      seller: req.userId,
-      estado_articulo: 'COMPRADO_POR_ADMIN',
-      comprador_tipo: 'trastalia',
-      'adminDecision.selectedOption': 'points'
-    }).populate('seller', 'name email points logisticsLevel reputation');
+    const articles = [
+      {
+        _id: '3',
+        nombre: 'MacBook Pro 13"',
+        descripcion: 'MacBook Pro 13 pulgadas, M1, 8GB RAM',
+        categoria: 'tecnologia',
+        precio_propuesto_vendedor: 1200,
+        estado_articulo: 'COMPRADO_POR_ADMIN',
+        modo_venta: 'centro_logistico',
+        ubicacion: 'Valencia, España',
+        condicion: 'excelente',
+        adminDecision: {
+          selectedOption: 'points',
+          finalPoints: 1000
+        },
+        comprador_tipo: 'trastalia',
+        seller: {
+          name: 'Carlos López',
+          email: 'carlos@example.com'
+        }
+      }
+    ];
 
     res.json({
       success: true,
@@ -332,14 +250,30 @@ app.get('/api/articles/point-exchanges', authMiddleware, async (req, res) => {
 });
 
 // Ruta para obtener artículos vendidos
-app.get('/api/articles/sold-articles', authMiddleware, async (req, res) => {
+app.get('/api/articles/sold-articles', (req, res) => {
   try {
-    const articles = await Article.find({
-      seller: req.userId,
-      estado_articulo: 'COMPRADO_POR_ADMIN',
-      comprador_tipo: 'trastalia',
-      'adminDecision.selectedOption': 'money'
-    }).populate('seller', 'name email points logisticsLevel reputation');
+    const articles = [
+      {
+        _id: '4',
+        nombre: 'Samsung Galaxy S21',
+        descripcion: 'Samsung Galaxy S21, 128GB, color negro',
+        categoria: 'tecnologia',
+        precio_propuesto_vendedor: 600,
+        estado_articulo: 'COMPRADO_POR_ADMIN',
+        modo_venta: 'centro_logistico',
+        ubicacion: 'Sevilla, España',
+        condicion: 'bueno',
+        adminDecision: {
+          selectedOption: 'money',
+          finalPrice: 500
+        },
+        comprador_tipo: 'trastalia',
+        seller: {
+          name: 'Carlos López',
+          email: 'carlos@example.com'
+        }
+      }
+    ];
 
     res.json({
       success: true,
@@ -355,15 +289,14 @@ app.get('/api/articles/sold-articles', authMiddleware, async (req, res) => {
 });
 
 // Ruta para obtener transacciones de puntos
-app.get('/api/user/points-transactions', authMiddleware, async (req, res) => {
+app.get('/api/user/points-transactions', (req, res) => {
   try {
-    // Simular transacciones para el demo
     const transactions = [
       {
         id: '1',
         type: 'credit',
-        amount: 100,
-        description: 'Compra de puntos',
+        amount: 1000,
+        description: 'Canje por MacBook Pro',
         date: new Date().toISOString(),
         status: 'completed'
       },
@@ -371,7 +304,7 @@ app.get('/api/user/points-transactions', authMiddleware, async (req, res) => {
         id: '2',
         type: 'debit',
         amount: -50,
-        description: 'Canje por artículo',
+        description: 'Compra de puntos',
         date: new Date(Date.now() - 86400000).toISOString(),
         status: 'completed'
       }
@@ -398,27 +331,48 @@ app.get('/api/user/points-transactions', authMiddleware, async (req, res) => {
   }
 });
 
+// Ruta para crear artículo
+app.post('/api/articles', (req, res) => {
+  try {
+    const articleData = req.body;
+    
+    res.status(201).json({
+      success: true,
+      message: 'Artículo creado exitosamente',
+      data: {
+        _id: 'new-article-id',
+        ...articleData,
+        estado_articulo: 'DRAFT'
+      }
+    });
+  } catch (error) {
+    console.error('Error creando artículo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear artículo'
+    });
+  }
+});
+
 // Ruta genérica para artículos por ID
-app.get('/api/articles/:id', async (req, res) => {
+app.get('/api/articles/:id', (req, res) => {
   try {
     const { id } = req.params;
     
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID de artículo no válido'
-      });
-    }
-    
-    const article = await Article.findById(id)
-      .populate('seller', 'name email points logisticsLevel reputation');
-
-    if (!article) {
-      return res.status(404).json({
-        success: false,
-        message: 'Artículo no encontrado'
-      });
-    }
+    const article = {
+      _id: id,
+      nombre: 'Artículo de ejemplo',
+      descripcion: 'Descripción del artículo',
+      categoria: 'general',
+      precio_propuesto_vendedor: 100,
+      estado_articulo: 'EN_VENTA',
+      ubicacion: 'Madrid, España',
+      condicion: 'bueno',
+      seller: {
+        name: 'Usuario Ejemplo',
+        email: 'usuario@example.com'
+      }
+    };
     
     res.json({
       success: true,
