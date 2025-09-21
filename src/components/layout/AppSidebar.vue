@@ -23,18 +23,18 @@
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="dark:hidden w-36 h-9 sm:w-40 sm:h-10 lg:w-44 lg:h-11"
-          src="/images/logosvg.png"
+          src="/images/Logodefi.png"
           alt="Logo"
         />
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="hidden dark:block w-36 h-9 sm:w-40 sm:h-10 lg:w-44 lg:h-11"
-          src="/images/logosvg.png"
+          src="/images/Logodefi.png"
           alt="Logo"
         />
         <img
           v-else
-          src="/images/logosvg.png"
+          src="/images/Logodefi.png"
           alt="Logo"
           width="32"
           height="32"
