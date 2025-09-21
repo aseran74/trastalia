@@ -7,7 +7,12 @@ const PORT = 3002;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:3000',
+    'https://trastalia.vercel.app',
+    'https://*.vercel.app'
+  ],
   credentials: true
 }));
 
