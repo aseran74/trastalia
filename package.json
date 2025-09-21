@@ -25,7 +25,8 @@
     "server:dev": "tsx --watch server/index.ts",
     "seed:users": "tsx server/scripts/seed-users.ts",
     "dev:full": "concurrently \"npm run server:dev\" \"npm run dev\"",
-    "vercel-build": "npm run build-only"
+    "vercel-build": "npm run build-only",
+    "start": "node server/working-server.cjs"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",

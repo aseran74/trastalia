@@ -1,0 +1,31 @@
+{
+  "name": "trastalia-backend",
+  "description": "Backend API para Trastalia - Plataforma de compraventa",
+  "repository": "https://github.com/aseran74/trastalia",
+  "logo": "https://raw.githubusercontent.com/aseran74/trastalia/main/public/images/logosvg.png",
+  "keywords": ["node", "express", "mongodb", "api", "trastalia"],
+  "image": "heroku/nodejs",
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment",
+      "value": "production"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB Atlas connection string",
+      "value": "mongodb+srv://mikabodea:Mika1974&@trastalia.ycg2lvb.mongodb.net/?retryWrites=true&w=majority&appName=Trastalia"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": []
+}
