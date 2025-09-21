@@ -14,15 +14,14 @@ app.use(express.json());
 // Conectar a MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ Conectado a MongoDB Atlas');
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(process.env.MONGODB_URI);
+      console.log('✅ Conectado a MongoDB Atlas');
+    }
   } catch (error) {
     console.error('❌ Error conectando a MongoDB:', error);
   }
 };
-
-// Ejecutar conexión
-connectDB();
 
 // Middleware de autenticación
 const authMiddleware = (req, res, next) => {
@@ -102,13 +101,19 @@ const User = mongoose.model('User', UserSchema);
 const Article = mongoose.model('Article', ArticleSchema);
 
 // Rutas principales
-app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'API funcionando correctamente' });
+app.get('/api/health', async (req, res) => {
+  try {
+    await connectDB();
+    res.json({ success: true, message: 'API funcionando correctamente' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error de conexión' });
+  }
 });
 
 // Ruta de login
 app.post('/api/auth/login', async (req, res) => {
   try {
+    await connectDB();
     const { email, password } = req.body;
 
     if (email === 'admin@trastalia.com' && password === 'admin123456') {
