@@ -25,7 +25,9 @@ export default defineConfig(({ command, mode }) => ({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3002',
+        target: process.env.NODE_ENV === 'production' 
+          ? 'https://trastalia-backend-production.up.railway.app' 
+          : 'http://localhost:3002',
         changeOrigin: true,
         secure: false
       }
