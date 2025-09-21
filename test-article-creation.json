@@ -1,0 +1,15 @@
+{
+  "nombre": "iPhone 12 Pro Max",
+  "descripcion": "iPhone en excelente estado",
+  "precio": 800,
+  "categoria": "tecnologia",
+  "condicion": "excelente",
+  "ubicacion": "Madrid, España",
+  "modo_venta": "compra_directa",
+  "opciones_logisticas": ["venta_directa"],
+  "acepta_descuento_admin": false,
+  "seller": "68cd4472601315508398cd53",
+  "images": [],
+  "tags": [],
+  "views": 0
+}

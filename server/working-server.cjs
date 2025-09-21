@@ -533,6 +533,26 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
   }
 });
 
+// Ruta para obtener los artículos del usuario
+app.get('/api/articles/my-articles', authMiddleware, async (req, res) => {
+  try {
+    const articles = await Article.find({ 
+      'seller': req.userId
+    }).populate('seller', 'name email');
+    
+    res.json({
+      success: true,
+      data: articles
+    });
+  } catch (error) {
+    console.error('Error obteniendo artículos del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener los artículos del usuario'
+    });
+  }
+});
+
 // Ruta específica para solicitudes de compra (debe ir antes de la ruta genérica)
 app.get('/api/articles/my-purchase-requests', authMiddleware, async (req, res) => {
   try {

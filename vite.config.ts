@@ -34,18 +34,6 @@ export default defineConfig(({ command, mode }) => ({
     // Deshabilitar Vue DevTools en producción
     __VUE_PROD_DEVTOOLS__: mode === 'development',
   },
-  // Configuración para controlar el título
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      }
-    },
-    chunkSizeWarningLimit: 1000
-  },
   server: {
     proxy: {
       '/api': {
