@@ -264,6 +264,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import GooglePlacesInput from '@/components/GooglePlacesInput.vue'
+import API_BASE_URL from '@/config/api'
 
 // Interfaces
 interface ArticleForm {
@@ -347,7 +348,7 @@ const submitArticle = async () => {
 
     console.log('Enviando artículo:', articleData)
 
-    const response = await fetch('/api/articles', {
+    const response = await fetch(`${API_BASE_URL}/api/articles`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
