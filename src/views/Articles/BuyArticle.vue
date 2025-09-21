@@ -190,6 +190,7 @@ import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import ShoppingCartModal from '@/components/modals/ShoppingCartModal.vue'
 import PaymentModal from '@/components/modals/PaymentModal.vue'
 import { getSupabaseImageUrl, getImageByCategory } from '@/config/supabase'
+import API_BASE_URL from '@/config/api'
 
 // Estado reactivo
 const articles = ref([])
