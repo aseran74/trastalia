@@ -149,67 +149,97 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Feature 1 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
-              <span class="text-2xl">💰</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group feature-card">
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6 animate-money-bounce group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl animate-money-shake">💰</span>
+              </div>
+              <!-- Money particles -->
+              <div class="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-money-float opacity-80"></div>
+              <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-money-float opacity-60" style="animation-delay: 0.5s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Sistema Híbrido</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 transition-colors duration-300">Sistema Híbrido</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Combina compra con dinero y puntos Trastalia. Los puntos equivalen exactamente al valor en euros (1 punto = 1€).
             </p>
           </div>
 
           <!-- Feature 2 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
-              <span class="text-2xl">🔄</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group feature-card">
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 animate-rotate-slow group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl animate-rotate-icon">🔄</span>
+              </div>
+              <!-- Rotating particles -->
+              <div class="absolute -top-1 -right-1 w-2 h-2 bg-purple-400 rounded-full animate-orbit opacity-80"></div>
+              <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-pink-400 rounded-full animate-orbit opacity-60" style="animation-delay: 0.3s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Intercambio Inteligente</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-purple-600 transition-colors duration-300">Intercambio Inteligente</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Intercambio directo con filtro de precios ±20%. Solo artículos con valor similar aparecen como opciones.
             </p>
           </div>
 
           <!-- Feature 3 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6">
-              <span class="text-2xl">🚚</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group feature-card">
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 animate-truck-move group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl animate-truck-bounce">🚚</span>
+              </div>
+              <!-- Moving particles -->
+              <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-truck-trail opacity-80"></div>
+              <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-emerald-400 rounded-full animate-truck-trail opacity-60" style="animation-delay: 0.4s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Centro Logístico</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-green-600 transition-colors duration-300">Centro Logístico</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Sistema de "Nave" como centro logístico centralizado para gestionar envíos y entregas de forma eficiente.
             </p>
           </div>
 
           <!-- Feature 4 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-6">
-              <span class="text-2xl">🎯</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group feature-card">
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-6 animate-target-pulse group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl animate-target-zoom">🎯</span>
+              </div>
+              <!-- Target particles -->
+              <div class="absolute -top-1 -right-1 w-2 h-2 bg-orange-400 rounded-full animate-target-ring opacity-80"></div>
+              <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-red-400 rounded-full animate-target-ring opacity-60" style="animation-delay: 0.6s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Filtros Avanzados</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-600 transition-colors duration-300">Filtros Avanzados</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Filtra por tipo de pago, categoría, estado y ubicación. Encuentra exactamente lo que buscas.
             </p>
           </div>
 
           <!-- Feature 5 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-6">
-              <span class="text-2xl">🔒</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group feature-card">
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-6 animate-lock-shake group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl animate-lock-glow">🔒</span>
+              </div>
+              <!-- Security particles -->
+              <div class="absolute -top-1 -right-1 w-2 h-2 bg-pink-400 rounded-full animate-security-pulse opacity-80"></div>
+              <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-rose-400 rounded-full animate-security-pulse opacity-60" style="animation-delay: 0.7s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Seguridad Total</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-pink-600 transition-colors duration-300">Seguridad Total</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Sistema de autenticación robusto con verificación de usuarios y transacciones seguras.
             </p>
           </div>
 
           <!-- Feature 6 -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6">
-              <span class="text-2xl">📱</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group feature-card">
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6 animate-phone-flip group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-2xl animate-phone-rotate">📱</span>
+              </div>
+              <!-- Phone particles -->
+              <div class="absolute -top-1 -right-1 w-2 h-2 bg-indigo-400 rounded-full animate-phone-bounce opacity-80"></div>
+              <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-blue-400 rounded-full animate-phone-bounce opacity-60" style="animation-delay: 0.8s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Responsive Design</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-indigo-600 transition-colors duration-300">Responsive Design</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Interfaz moderna y responsive que funciona perfectamente en cualquier dispositivo.
             </p>
           </div>
@@ -468,5 +498,268 @@ onMounted(() => {
 
 .animate-ping {
   animation: particle-float 2s ease-in-out infinite;
+}
+
+/* Feature-specific animations */
+@keyframes money-bounce {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.05);
+  }
+}
+
+@keyframes money-shake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes money-float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-15px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate-icon {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(20px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(20px) rotate(-360deg);
+  }
+}
+
+@keyframes truck-move {
+  0%, 100% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes truck-bounce {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@keyframes truck-trail {
+  0%, 100% {
+    transform: translateX(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(10px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes target-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes target-zoom {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes target-ring {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.4;
+  }
+}
+
+@keyframes lock-shake {
+  0%, 100% {
+    transform: translateX(0px);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes lock-glow {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes security-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes phone-flip {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(10deg);
+  }
+}
+
+@keyframes phone-rotate {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes phone-bounce {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Apply animations */
+.animate-money-bounce {
+  animation: money-bounce 2s ease-in-out infinite;
+}
+
+.animate-money-shake {
+  animation: money-shake 1.5s ease-in-out infinite;
+}
+
+.animate-money-float {
+  animation: money-float 2.5s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 4s linear infinite;
+}
+
+.animate-rotate-icon {
+  animation: rotate-icon 2s ease-in-out infinite;
+}
+
+.animate-orbit {
+  animation: orbit 3s linear infinite;
+}
+
+.animate-truck-move {
+  animation: truck-move 2s ease-in-out infinite;
+}
+
+.animate-truck-bounce {
+  animation: truck-bounce 1.8s ease-in-out infinite;
+}
+
+.animate-truck-trail {
+  animation: truck-trail 2.2s ease-in-out infinite;
+}
+
+.animate-target-pulse {
+  animation: target-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-target-zoom {
+  animation: target-zoom 2s ease-in-out infinite;
+}
+
+.animate-target-ring {
+  animation: target-ring 2.5s ease-in-out infinite;
+}
+
+.animate-lock-shake {
+  animation: lock-shake 1.2s ease-in-out infinite;
+}
+
+.animate-lock-glow {
+  animation: lock-glow 2s ease-in-out infinite;
+}
+
+.animate-security-pulse {
+  animation: security-pulse 1.8s ease-in-out infinite;
+}
+
+.animate-phone-flip {
+  animation: phone-flip 2.5s ease-in-out infinite;
+}
+
+.animate-phone-rotate {
+  animation: phone-rotate 1.5s ease-in-out infinite;
+}
+
+.animate-phone-bounce {
+  animation: phone-bounce 2s ease-in-out infinite;
+}
+
+/* Feature card hover effects */
+.feature-card:hover .animate-money-bounce,
+.feature-card:hover .animate-rotate-slow,
+.feature-card:hover .animate-truck-move,
+.feature-card:hover .animate-target-pulse,
+.feature-card:hover .animate-lock-shake,
+.feature-card:hover .animate-phone-flip {
+  animation-play-state: paused;
+  transform: scale(1.1);
 }
 </style>
