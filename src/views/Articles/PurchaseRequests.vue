@@ -182,7 +182,7 @@ const loadArticles = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch('http://localhost:3002/api/articles/my-purchase-requests', {
+    const response = await fetch(`${API_BASE_URL}/api/articles/my-purchase-requests`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -232,7 +232,7 @@ const acceptOffer = async (article) => {
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     
-    const response = await fetch('http://localhost:3002/api/articles/accept-offer', {
+    const response = await fetch(`${API_BASE_URL}/api/articles/accept-offer`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -263,7 +263,7 @@ const rejectOffer = async (article) => {
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     
-    const response = await fetch('http://localhost:3002/api/articles/reject-offer', {
+    const response = await fetch(`${API_BASE_URL}/api/articles/reject-offer`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -221,7 +221,7 @@ const loadMyArticles = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch('http://localhost:3002/api/articles/my-articles', {
+    const response = await fetch(`${API_BASE_URL}/api/articles/my-articles`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -296,7 +296,7 @@ const deleteArticle = async (article) => {
   
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`http://localhost:3002/api/articles/${article.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/articles/${article.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
