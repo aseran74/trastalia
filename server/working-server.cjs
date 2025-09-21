@@ -1355,12 +1355,10 @@ app.get('/api/articles/:id', async (req, res) => {
 });
 
 // Iniciar servidor
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor backend ejecutándose en puerto ${PORT}`);
-  console.log(`📱 Frontend: http://localhost:5173`);
   console.log(`🔗 API: http://localhost:${PORT}/api`);
   console.log(`💾 Almacenamiento: MongoDB Atlas`);
-  console.log(`🎯 Panel Admin: http://localhost:5173/admin/articles`);
   console.log(`🔑 Login: admin@trastalia.com / admin123456`);
   console.log(`✅ Conectado a MongoDB Atlas`);
 });
