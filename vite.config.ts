@@ -18,6 +18,14 @@ export default defineConfig(({ command, mode }) => ({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  build: {
+    rollupOptions: {
+      external: (id) => {
+        // Excluir archivos de imágenes de public de la resolución de módulos
+        return id.startsWith('/images/')
+      }
+    }
+  },
   define: {
     // Deshabilitar Vue DevTools en producción
     __VUE_PROD_DEVTOOLS__: mode === 'development',
