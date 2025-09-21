@@ -379,16 +379,17 @@ import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import OfferSelectionModal from '@/components/modals/OfferSelectionModal.vue'
+import type { PurchaseRequest, ESTADO_ARTICULO, MODO_VENTA, ADMIN_STATUS } from '@/types'
 
 const authStore = useAuthStore()
 const toast = useToast()
 
 // Estado reactivo
 const loading = ref(false)
-const requests = ref([])
+const requests = ref<PurchaseRequest[]>([])
 const selectedFilter = ref('all')
 const showSelectionModal = ref(false)
-const selectedRequest = ref(null)
+const selectedRequest = ref<PurchaseRequest | null>(null)
 const selectedOption = ref('')
 
 // Computed
@@ -451,7 +452,7 @@ const filterRequests = () => {
 }
 
 const getStatusBadgeClass = (status: string) => {
-  const classes = {
+  const classes: Record<string, string> = {
     'DRAFT': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
     'EN_VENTA': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     'EN_LOGISTICA': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
@@ -466,7 +467,7 @@ const getStatusBadgeClass = (status: string) => {
 }
 
 const getStatusText = (status: string) => {
-  const texts = {
+  const texts: Record<string, string> = {
     'DRAFT': 'Borrador',
     'EN_VENTA': 'En Venta',
     'EN_LOGISTICA': 'En Logística',
@@ -481,7 +482,7 @@ const getStatusText = (status: string) => {
 }
 
 const getSaleModeText = (mode: string) => {
-  const texts = {
+  const texts: Record<string, string> = {
     'directa_casa': 'Venta desde Casa',
     'centro_logistico': 'Centro Logístico',
     'venta_directa': 'Venta Directa',
@@ -490,7 +491,7 @@ const getSaleModeText = (mode: string) => {
   return texts[mode] || mode
 }
 
-const isDirectSaleOrPoints = (request: any) => {
+const isDirectSaleOrPoints = (request: PurchaseRequest) => {
   // Verificar si tiene opciones de compra directa o intercambio por puntos
   const hasLogisticsOptions = request.opciones_logisticas && 
     (request.opciones_logisticas.includes('compra_directa') || 
@@ -503,7 +504,7 @@ const isDirectSaleOrPoints = (request: any) => {
 }
 
 
-const canShowActions = (request: any) => {
+const canShowActions = (request: PurchaseRequest) => {
   // Mostrar acciones si tiene opciones de compra directa o intercambio por puntos
   // y hay una decisión del administrador
   return isDirectSaleOrPoints(request) && 
@@ -513,7 +514,7 @@ const canShowActions = (request: any) => {
          !request.sellerRejected
 }
 
-const getActionMessage = (request: any) => {
+const getActionMessage = (request: PurchaseRequest) => {
   if (request.modo_venta === 'directa_casa') {
     return 'El artículo será enviado por correo al comprador'
   } else if (request.modo_venta === 'centro_logistico') {
@@ -522,7 +523,7 @@ const getActionMessage = (request: any) => {
   return 'Esperando decisión del administrador'
 }
 
-const openSelectionModal = (request: any) => {
+const openSelectionModal = (request: PurchaseRequest) => {
   selectedRequest.value = request
   selectedOption.value = ''
   showSelectionModal.value = true
@@ -554,7 +555,7 @@ const confirmSelection = () => {
   }
 }
 
-const acceptOffer = async (request: any, option: string) => {
+const acceptOffer = async (request: PurchaseRequest, option: string) => {
   try {
     // Mostrar toast de confirmación
     const optionText = option === 'money' ? 
@@ -616,7 +617,7 @@ const acceptOffer = async (request: any, option: string) => {
   }
 }
 
-const rejectOffer = async (request: any) => {
+const rejectOffer = async (request: PurchaseRequest) => {
   // Mostrar toast de información sobre el rechazo
   toast.info(
     'Rechazando oferta...',
@@ -663,7 +664,13 @@ const rejectOffer = async (request: any) => {
 }
 
 const formatDate = (dateString: string) => {
-  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+  const options: Intl.DateTimeFormatOptions = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  }
   return new Date(dateString).toLocaleDateString('es-ES', options)
 }
 
