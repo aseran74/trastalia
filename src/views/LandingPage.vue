@@ -231,34 +231,49 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Step 1 -->
-          <div class="text-center">
-            <div class="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span class="text-3xl font-bold text-white">1</span>
+          <div class="text-center group">
+            <div class="relative">
+              <div class="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-float group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-3xl font-bold text-white animate-bounce-slow">1</span>
+              </div>
+              <!-- Floating particles around step 1 -->
+              <div class="absolute -top-2 -right-2 w-3 h-3 bg-blue-400 rounded-full animate-ping opacity-75"></div>
+              <div class="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-400 rounded-full animate-ping opacity-75" style="animation-delay: 0.5s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Regístrate</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 transition-colors duration-300">Regístrate</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Crea tu cuenta gratuita en menos de 2 minutos. Verifica tu identidad para mayor seguridad.
             </p>
           </div>
 
           <!-- Step 2 -->
-          <div class="text-center">
-            <div class="w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span class="text-3xl font-bold text-white">2</span>
+          <div class="text-center group">
+            <div class="relative">
+              <div class="w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-float-delayed group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-3xl font-bold text-white animate-bounce-slow" style="animation-delay: 0.3s;">2</span>
+              </div>
+              <!-- Floating particles around step 2 -->
+              <div class="absolute -top-2 -right-2 w-3 h-3 bg-purple-400 rounded-full animate-ping opacity-75" style="animation-delay: 0.2s;"></div>
+              <div class="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-400 rounded-full animate-ping opacity-75" style="animation-delay: 0.7s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Publica o Busca</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-purple-600 transition-colors duration-300">Publica o Busca</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Sube tus artículos con fotos y descripción, o busca lo que necesitas con filtros avanzados.
             </p>
           </div>
 
           <!-- Step 3 -->
-          <div class="text-center">
-            <div class="w-20 h-20 bg-gradient-to-r from-pink-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span class="text-3xl font-bold text-white">3</span>
+          <div class="text-center group">
+            <div class="relative">
+              <div class="w-20 h-20 bg-gradient-to-r from-pink-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-float-delayed-2 group-hover:animate-pulse group-hover:scale-110 transition-all duration-300">
+                <span class="text-3xl font-bold text-white animate-bounce-slow" style="animation-delay: 0.6s;">3</span>
+              </div>
+              <!-- Floating particles around step 3 -->
+              <div class="absolute -top-2 -right-2 w-3 h-3 bg-pink-400 rounded-full animate-ping opacity-75" style="animation-delay: 0.4s;"></div>
+              <div class="absolute -bottom-1 -left-1 w-2 h-2 bg-red-400 rounded-full animate-ping opacity-75" style="animation-delay: 0.9s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Intercambia</h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-pink-600 transition-colors duration-300">Intercambia</h3>
+            <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
               Compra con dinero, intercambia por puntos o haz trueque directo. ¡Tú decides!
             </p>
           </div>
@@ -374,5 +389,84 @@ onMounted(() => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #2563eb, #7c3aed);
+}
+
+/* Custom animations for step icons */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes float-delayed-2 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 3s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-float-delayed-2 {
+  animation: float-delayed-2 3s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+/* Hover effects */
+.group:hover .animate-float,
+.group:hover .animate-float-delayed,
+.group:hover .animate-float-delayed-2 {
+  animation-play-state: paused;
+  transform: translateY(-15px) scale(1.1);
+}
+
+/* Particle animations */
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+.animate-ping {
+  animation: particle-float 2s ease-in-out infinite;
 }
 </style>
