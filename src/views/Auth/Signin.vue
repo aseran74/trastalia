@@ -34,9 +34,10 @@
               <!-- Logo de Trastalia -->
               <div class="flex justify-center mb-8">
                 <img 
-                  src="/images/logo.png" 
+                  src="./images/logo.png" 
                   alt="Trastalia" 
                   class="h-16 w-auto"
+                  @error="handleImageError"
                 />
               </div>
               
@@ -283,7 +284,7 @@
             <common-grid-shape />
             <div class="flex flex-col items-center max-w-xs">
               <router-link to="/" class="block mb-4">
-                <img width="{231}" height="{48}" src="/images/logo.png" alt="Logo" />
+                <img width="231" height="48" src="./images/logo.png" alt="Trastalia Logo" />
               </router-link>
               <p class="text-center text-gray-400 dark:text-white/60">
                 Free and Open-Source Tailwind CSS Admin Dashboard Template
@@ -316,5 +317,12 @@ const handleSubmit = () => {
     password: password.value,
     keepLoggedIn: keepLoggedIn.value,
   })
+}
+
+const handleImageError = (event: Event) => {
+  console.log('Error loading logo image:', event)
+  // Fallback to a different path or show a placeholder
+  const img = event.target as HTMLImageElement
+  img.src = '/images/Logodefi.png' // Fallback to another logo
 }
 </script>
