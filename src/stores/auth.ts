@@ -137,22 +137,31 @@ export const useAuthStore = defineStore('auth', () => {
       if (storedToken && storedUser) {
         // Verificar token con API real
         console.log('🔍 checkAuth - Verificando token con API');
-        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-          headers: {
-            'Authorization': `Bearer ${storedToken}`
-          }
-        });
+        console.log('🔍 checkAuth - URL:', `${API_BASE_URL}/api/auth/me`);
+        console.log('🔍 checkAuth - Token:', storedToken);
+        
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+            headers: {
+              'Authorization': `Bearer ${storedToken}`
+            }
+          });
 
-        console.log('🔍 checkAuth - API response status:', response.status);
-        if (response.ok) {
-          const data = await response.json();
-          console.log('🔍 checkAuth - API data:', data);
-          if (data.success) {
-            user.value = data.data;
-            token.value = storedToken;
-            console.log('✅ checkAuth - Usuario autenticado:', user.value);
-            return true;
+          console.log('🔍 checkAuth - API response status:', response.status);
+          if (response.ok) {
+            const data = await response.json();
+            console.log('🔍 checkAuth - API data:', data);
+            if (data.success) {
+              user.value = data.data;
+              token.value = storedToken;
+              console.log('✅ checkAuth - Usuario autenticado:', user.value);
+              return true;
+            }
+          } else {
+            console.error('❌ checkAuth - Error de respuesta:', response.status, response.statusText);
           }
+        } catch (error) {
+          console.error('❌ checkAuth - Error de fetch:', error);
         }
       }
 
