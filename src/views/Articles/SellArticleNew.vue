@@ -309,15 +309,25 @@ const submitArticle = async () => {
   loading.value = true
   
   try {
-    // Determinar el estado inicial según el modo de venta
+    // Determinar el estado inicial según el modo de venta y opciones logísticas
     let estado_inicial = 'DRAFT'
     
     if (form.value.modo_venta === 'directa_casa') {
       estado_inicial = 'EN_VENTA'
     } else if (form.value.modo_venta === 'centro_logistico') {
-      estado_inicial = 'PENDIENTE_APROBACION_ADMIN'
+      // Si hay opciones logísticas seleccionadas (compra directa o intercambio por puntos)
+      if (form.value.opciones_logisticas && form.value.opciones_logisticas.length > 0) {
+        estado_inicial = 'PENDIENTE_APROBACION_ADMIN'
+      } else {
+        // Solo venta en centro logístico sin compra directa
+        estado_inicial = 'EN_LOGISTICA'
+      }
     }
 
+    // Configurar opciones de compra directa e intercambio por puntos
+    const hasCompraDirecta = form.value.opciones_logisticas.includes('compra_directa')
+    const hasIntercambioPuntos = form.value.opciones_logisticas.includes('intercambio_puntos')
+    
     // Crear el artículo según el nuevo modelo
     const articleData = {
       nombre: form.value.nombre,
@@ -331,6 +341,35 @@ const submitArticle = async () => {
       acepta_descuento_admin: form.value.acepta_descuento_admin,
       estado_articulo: estado_inicial,
       id_vendedor: authStore.user?.id,
+      
+      // Configurar opciones de compra directa e intercambio por puntos
+      trastaliaPurchase: {
+        enabled: hasCompraDirecta || hasIntercambioPuntos,
+        adminPrice: 0,
+        demandLevel: 'medium',
+        adminApproved: false,
+        autoAcceptMoney: form.value.acepta_descuento_admin && hasCompraDirecta,
+        autoAcceptPoints: form.value.acepta_descuento_admin && hasIntercambioPuntos
+      },
+      pointsExchange: {
+        enabled: hasIntercambioPuntos,
+        pointsPrice: hasIntercambioPuntos ? form.value.precio_propuesto_vendedor * 100 : 0,
+        pointsPerEuro: 100
+      },
+      
+      // Configurar centro logístico
+      logisticsCenterSale: {
+        enabled: form.value.modo_venta === 'centro_logistico',
+        commission: 0.1, // 10% de comisión
+        storageCost: 5, // Costo de almacenamiento por día
+        logisticsCenter: form.value.modo_venta === 'centro_logistico' ? '68cd4472601315508398cd59' : null
+      },
+      
+      // Configurar venta directa desde casa
+      directFromHome: {
+        enabled: form.value.modo_venta === 'directa_casa',
+        shippingCost: 0 // El vendedor se encarga del envío
+      },
       
       // Campos de compatibilidad
       title: form.value.nombre,
@@ -346,7 +385,14 @@ const submitArticle = async () => {
       views: 0
     }
 
-    console.log('Enviando artículo:', articleData)
+    console.log('🔍 Enviando artículo con lógica de datos:')
+    console.log('- Modo de venta:', form.value.modo_venta)
+    console.log('- Opciones logísticas:', form.value.opciones_logisticas)
+    console.log('- Acepta descuento admin:', form.value.acepta_descuento_admin)
+    console.log('- Estado inicial:', estado_inicial)
+    console.log('- Compra directa:', hasCompraDirecta)
+    console.log('- Intercambio por puntos:', hasIntercambioPuntos)
+    console.log('- Datos completos:', articleData)
 
     const response = await fetch(`${API_BASE_URL}/api/articles`, {
       method: 'POST',
