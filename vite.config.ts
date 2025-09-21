@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import { createHtmlPlugin } from 'vite-plugin-html'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => ({
@@ -13,6 +14,15 @@ export default defineConfig(({ command, mode }) => ({
     vueJsx(),
     // Solo habilitar Vue DevTools en modo desarrollo
     ...(command === 'serve' && mode === 'development' ? [vueDevTools()] : []),
+    // Plugin de HTML para controlar el título
+    createHtmlPlugin({
+      minify: true,
+      inject: {
+        data: {
+          title: 'Trastalia - Nueva manera de vender artículos de segunda mano'
+        }
+      }
+    })
   ],
   resolve: {
     alias: {
