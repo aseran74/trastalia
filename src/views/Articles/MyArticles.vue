@@ -209,6 +209,7 @@ import { ref, computed, onMounted } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import { getSupabaseImageUrl, getImageByCategory } from '@/config/supabase'
+import API_BASE_URL from '@/config/api'
 
 // Estado reactivo
 const articles = ref([])

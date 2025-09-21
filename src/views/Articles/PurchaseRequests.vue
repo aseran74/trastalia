@@ -171,6 +171,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
+import API_BASE_URL from '@/config/api'
 
 // Estado reactivo
 const articles = ref([])
