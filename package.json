@@ -10,7 +10,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build",
+    "type-check": "vue-tsc --noEmit --project tsconfig.build.json",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
     "seed": "tsx scripts/seed-database.ts",
@@ -18,15 +18,15 @@
     "mcp-atlas": "tsx scripts/start-atlas-mcp.ts",
     "dev:with-mcp": "concurrently \"npm run mcp-server\" \"npm run dev\"",
     "dev:with-atlas": "concurrently \"npm run mcp-atlas\" \"npm run dev\"",
-    "start": "node start-servers.js",
+    "start": "node server/working-server.cjs",
     "start:all": "concurrently \"node server/working-server.cjs\" \"npm run dev\"",
+    "start:dev": "node start-servers.js",
     "setup-atlas": "node scripts/setup-atlas-credentials.js",
     "server": "tsx server/index.ts",
     "server:dev": "tsx --watch server/index.ts",
     "seed:users": "tsx server/scripts/seed-users.ts",
     "dev:full": "concurrently \"npm run server:dev\" \"npm run dev\"",
-    "vercel-build": "npm run build-only",
-    "start": "node server/working-server.cjs"
+    "vercel-build": "npm run build-only"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",

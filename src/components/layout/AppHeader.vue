@@ -138,7 +138,7 @@ const proceedToCheckout = () => {
   window.location.href = '/comprar-articulos'
 }
 
-const handlePointsPurchase = (purchaseData) => {
+const handlePointsPurchase = (purchaseData: any) => {
   console.log('Puntos comprados:', purchaseData)
   // Aquí podrías actualizar el store de puntos del usuario
 }
