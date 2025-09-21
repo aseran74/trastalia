@@ -7,6 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => ({
+  base: mode === 'production' ? '/' : '/',
   plugins: [
     vue(),
     vueJsx(),
@@ -20,11 +21,14 @@ export default defineConfig(({ command, mode }) => ({
   },
   build: {
     rollupOptions: {
-      external: (id) => {
-        // Excluir archivos de imágenes de public de la resolución de módulos
-        return id.startsWith('/images/')
+      output: {
+        manualChunks: undefined,
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000
   },
   define: {
     // Deshabilitar Vue DevTools en producción
