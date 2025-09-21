@@ -210,7 +210,7 @@ const loadArticles = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch('http://localhost:3002/api/articles', {
+    const response = await fetch(`${API_BASE_URL}/api/articles`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
