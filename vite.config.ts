@@ -11,8 +11,8 @@ export default defineConfig(({ command, mode }) => ({
   plugins: [
     vue(),
     vueJsx(),
-    // Solo habilitar Vue DevTools en modo desarrollo
-    ...(command === 'serve' && mode === 'development' ? [vueDevTools()] : []),
+    // Temporalmente deshabilitado Vue DevTools para probar el título
+    // ...(command === 'serve' && mode === 'development' ? [vueDevTools()] : []),
   ],
   resolve: {
     alias: {
