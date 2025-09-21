@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { SignJWT, jwtVerify } from 'jose';
+import API_BASE_URL from '@/config/api';
 
 interface User {
   id: string;
@@ -43,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = true;
 
       // Llamada a API real
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = true;
 
       // Llamada a API real
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,7 +137,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (storedToken && storedUser) {
         // Verificar token con API real
         console.log('🔍 checkAuth - Verificando token con API');
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
           headers: {
             'Authorization': `Bearer ${storedToken}`
           }
@@ -189,7 +190,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       // Llamada a API real
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/users/${user.value.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${user.value.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
