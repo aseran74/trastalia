@@ -1,0 +1,12 @@
+{
+  "adminDecision": {
+    "money": true,
+    "points": true,
+    "moneyPrice": 120,
+    "pointsAmount": 150,
+    "reject": false,
+    "date": "2025-09-22T08:00:00.000Z"
+  },
+  "adminStatus": "approved_both",
+  "estado_articulo": "EN_VENTA"
+}
