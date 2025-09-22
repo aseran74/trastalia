@@ -168,7 +168,9 @@ const confirmPurchase = async () => {
     console.log('🌐 Realizando petición:', {
       url,
       headers,
-      body: JSON.parse(body)
+      body: JSON.parse(body),
+      authStoreToken: authStore.token,
+      authStoreUser: authStore.user
     })
     
     // Llamar a la API para procesar la compra con puntos
