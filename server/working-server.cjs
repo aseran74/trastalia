@@ -442,9 +442,17 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
       initialAdminStatus = 'approved_money'; // Aprobado automáticamente
       initialEstadoArticulo = 'EN_VENTA';
     } else if (modo_venta === 'centro_logistico' || saleMode === 'logistics_center') {
-      initialStatus = 'disponible';
-      initialAdminStatus = 'pending';
-      initialEstadoArticulo = 'PENDIENTE_APROBACION_ADMIN';
+      // Si hay opciones logísticas seleccionadas (compra directa o intercambio por puntos)
+      if (opciones_logisticas && opciones_logisticas.length > 0) {
+        initialStatus = 'disponible'; // Disponible pero pendiente de aprobación admin
+        initialAdminStatus = 'pending';
+        initialEstadoArticulo = 'PENDIENTE_APROBACION_ADMIN';
+      } else {
+        // Solo venta en centro logístico sin compra directa
+        initialStatus = 'disponible';
+        initialAdminStatus = 'approved_money'; // Aprobado automáticamente
+        initialEstadoArticulo = 'EN_LOGISTICA';
+      }
     }
     // Si es centro logístico con venta directa, queda disponible
     else if (saleMode === 'logistics_center' && !trastaliaPurchase?.enabled && !pointsExchange?.enabled) {
@@ -824,6 +832,80 @@ app.get('/api/articles/point-exchanges', authMiddleware, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener los canjes por puntos'
+    });
+  }
+});
+
+// Ruta para comprar artículo con puntos
+app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) => {
+  try {
+    const { articleId, pointsAmount } = req.body;
+    
+    if (!articleId || !pointsAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Faltan datos requeridos'
+      });
+    }
+
+    // Buscar el artículo
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Verificar que el artículo esté disponible para compra con puntos
+    if (!article.adminDecision?.points || !article.pointsExchange?.enabled) {
+      return res.status(400).json({
+        success: false,
+        message: 'Este artículo no está disponible para compra con puntos'
+      });
+    }
+
+    // Verificar que el usuario tenga suficientes puntos
+    const user = await User.findById(req.userId);
+    if (!user || user.points < pointsAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'No tienes suficientes puntos para esta compra'
+      });
+    }
+
+    // Actualizar el artículo
+    article.estado_articulo = 'COMPRADO_POR_ADMIN';
+    article.comprador = req.userId;
+    article.comprador_tipo = 'usuario';
+    article.adminDecision.selectedOption = 'points';
+    article.adminDecision.finalPoints = pointsAmount;
+    article.sellerAccepted = true;
+    article.sellerAcceptedDate = new Date();
+    article.updatedAt = new Date();
+
+    // Restar puntos al usuario
+    user.points -= pointsAmount;
+    user.updatedAt = new Date();
+
+    // Guardar cambios
+    await article.save();
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Compra realizada con éxito',
+      data: {
+        articleId: article._id,
+        pointsUsed: pointsAmount,
+        remainingPoints: user.points
+      }
+    });
+  } catch (error) {
+    console.error('Error comprando artículo con puntos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al procesar la compra con puntos'
     });
   }
 });
