@@ -12,76 +12,76 @@
       </div>
 
       <!-- Estadísticas -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
+        <div class="rounded-sm border border-stroke bg-white p-3 md:p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-6 h-6 md:w-8 md:h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                <svg class="w-3 h-3 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
               </div>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
-              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.total }}</p>
+            <div class="ml-2 md:ml-4">
+              <p class="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
+              <p class="text-lg md:text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.total }}</p>
             </div>
           </div>
         </div>
 
-        <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div class="rounded-sm border border-stroke bg-white p-3 md:p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-6 h-6 md:w-8 md:h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                <svg class="w-3 h-3 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pendientes</p>
-              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.pending }}</p>
+            <div class="ml-2 md:ml-4">
+              <p class="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400">Pendientes</p>
+              <p class="text-lg md:text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.pending }}</p>
             </div>
           </div>
         </div>
 
-        <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div class="rounded-sm border border-stroke bg-white p-3 md:p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-6 h-6 md:w-8 md:h-8 bg-green-500 rounded-md flex items-center justify-center">
+                <svg class="w-3 h-3 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Aprobados</p>
-              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.approved }}</p>
+            <div class="ml-2 md:ml-4">
+              <p class="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400">Aprobados</p>
+              <p class="text-lg md:text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.approved }}</p>
             </div>
           </div>
         </div>
 
-        <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div class="rounded-sm border border-stroke bg-white p-3 md:p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-6 h-6 md:w-8 md:h-8 bg-red-500 rounded-md flex items-center justify-center">
+                <svg class="w-3 h-3 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </div>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Rechazados</p>
-              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.rejected }}</p>
+            <div class="ml-2 md:ml-4">
+              <p class="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400">Rechazados</p>
+              <p class="text-lg md:text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.rejected }}</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Filtros -->
-      <div class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark mb-6">
-        <div class="flex flex-wrap gap-4">
-          <select v-model="statusFilter" @change="loadArticles" class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+      <div class="rounded-sm border border-stroke bg-white p-3 md:p-4 shadow-default dark:border-strokedark dark:bg-boxdark mb-6">
+        <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
+          <select v-model="statusFilter" @change="loadArticles" class="w-full sm:flex-1 rounded border border-stroke bg-transparent py-2 md:py-3 px-3 md:px-5 text-sm md:text-base text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
             <option value="">Todos los estados</option>
             <option value="pending">Pendientes</option>
             <option value="approved_money">Aprobados (Dinero)</option>
@@ -90,7 +90,7 @@
             <option value="rejected">Rechazados</option>
           </select>
           
-          <button @click="loadArticles" class="inline-flex items-center justify-center rounded-md bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90">
+          <button @click="loadArticles" class="inline-flex items-center justify-center rounded-md bg-primary py-2 md:py-3 px-4 md:px-10 text-center text-sm md:text-base font-medium text-white hover:bg-opacity-90">
             Actualizar
           </button>
         </div>
@@ -98,38 +98,38 @@
 
       <!-- Lista de artículos -->
       <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="px-6 py-4 border-b border-stroke dark:border-strokedark">
-          <h3 class="text-lg font-medium text-black dark:text-white">Artículos</h3>
+        <div class="px-3 md:px-6 py-3 md:py-4 border-b border-stroke dark:border-strokedark">
+          <h3 class="text-base md:text-lg font-medium text-black dark:text-white">Artículos</h3>
         </div>
         
-        <div v-if="loading" class="p-6 text-center">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p class="mt-2 text-gray-600 dark:text-gray-400">Cargando artículos...</p>
+        <div v-if="loading" class="p-4 md:p-6 text-center">
+          <div class="animate-spin rounded-full h-6 w-6 md:h-8 md:w-8 border-b-2 border-primary mx-auto"></div>
+          <p class="mt-2 text-sm md:text-base text-gray-600 dark:text-gray-400">Cargando artículos...</p>
         </div>
 
-        <div v-else-if="articles.length === 0" class="p-6 text-center text-gray-500 dark:text-gray-400">
+        <div v-else-if="articles.length === 0" class="p-4 md:p-6 text-center text-sm md:text-base text-gray-500 dark:text-gray-400">
           No hay artículos para mostrar
         </div>
 
         <div v-else class="divide-y divide-stroke dark:divide-strokedark">
-          <div v-for="article in articles" :key="article._id" class="p-6 hover:bg-gray-50 dark:hover:bg-boxdark">
-            <div class="flex items-start justify-between">
+          <div v-for="article in articles" :key="article._id" class="p-3 md:p-6 hover:bg-gray-50 dark:hover:bg-boxdark">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
               <div class="flex-1">
-                <div class="flex items-center space-x-3">
-                  <h4 class="text-lg font-medium text-black dark:text-white">{{ article.title }}</h4>
-                  <span :class="getStatusBadgeClass(article.adminStatus)" class="px-2 py-1 text-xs font-medium rounded-full">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                  <h4 class="text-base md:text-lg font-medium text-black dark:text-white">{{ article.title }}</h4>
+                  <span :class="getStatusBadgeClass(article.adminStatus)" class="px-2 py-1 text-xs font-medium rounded-full self-start">
                     {{ getStatusText(article.adminStatus) }}
                   </span>
                 </div>
                 
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ article.description }}</p>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{{ article.description }}</p>
                 
-                       <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                         <span>Precio: {{ article.price }}€</span>
-                         <span v-if="article.pointsPrice">Puntos: {{ article.pointsPrice }}</span>
-                         <span>Categoría: {{ article.category }}</span>
-                         <span>Estado: {{ article.condition }}</span>
-                       </div>
+                <div class="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                  <span class="truncate">Precio: {{ article.price }}€</span>
+                  <span v-if="article.pointsPrice" class="truncate">Puntos: {{ article.pointsPrice }}</span>
+                  <span class="truncate">Categoría: {{ article.category }}</span>
+                  <span class="truncate">Estado: {{ article.condition }}</span>
+                </div>
 
                        <!-- Información de nave logística -->
                        <div v-if="article.logisticsShip" class="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
@@ -143,11 +143,11 @@
                          </div>
                        </div>
                 
-                <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <span>Vendedor: {{ article.seller.name }}</span>
-                  <span>Email: {{ article.seller.email }}</span>
-                  <span>Puntos: {{ article.seller.points || 0 }}</span>
-                  <span>Nivel: {{ article.seller.logisticsLevel || 'civil' }}</span>
+                <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                  <span class="truncate">Vendedor: {{ article.seller.name }}</span>
+                  <span class="truncate">Email: {{ article.seller.email }}</span>
+                  <span class="truncate">Puntos: {{ article.seller.points || 0 }}</span>
+                  <span class="truncate">Nivel: {{ article.seller.logisticsLevel || 'civil' }}</span>
                 </div>
 
                 <div v-if="article.adminDecision && article.adminDecision.reject" class="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
@@ -165,11 +165,11 @@
                 </div>
               </div>
               
-              <div v-if="article.adminStatus === 'pending'" class="flex space-x-2 ml-4">
-                <button @click="openApproveModal(article)" class="inline-flex items-center justify-center rounded-md bg-green-600 py-2 px-4 text-center font-medium text-white hover:bg-opacity-90">
+              <div v-if="article.adminStatus === 'pending'" class="flex flex-col sm:flex-row gap-2 lg:ml-4 mt-4 lg:mt-0">
+                <button @click="openApproveModal(article)" class="inline-flex items-center justify-center rounded-md bg-green-600 py-2 px-3 md:px-4 text-center text-sm md:text-base font-medium text-white hover:bg-opacity-90">
                   Aprobar
                 </button>
-                <button @click="openRejectModal(article)" class="inline-flex items-center justify-center rounded-md bg-red-600 py-2 px-4 text-center font-medium text-white hover:bg-opacity-90">
+                <button @click="openRejectModal(article)" class="inline-flex items-center justify-center rounded-md bg-red-600 py-2 px-3 md:px-4 text-center text-sm md:text-base font-medium text-white hover:bg-opacity-90">
                   Rechazar
                 </button>
               </div>
