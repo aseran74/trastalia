@@ -128,18 +128,24 @@
           <div class="space-y-2">
             <div class="flex space-x-2">
               <button
-                v-if="article.price > 0"
+                v-if="article.price > 0 && (article.adminDecision?.money || article.trastaliaPurchase?.enabled)"
                 @click="buyWithMoney(article)"
                 class="flex-1 rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
               >
                 Comprar con Dinero
+                <span v-if="article.adminDecision?.moneyPrice" class="block text-xs opacity-90">
+                  ({{ article.adminDecision.moneyPrice }}€)
+                </span>
               </button>
               <button
-                v-if="article.pointsPrice > 0"
+                v-if="article.price > 0 && (article.adminDecision?.points || article.pointsExchange?.enabled)"
                 @click="buyWithPoints(article)"
                 class="flex-1 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 Comprar con Puntos
+                <span v-if="article.adminDecision?.pointsAmount" class="block text-xs opacity-90">
+                  ({{ article.adminDecision.pointsAmount }} pts)
+                </span>
               </button>
             </div>
             <router-link
@@ -236,11 +242,14 @@ const filteredArticles = computed(() => {
     // Filtrar por tipo de venta
     switch (filterType.value) {
       case 'money':
-        return article.price > 0
+        return article.price > 0 && (article.adminDecision?.money || article.trastaliaPurchase?.enabled)
       case 'points':
-        return article.price > 0 // Los puntos equivalen al precio en dinero
+        return article.price > 0 && (article.adminDecision?.points || article.pointsExchange?.enabled)
       case 'both':
-        return article.price > 0 // Si tiene precio, se puede comprar con dinero o puntos
+        return article.price > 0 && (
+          (article.adminDecision?.money || article.trastaliaPurchase?.enabled) ||
+          (article.adminDecision?.points || article.pointsExchange?.enabled)
+        )
       default:
         return article.price > 0
     }
