@@ -1419,8 +1419,10 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
       pointsExchange: article.pointsExchange
     });
     
-    if (!article.adminDecision?.points || !article.pointsExchange?.enabled) {
-      console.log('❌ Artículo no disponible para compra con puntos');
+    // Verificar que el artículo esté disponible para compra con puntos
+    // Si adminDecision.points es true, permitir la compra independientemente de pointsExchange
+    if (!article.adminDecision?.points) {
+      console.log('❌ Artículo no disponible para compra con puntos - adminDecision.points es false');
       return res.status(400).json({
         success: false,
         message: 'Este artículo no está disponible para compra con puntos'
