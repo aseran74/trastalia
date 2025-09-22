@@ -228,6 +228,18 @@ import {
 } from "../../icons";
 import SidebarWidget from "./SidebarWidget.vue";
 import BoxCubeIcon from "@/icons/BoxCubeIcon.vue";
+import ShoppingCartIcon from "@/icons/ShoppingCartIcon.vue";
+import SellIcon from "@/icons/SellIcon.vue";
+import CoinsIcon from "@/icons/CoinsIcon.vue";
+import RequestIcon from "@/icons/RequestIcon.vue";
+import WarehouseIcon from "@/icons/WarehouseIcon.vue";
+import MyItemsIcon from "@/icons/MyItemsIcon.vue";
+import PurchaseIcon from "@/icons/PurchaseIcon.vue";
+import ExchangeIcon from "@/icons/ExchangeIcon.vue";
+import SoldIcon from "@/icons/SoldIcon.vue";
+import AdminIcon from "@/icons/AdminIcon.vue";
+import ManageIcon from "@/icons/ManageIcon.vue";
+import LogisticsIcon from "@/icons/LogisticsIcon.vue";
 import { useSidebar } from "@/composables/useSidebar";
 import { useAuthStore } from "@/stores/auth";
 
@@ -264,22 +276,22 @@ const menuGroups = [
     title: "Plataforma de Compraventa",
     items: [
       {
-        icon: BoxCubeIcon,
+        icon: ShoppingCartIcon,
         name: "Comprar Artículos",
         path: "/comprar-articulos",
       },
       {
-        icon: BoxCubeIcon,
+        icon: SellIcon,
         name: "Vender Artículo",
         path: "/vender-articulo",
       },
       {
-        icon: BoxCubeIcon,
+        icon: CoinsIcon,
         name: "Mis Puntos",
         path: "/mis-transacciones-puntos",
       },
       {
-        icon: BoxCubeIcon,
+        icon: RequestIcon,
         name: "Solicitudes de Compra",
         path: "/mis-solicitudes-compra",
       },
@@ -289,7 +301,7 @@ const menuGroups = [
     title: "Centro Logístico",
     items: [
       {
-        icon: PlugInIcon,
+        icon: WarehouseIcon,
         name: "Mi Nave",
         path: "/mi-nave",
       },
@@ -299,22 +311,22 @@ const menuGroups = [
     title: "Mis Actividades",
     items: [
       {
-        icon: ListIcon,
+        icon: MyItemsIcon,
         name: "Mis Artículos",
         path: "/mis-articulos",
       },
       {
-        icon: ListIcon,
+        icon: PurchaseIcon,
         name: "Mis Compras",
         path: "/mis-compras",
       },
       {
-        icon: ListIcon,
+        icon: ExchangeIcon,
         name: "Mis Canjes",
         path: "/mis-intercambios",
       },
       {
-        icon: ListIcon,
+        icon: SoldIcon,
         name: "Artículos Vendidos",
         path: "/articulos-vendidos",
       },
@@ -334,17 +346,17 @@ const menuGroups = [
     title: "Administración",
     items: [
       {
-        icon: ListIcon,
+        icon: AdminIcon,
         name: "Panel Admin",
         path: "/admin",
       },
       {
-        icon: ListIcon,
+        icon: ManageIcon,
         name: "Gestionar Artículos",
         path: "/admin/articles",
       },
       {
-        icon: PlugInIcon,
+        icon: LogisticsIcon,
         name: "Centros Logísticos",
         path: "/centros-logisticos",
       },
