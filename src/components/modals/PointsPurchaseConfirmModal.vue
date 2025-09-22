@@ -155,17 +155,27 @@ const confirmPurchase = async () => {
   loading.value = true
   
   try {
+    const url = `${API_BASE_URL}/api/articles/purchase-with-points`
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authStore.token}`
+    }
+    const body = JSON.stringify({
+      articleId: props.article._id,
+      pointsAmount: pointsRequired.value
+    })
+    
+    console.log('🌐 Realizando petición:', {
+      url,
+      headers,
+      body: JSON.parse(body)
+    })
+    
     // Llamar a la API para procesar la compra con puntos
-    const response = await fetch(`${API_BASE_URL}/api/articles/purchase-with-points`, {
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authStore.token}`
-      },
-      body: JSON.stringify({
-        articleId: props.article._id,
-        pointsAmount: pointsRequired.value
-      })
+      headers,
+      body
     })
 
     console.log('📡 Respuesta del servidor:', response.status, response.statusText)
