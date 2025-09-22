@@ -139,7 +139,18 @@ const closeModal = () => {
 }
 
 const confirmPurchase = async () => {
-  if (!props.article) return
+  if (!props.article) {
+    console.error('❌ No hay artículo seleccionado')
+    return
+  }
+  
+  console.log('🛒 Iniciando compra con puntos:', {
+    article: props.article.title,
+    articleId: props.article._id,
+    pointsRequired: pointsRequired.value,
+    userPoints: userPoints.value,
+    API_BASE_URL
+  })
   
   loading.value = true
   
@@ -157,9 +168,13 @@ const confirmPurchase = async () => {
       })
     })
 
+    console.log('📡 Respuesta del servidor:', response.status, response.statusText)
+
     const data = await response.json()
+    console.log('📦 Datos de respuesta:', data)
 
     if (data.success) {
+      console.log('✅ Compra exitosa')
       toast.success('¡Compra realizada con éxito!', 'El artículo se ha añadido a tus canjes.')
       
       // Actualizar puntos del usuario
@@ -168,10 +183,11 @@ const confirmPurchase = async () => {
       // Emitir evento de confirmación
       emit('confirmed', props.article)
     } else {
+      console.error('❌ Error en la compra:', data.message)
       toast.error('Error en la compra', data.message || 'No se pudo procesar la compra')
     }
   } catch (error) {
-    console.error('Error comprando con puntos:', error)
+    console.error('💥 Error comprando con puntos:', error)
     toast.error('Error en la compra', 'No se pudo procesar la compra. Inténtalo de nuevo.')
   } finally {
     loading.value = false

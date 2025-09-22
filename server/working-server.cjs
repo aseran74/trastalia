@@ -836,79 +836,6 @@ app.get('/api/articles/point-exchanges', authMiddleware, async (req, res) => {
   }
 });
 
-// Ruta para comprar artículo con puntos
-app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) => {
-  try {
-    const { articleId, pointsAmount } = req.body;
-    
-    if (!articleId || !pointsAmount) {
-      return res.status(400).json({
-        success: false,
-        message: 'Faltan datos requeridos'
-      });
-    }
-
-    // Buscar el artículo
-    const article = await Article.findById(articleId);
-    if (!article) {
-      return res.status(404).json({
-        success: false,
-        message: 'Artículo no encontrado'
-      });
-    }
-
-    // Verificar que el artículo esté disponible para compra con puntos
-    if (!article.adminDecision?.points || !article.pointsExchange?.enabled) {
-      return res.status(400).json({
-        success: false,
-        message: 'Este artículo no está disponible para compra con puntos'
-      });
-    }
-
-    // Verificar que el usuario tenga suficientes puntos
-    const user = await User.findById(req.userId);
-    if (!user || user.points < pointsAmount) {
-      return res.status(400).json({
-        success: false,
-        message: 'No tienes suficientes puntos para esta compra'
-      });
-    }
-
-    // Actualizar el artículo
-    article.estado_articulo = 'COMPRADO_POR_ADMIN';
-    article.comprador = req.userId;
-    article.comprador_tipo = 'usuario';
-    article.adminDecision.selectedOption = 'points';
-    article.adminDecision.finalPoints = pointsAmount;
-    article.sellerAccepted = true;
-    article.sellerAcceptedDate = new Date();
-    article.updatedAt = new Date();
-
-    // Restar puntos al usuario
-    user.points -= pointsAmount;
-    user.updatedAt = new Date();
-
-    // Guardar cambios
-    await article.save();
-    await user.save();
-
-    res.json({
-      success: true,
-      message: 'Compra realizada con éxito',
-      data: {
-        articleId: article._id,
-        pointsUsed: pointsAmount,
-        remainingPoints: user.points
-      }
-    });
-  } catch (error) {
-    console.error('Error comprando artículo con puntos:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error al procesar la compra con puntos'
-    });
-  }
-});
 
 // Ruta para solicitudes de compra de Trastalia (para usuarios)
 app.get('/api/articles/trastalia-purchase-requests', authMiddleware, async (req, res) => {
@@ -1457,6 +1384,90 @@ app.get('/api/articles/:id', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener el artículo'
+    });
+  }
+});
+
+// Ruta para comprar artículo con puntos
+app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) => {
+  console.log('🚀 Ruta purchase-with-points ejecutándose');
+  try {
+    const { articleId, pointsAmount } = req.body;
+    
+    if (!articleId || !pointsAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Faltan datos requeridos'
+      });
+    }
+
+    // Buscar el artículo
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Verificar que el artículo esté disponible para compra con puntos
+    console.log('🔍 Validando artículo para compra con puntos:', {
+      articleId: article._id,
+      adminDecisionPoints: article.adminDecision?.points,
+      pointsExchangeEnabled: article.pointsExchange?.enabled,
+      adminDecision: article.adminDecision,
+      pointsExchange: article.pointsExchange
+    });
+    
+    if (!article.adminDecision?.points || !article.pointsExchange?.enabled) {
+      console.log('❌ Artículo no disponible para compra con puntos');
+      return res.status(400).json({
+        success: false,
+        message: 'Este artículo no está disponible para compra con puntos'
+      });
+    }
+
+    // Verificar que el usuario tenga suficientes puntos
+    const user = await User.findById(req.userId);
+    if (!user || user.points < pointsAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'No tienes suficientes puntos para esta compra'
+      });
+    }
+
+    // Actualizar el artículo
+    article.estado_articulo = 'COMPRADO_POR_ADMIN';
+    article.comprador = req.userId;
+    article.comprador_tipo = 'usuario';
+    article.adminDecision.selectedOption = 'points';
+    article.adminDecision.finalPoints = pointsAmount;
+    article.sellerAccepted = true;
+    article.sellerAcceptedDate = new Date();
+    article.updatedAt = new Date();
+
+    // Restar puntos al usuario
+    user.points -= pointsAmount;
+    user.updatedAt = new Date();
+
+    // Guardar cambios
+    await article.save();
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Compra realizada con éxito',
+      data: {
+        articleId: article._id,
+        pointsUsed: pointsAmount,
+        remainingPoints: user.points
+      }
+    });
+  } catch (error) {
+    console.error('Error comprando artículo con puntos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al procesar la compra con puntos'
     });
   }
 });
