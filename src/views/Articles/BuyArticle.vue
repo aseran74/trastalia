@@ -184,6 +184,14 @@
       @close="closePayment"
       @payment-success="handlePaymentSuccess"
     />
+
+    <!-- Modal de confirmación de compra con puntos -->
+    <PointsPurchaseConfirmModal
+      :is-open="showPointsConfirmModal"
+      :article="selectedArticleForPoints"
+      @close="closePointsConfirmModal"
+      @confirmed="confirmPointsPurchase"
+    />
   </AdminLayout>
 </template>
 
@@ -195,6 +203,7 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import ShoppingCartModal from '@/components/modals/ShoppingCartModal.vue'
 import PaymentModal from '@/components/modals/PaymentModal.vue'
+import PointsPurchaseConfirmModal from '@/components/modals/PointsPurchaseConfirmModal.vue'
 import { getSupabaseImageUrl, getImageByCategory } from '@/config/supabase'
 import API_BASE_URL from '@/config/api'
 
@@ -211,6 +220,8 @@ const toast = useToast()
 // Estado del carrito de compra
 const showCartModal = ref(false)
 const showPaymentModal = ref(false)
+const showPointsConfirmModal = ref(false)
+const selectedArticleForPoints = ref(null)
 
 // Cargar artículos
 const loadArticles = async () => {
@@ -378,13 +389,28 @@ const buyWithPoints = (article) => {
     return
   }
   
-  // Los puntos equivalen al valor en dinero (1 punto = 1€)
-  const pointsNeeded = article.price
+  // Mostrar modal de confirmación
+  selectedArticleForPoints.value = article
+  showPointsConfirmModal.value = true
+}
+
+// Cerrar modal de confirmación de puntos
+const closePointsConfirmModal = () => {
+  showPointsConfirmModal.value = false
+  selectedArticleForPoints.value = null
+}
+
+// Confirmar compra con puntos
+const confirmPointsPurchase = (article) => {
+  // Cerrar modal
+  closePointsConfirmModal()
   
-  // Simular compra con puntos
+  // Recargar artículos para actualizar la lista
+  loadArticles()
+  
   toast.success(
-    '¡Compra con puntos!',
-    `"${article.title}" se ha comprado por ${pointsNeeded} puntos. Los puntos se han descontado de tu balance.`,
+    '¡Compra realizada con éxito!',
+    `"${article.title}" se ha añadido a tus canjes.`,
     { duration: 5000 }
   )
 }
