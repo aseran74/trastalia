@@ -144,10 +144,10 @@
                        </div>
                 
                 <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                  <span class="truncate">Vendedor: {{ article.seller.name }}</span>
-                  <span class="truncate">Email: {{ article.seller.email }}</span>
-                  <span class="truncate">Puntos: {{ article.seller.points || 0 }}</span>
-                  <span class="truncate">Nivel: {{ article.seller.logisticsLevel || 'civil' }}</span>
+                  <span class="truncate">Vendedor: {{ getSellerInfo(article).name }}</span>
+                  <span class="truncate">Email: {{ getSellerInfo(article).email }}</span>
+                  <span class="truncate">Puntos: {{ getSellerInfo(article).points }}</span>
+                  <span class="truncate">Nivel: {{ getSellerInfo(article).logisticsLevel }}</span>
                 </div>
 
                 <div v-if="article.adminDecision && article.adminDecision.reject" class="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
@@ -314,15 +314,24 @@ const rejectForm = ref({
 // Métodos
 const loadStats = async () => {
   try {
-    const response = await fetch('/api/articles/admin/stats', {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    const response = await fetch('/api/articles', {
       headers: {
-        'Authorization': `Bearer ${authStore.token}`
+        'Authorization': `Bearer ${token}`
       }
     })
     
     if (response.ok) {
       const data = await response.json()
-      stats.value = data.data
+      const articles = data.data || []
+      
+      // Calcular estadísticas
+      stats.value = {
+        total: articles.length,
+        pending: articles.filter(a => a.adminStatus === 'pending').length,
+        approved: articles.filter(a => ['approved_money', 'approved_points', 'approved_both'].includes(a.adminStatus)).length,
+        rejected: articles.filter(a => a.adminStatus === 'rejected').length
+      }
     }
   } catch (error) {
     console.error('Error cargando estadísticas:', error)
@@ -332,20 +341,26 @@ const loadStats = async () => {
 const loadArticles = async () => {
   loading.value = true
   try {
-    let url = '/api/articles/admin/pending'
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    let url = '/api/articles'
+    
+    // Si hay filtro, agregar parámetro
     if (statusFilter.value) {
-      url = `/api/articles?adminStatus=${statusFilter.value}`
+      url += `?adminStatus=${statusFilter.value}`
     }
     
     const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${authStore.token}`
+        'Authorization': `Bearer ${token}`
       }
     })
     
     if (response.ok) {
       const data = await response.json()
-      articles.value = data.data
+      articles.value = data.data || []
+      console.log('📊 Artículos cargados:', articles.value.length)
+    } else {
+      console.error('Error en respuesta:', response.status, response.statusText)
     }
   } catch (error) {
     console.error('Error cargando artículos:', error)
@@ -396,11 +411,12 @@ const approveArticle = async () => {
   if (!selectedArticle.value) return
   
   try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     const response = await fetch(`/api/articles/admin/${selectedArticle.value._id}/approve`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authStore.token}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(approveForm.value)
     })
@@ -436,11 +452,12 @@ const rejectArticle = async () => {
   if (!selectedArticle.value) return
   
   try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     const response = await fetch(`/api/articles/admin/${selectedArticle.value._id}/reject`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authStore.token}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(rejectForm.value)
     })
@@ -492,6 +509,17 @@ const getStatusText = (status: string) => {
     rejected: 'Rechazado'
   }
   return texts[status] || status
+}
+
+const getSellerInfo = (article: any) => {
+  // Manejar seller, vendedor_id e id_vendedor
+  const seller = article.seller || article.vendedor_id || article.id_vendedor
+  return {
+    name: seller?.name || 'No disponible',
+    email: seller?.email || 'No disponible',
+    points: seller?.points || 0,
+    logisticsLevel: seller?.logisticsLevel || 'civil'
+  }
 }
 
 // Lifecycle

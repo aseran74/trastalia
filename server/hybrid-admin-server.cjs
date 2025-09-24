@@ -536,10 +536,11 @@ app.get('/api/articles/admin/pending', authMiddleware, async (req, res) => {
         data: articles
       });
     } else {
-      // Usar datos simulados
+      // Usar datos simulados - solo artículos pendientes
+      const pendingArticles = mockArticles.filter(article => article.adminStatus === 'pending');
       res.json({
         success: true,
-        data: mockArticles
+        data: pendingArticles
       });
     }
   } catch (error) {

@@ -339,7 +339,7 @@ const selectedCategory = ref('')
       loading.value = true
       try {
         const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-        const response = await fetch(`${API_BASE_URL}/api/articles/admin-pending`, {
+        const response = await fetch(`/api/articles`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -424,7 +424,7 @@ const processDecision = async (article) => {
         notes: article.decisions.notes
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/process-article`, {
+      const response = await fetch(`/api/admin/process-article`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -450,7 +450,7 @@ const processDecision = async (article) => {
         notes: article.decisions.notes
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/process-article`, {
+      const response = await fetch(`/api/admin/process-article`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

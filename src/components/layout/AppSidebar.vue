@@ -22,22 +22,21 @@
       <router-link to="/dashboard">
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
-          class="dark:hidden w-36 h-9 sm:w-40 sm:h-10 lg:w-44 lg:h-11"
-          src="/images/logo.png"
+          class="dark:hidden h-16 w-auto sm:h-18 lg:h-20"
+          src="/images/Trastalia.png"
           alt="Logo"
         />
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
-          class="hidden dark:block w-36 h-9 sm:w-40 sm:h-10 lg:w-44 lg:h-11"
-          src="/images/logo.png"
+          class="hidden dark:block h-16 w-auto sm:h-18 lg:h-20"
+          src="/images/Trastalia.png"
           alt="Logo"
         />
         <img
           v-else
-          src="/images/logo.png"
+          src="/images/Trastalia.png"
           alt="Logo"
-          width="32"
-          height="32"
+          class="h-12 w-auto"
         />
       </router-link>
     </div>
@@ -283,7 +282,7 @@ const menuGroups = [
       {
         icon: SellIcon,
         name: "Vender Artículo",
-        path: "/vender-articulo",
+        path: "/vender-articulo-nuevo",
       },
       {
         icon: CoinsIcon,
@@ -294,16 +293,6 @@ const menuGroups = [
         icon: RequestIcon,
         name: "Solicitudes de Compra",
         path: "/mis-solicitudes-compra",
-      },
-    ],
-  },
-  {
-    title: "Centro Logístico",
-    items: [
-      {
-        icon: WarehouseIcon,
-        name: "Mi Nave",
-        path: "/mi-nave",
       },
     ],
   },
@@ -352,6 +341,16 @@ const menuGroups = [
       },
       {
         icon: ManageIcon,
+        name: "Editar Artículos",
+        path: "/admin/articles-management",
+      },
+      {
+        icon: RequestIcon,
+        name: "Solicitudes de Compra",
+        path: "/admin/purchase-requests",
+      },
+      {
+        icon: ManageIcon,
         name: "Gestionar Artículos",
         path: "/admin/articles",
       },
@@ -359,21 +358,6 @@ const menuGroups = [
         icon: LogisticsIcon,
         name: "Centros Logísticos",
         path: "/centros-logisticos",
-      },
-    ],
-  },
-  {
-    title: "Ejemplos",
-    items: [
-      {
-        icon: PlugInIcon,
-        name: "Google Places",
-        path: "/google-places-example",
-      },
-      {
-        icon: PlugInIcon,
-        name: "Toast Demo",
-        path: "/toast-demo",
       },
     ],
   },

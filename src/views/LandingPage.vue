@@ -1,17 +1,22 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Header -->
-    <header class="relative overflow-hidden">
+    <header 
+      :class="[
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        isScrolled ? 'bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm' : 'bg-transparent'
+      ]"
+    >
       <!-- Navigation -->
-      <nav class="relative z-10 px-6 py-4">
-        <div class="mx-auto max-w-7xl">
+      <nav class="relative z-10 px-4 py-3">
+        <div class="mx-auto max-w-5xl">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <img src="/images/logo.png" alt="Trastalia" class="h-10 w-auto sm:h-12 md:h-14">
+              <img src="/images/Trastalia.png" alt="Trastalia" class="h-16 w-auto sm:h-18 md:h-20">
             </div>
             
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-8">
+            <div class="hidden md:flex items-center space-x-6">
               <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Características</a>
               <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Cómo funciona</a>
               <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Precios</a>
@@ -55,9 +60,10 @@
           </div>
         </div>
       </nav>
+    </header>
 
-      <!-- Hero Section -->
-      <div class="relative px-6 py-20 lg:py-32">
+    <!-- Hero Section -->
+    <div class="relative px-6 py-20 lg:py-32 pt-32">
         <div class="mx-auto max-w-7xl">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <!-- Left Column -->
@@ -133,7 +139,6 @@
           </div>
         </div>
       </div>
-    </header>
 
     <!-- Features Section -->
     <section id="features" class="py-20 px-6">
@@ -337,7 +342,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div class="col-span-1 md:col-span-2">
             <div class="flex items-center space-x-2 mb-4">
-              <img src="/images/logo.png" alt="Trastalia" class="h-10 w-auto sm:h-12 md:h-14">
+              <img src="/images/Trastalia.png" alt="Trastalia" class="h-20 w-auto sm:h-24 md:h-28 brightness-0 invert">
             </div>
             <p class="text-gray-400 mb-4">
               La plataforma revolucionaria para el comercio de segunda mano. 
@@ -373,18 +378,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import UserProfileMenu from '@/components/landing/UserProfileMenu.vue'
 
 const authStore = useAuthStore()
 const mobileMenuOpen = ref(false)
+const isScrolled = ref(false)
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50
+}
+
 onMounted(() => {
+  // Add scroll event listener
+  window.addEventListener('scroll', handleScroll)
+  
   // Smooth scrolling for anchor links
   const links = document.querySelectorAll('a[href^="#"]')
   links.forEach(link => {
@@ -399,6 +412,10 @@ onMounted(() => {
       }
     })
   })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 

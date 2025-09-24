@@ -1,6 +1,14 @@
 <template>
-  <AdminLayout>
-    <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+  <div class="min-h-screen xl:flex">
+    <app-sidebar />
+    <Backdrop />
+    <div
+      class="flex-1 transition-all duration-300 ease-in-out"
+      :class="[isExpanded || isHovered ? 'lg:ml-[290px]' : 'lg:ml-[90px]']"
+    >
+      <app-header />
+      <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+        <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
       <!-- Breadcrumb -->
       <BreadcrumbNav />
       
@@ -9,10 +17,10 @@
         <div class="flex justify-between items-start">
           <div>
             <h1 class="text-3xl font-bold text-black dark:text-white">
-              Comprar Artículos
+              Comprar Artículos de Trastalia
             </h1>
             <p class="text-gray-600 dark:text-gray-400">
-              Artículos disponibles para compra con dinero o puntos
+              Artículos que Trastalia ha comprado y están disponibles para ti
             </p>
           </div>
           
@@ -101,9 +109,9 @@
             </p>
             
             <!-- Precio -->
-            <div v-if="article.price > 0" class="mb-3 flex items-center justify-between">
+            <div v-if="(article.precio_sugerido || article.price) > 0" class="mb-3 flex items-center justify-between">
               <span class="text-sm text-gray-600 dark:text-gray-400">Precio:</span>
-              <span class="text-lg font-bold text-green-600">{{ article.price }}€</span>
+              <span class="text-lg font-bold text-green-600">{{ article.precio_sugerido || article.price }}€</span>
             </div>
 
             <!-- Ubicación -->
@@ -128,23 +136,29 @@
           <div class="space-y-2">
             <div class="flex space-x-2">
               <button
-                v-if="article.price > 0 && (article.adminDecision?.money || article.trastaliaPurchase?.enabled)"
+                v-if="(article.precio_sugerido || article.price) > 0 && (article.oferta_admin?.tipo_oferta === 'dinero' || article.oferta_admin?.tipo_oferta === 'ambos' || article.estado === 'en_venta')"
                 @click="buyWithMoney(article)"
                 class="flex-1 rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
               >
                 Comprar con Dinero
-                <span v-if="article.adminDecision?.moneyPrice" class="block text-xs opacity-90">
-                  ({{ article.adminDecision.moneyPrice }}€)
+                <span v-if="article.oferta_admin?.precio_ofertado" class="block text-xs opacity-90">
+                  ({{ article.oferta_admin.precio_ofertado }}€)
+                </span>
+                <span v-else class="block text-xs opacity-90">
+                  ({{ article.precio_sugerido || article.price }}€)
                 </span>
               </button>
               <button
-                v-if="article.price > 0 && (article.adminDecision?.points || article.pointsExchange?.enabled)"
+                v-if="(article.precio_sugerido || article.price) > 0 && (article.oferta_admin?.tipo_oferta === 'puntos' || article.oferta_admin?.tipo_oferta === 'ambos' || article.estado === 'en_venta')"
                 @click="buyWithPoints(article)"
                 class="flex-1 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 Comprar con Puntos
-                <span v-if="article.adminDecision?.pointsAmount" class="block text-xs opacity-90">
-                  ({{ article.adminDecision.pointsAmount }} pts)
+                <span v-if="article.oferta_admin?.puntos_ofertados" class="block text-xs opacity-90">
+                  ({{ article.oferta_admin.puntos_ofertados }} pts)
+                </span>
+                <span v-else class="block text-xs opacity-90">
+                  ({{ article.precio_sugerido || article.price }} pts)
                 </span>
               </button>
             </div>
@@ -192,14 +206,22 @@
       @close="closePointsConfirmModal"
       @confirmed="confirmPointsPurchase"
     />
-  </AdminLayout>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useToast } from '@/composables/useToast'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import Backdrop from '@/components/layout/Backdrop.vue'
+import { useSidebar } from '@/composables/useSidebar'
+
+// Sidebar logic
+const { isExpanded, isHovered } = useSidebar()
 import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import ShoppingCartModal from '@/components/modals/ShoppingCartModal.vue'
 import PaymentModal from '@/components/modals/PaymentModal.vue'
@@ -223,12 +245,12 @@ const showPaymentModal = ref(false)
 const showPointsConfirmModal = ref(false)
 const selectedArticleForPoints = ref(null)
 
-// Cargar artículos
+// Cargar artículos del admin
 const loadArticles = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${API_BASE_URL}/api/articles`, {
+    const response = await fetch(`/api/articles/admin-owned`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -237,11 +259,12 @@ const loadArticles = async () => {
     if (response.ok) {
       const data = await response.json()
       articles.value = data.data || []
+      console.log('📦 Artículos del admin cargados:', articles.value.length)
     } else {
-      console.error('Error cargando artículos:', response.statusText)
+      console.error('Error cargando artículos del admin:', response.statusText)
     }
   } catch (error) {
-    console.error('Error cargando artículos:', error)
+    console.error('Error cargando artículos del admin:', error)
   } finally {
     loading.value = false
   }
@@ -250,32 +273,48 @@ const loadArticles = async () => {
 // Filtrar artículos
 const filteredArticles = computed(() => {
   let filtered = articles.value.filter(article => {
+    // Usar precio_sugerido en lugar de price para la nueva lógica
+    const price = article.precio_sugerido || article.price || 0
+    
     // Filtrar por tipo de venta
     switch (filterType.value) {
       case 'money':
-        return article.price > 0 && (article.adminDecision?.money || article.trastaliaPurchase?.enabled)
+        return price > 0 && (
+          article.oferta_admin?.tipo_oferta === 'dinero' || 
+          article.oferta_admin?.tipo_oferta === 'ambos' ||
+          article.estado === 'en_venta' ||
+          article.estado === 'solicitud_compra_pendiente'
+        )
       case 'points':
-        return article.price > 0 && (article.adminDecision?.points || article.pointsExchange?.enabled)
+        return price > 0 && (
+          article.oferta_admin?.tipo_oferta === 'puntos' || 
+          article.oferta_admin?.tipo_oferta === 'ambos' ||
+          article.estado === 'en_venta' ||
+          article.estado === 'solicitud_compra_pendiente'
+        )
       case 'both':
-        return article.price > 0 && (
-          (article.adminDecision?.money || article.trastaliaPurchase?.enabled) ||
-          (article.adminDecision?.points || article.pointsExchange?.enabled)
+        return price > 0 && (
+          article.oferta_admin?.tipo_oferta === 'dinero' || 
+          article.oferta_admin?.tipo_oferta === 'puntos' || 
+          article.oferta_admin?.tipo_oferta === 'ambos' ||
+          article.estado === 'en_venta' ||
+          article.estado === 'solicitud_compra_pendiente'
         )
       default:
-        return article.price > 0
+        return price > 0 && (article.estado === 'en_venta' || article.estado === 'solicitud_compra_pendiente')
     }
   })
 
   // Ordenar
   switch (sortBy.value) {
     case 'price-low':
-      return filtered.sort((a, b) => (a.price || 0) - (b.price || 0))
+      return filtered.sort((a, b) => (a.precio_sugerido || a.price || 0) - (b.precio_sugerido || b.price || 0))
     case 'price-high':
-      return filtered.sort((a, b) => (b.price || 0) - (a.price || 0))
+      return filtered.sort((a, b) => (b.precio_sugerido || b.price || 0) - (a.precio_sugerido || a.price || 0))
     case 'points-low':
-      return filtered.sort((a, b) => (a.price || 0) - (b.price || 0)) // Los puntos equivalen al precio
+      return filtered.sort((a, b) => (a.precio_sugerido || a.price || 0) - (b.precio_sugerido || b.price || 0)) // Los puntos equivalen al precio
     case 'points-high':
-      return filtered.sort((a, b) => (b.price || 0) - (a.price || 0)) // Los puntos equivalen al precio
+      return filtered.sort((a, b) => (b.precio_sugerido || b.price || 0) - (a.precio_sugerido || a.price || 0)) // Los puntos equivalen al precio
     default:
       return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   }
@@ -283,7 +322,8 @@ const filteredArticles = computed(() => {
 
 // Comprar con dinero
 const buyWithMoney = (article) => {
-  if (!article.price || article.price <= 0) {
+  const price = article.precio_sugerido || article.price
+  if (!price || price <= 0) {
     alert('Este artículo no está disponible para compra con dinero')
     return
   }
@@ -369,7 +409,8 @@ const handlePaymentSuccess = (paymentData) => {
 
 // Comprar con puntos
 const buyWithPoints = (article) => {
-  if (!article.price || article.price <= 0) {
+  const price = article.precio_sugerido || article.price
+  if (!price || price <= 0) {
     toast.warning(
       'Artículo no disponible',
       'Este artículo no está disponible para compra con puntos.',

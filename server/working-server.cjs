@@ -75,14 +75,14 @@ const ArticleSchema = new mongoose.Schema({
   // Modo de venta principal
   modo_venta: { 
     type: String, 
-    enum: ['directa_casa', 'centro_logistico'], 
+    enum: ['venta_desde_casa', 'venta_desde_centro_logistico'], 
     required: true 
   },
   
   // Campos específicos para centro logístico
   opciones_logisticas: [{ 
     type: String, 
-    enum: ['porcentaje_fijo', 'compra_directa', 'intercambio_puntos'] 
+    enum: ['guardamos_hasta_vender', 'quieres_que_te_lo_compremos', 'compra_directa', 'intercambio_puntos'] 
   }],
   acepta_descuento_admin: { type: Boolean, default: false },
   fecha_entrada_logistica: Date,
@@ -201,14 +201,16 @@ const assignClosestLogisticsShip = (location) => {
   ];
 
   // Buscar la nave que cubra la ubicación
-  for (const ship of ships) {
-    for (const sector of ship.sectors) {
-      if (location.toLowerCase().includes(sector.toLowerCase())) {
-        return {
-          ship: ship.name,
-          location: `Sector ${sector}-${Math.floor(Math.random() * 5) + 1}`,
-          capacity: ship.capacity
-        };
+  if (location) {
+    for (const ship of ships) {
+      for (const sector of ship.sectors) {
+        if (location.toLowerCase().includes(sector.toLowerCase())) {
+          return {
+            ship: ship.name,
+            location: `Sector ${sector}-${Math.floor(Math.random() * 5) + 1}`,
+            capacity: ship.capacity
+          };
+        }
       }
     }
   }
@@ -371,14 +373,23 @@ app.get('/api/auth/me', authMiddleware, async (req, res) => {
 app.get('/api/articles', async (req, res) => {
   try {
     const { adminStatus } = req.query;
-    let query = { status: 'disponible' };
+    let query = {};
     
+    // Si se especifica adminStatus, filtrar por ese campo
     if (adminStatus) {
       query.adminStatus = adminStatus;
+    } else {
+      // Si no hay filtro de adminStatus, mostrar artículos disponibles o sin status específico
+      query.$or = [
+        { status: 'disponible' },
+        { status: { $exists: false } },
+        { status: null }
+      ];
     }
     
     const articles = await Article.find(query)
       .populate('seller', 'name email points logisticsLevel reputation')
+      .populate('id_vendedor', 'name email points logisticsLevel reputation')
       .sort({ createdAt: -1 });
 
     res.json({
@@ -433,36 +444,28 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
 
     // Determinar el estado inicial del artículo según el modo de venta
     let initialStatus = 'disponible';
-    let initialAdminStatus = 'pending';
+    let initialAdminStatus = 'pending'; // SIEMPRE pendiente por defecto
     let initialEstadoArticulo = 'DRAFT';
     
-    // Si es venta desde casa, el artículo queda disponible inmediatamente
-    if (modo_venta === 'directa_casa' || saleMode === 'direct_from_home') {
+    // NUEVA LÓGICA: Solo 2 casos se aprueban automáticamente
+    // 1. Venta directa desde casa (sin centro logístico)
+    if (modo_venta === 'venta_desde_casa' || saleMode === 'direct_from_home') {
       initialStatus = 'disponible';
       initialAdminStatus = 'approved_money'; // Aprobado automáticamente
       initialEstadoArticulo = 'EN_VENTA';
-    } else if (modo_venta === 'centro_logistico' || saleMode === 'logistics_center') {
-      // Si hay opciones logísticas seleccionadas (compra directa o intercambio por puntos)
-      if (opciones_logisticas && opciones_logisticas.length > 0) {
-        initialStatus = 'disponible'; // Disponible pero pendiente de aprobación admin
-        initialAdminStatus = 'pending';
-        initialEstadoArticulo = 'PENDIENTE_APROBACION_ADMIN';
-      } else {
-        // Solo venta en centro logístico sin compra directa
-        initialStatus = 'disponible';
-        initialAdminStatus = 'approved_money'; // Aprobado automáticamente
-        initialEstadoArticulo = 'EN_LOGISTICA';
-      }
     }
-    // Si es centro logístico con venta directa, queda disponible
-    else if (saleMode === 'logistics_center' && !trastaliaPurchase?.enabled && !pointsExchange?.enabled) {
+    // 2. Solo gestión de venta en centro logístico (sin compra por Trastalia)
+    else if ((modo_venta === 'venta_desde_centro_logistico' || saleMode === 'logistics_center') && 
+             !trastaliaPurchase?.enabled && !pointsExchange?.enabled) {
       initialStatus = 'disponible';
       initialAdminStatus = 'approved_money'; // Aprobado automáticamente
+      initialEstadoArticulo = 'EN_LOGISTICA';
     }
-    // Si es compra por Trastalia o puntos, queda pendiente de aprobación
-    else if (trastaliaPurchase?.enabled || pointsExchange?.enabled) {
-      initialStatus = 'disponible'; // Disponible pero pendiente de aprobación admin
-      initialAdminStatus = 'pending';
+    // TODOS LOS DEMÁS CASOS quedan PENDIENTES de revisión del admin
+    else {
+      initialStatus = 'disponible';
+      initialAdminStatus = 'pending'; // SIEMPRE pendiente
+      initialEstadoArticulo = 'PENDIENTE_APROBACION_ADMIN';
     }
 
     // Asignar nave logística si es necesario
@@ -541,6 +544,27 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
   }
 });
 
+// Endpoint para subir fotos (temporalmente sin autenticación para testing)
+app.post('/api/upload-photo', async (req, res) => {
+  try {
+    // Por ahora, simulamos la subida de fotos
+    // En un entorno real, aquí subirías a un servicio como AWS S3, Cloudinary, etc.
+    const photoUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=Foto+${Date.now()}`;
+    
+    res.json({
+      success: true,
+      url: photoUrl,
+      message: 'Foto subida exitosamente'
+    });
+  } catch (error) {
+    console.error('Error subiendo foto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al subir la foto'
+    });
+  }
+});
+
 // Ruta para obtener los artículos del usuario
 app.get('/api/articles/my-articles', authMiddleware, async (req, res) => {
   try {
@@ -565,15 +589,27 @@ app.get('/api/articles/my-articles', authMiddleware, async (req, res) => {
 app.get('/api/articles/my-purchase-requests', authMiddleware, async (req, res) => {
   try {
     const articles = await Article.find({ 
-      'seller': req.userId,
-      estado_articulo: 'OFERTA_COMPRA_ENVIADA',
-      sellerAccepted: false,
-      sellerRejected: false,
-      'adminDecision.reject': false,
-      // Excluir artículos que ya han sido comprados
-      transferido_a_trastalia: { $ne: true }
+      $and: [
+        { 'id_vendedor': req.userId },
+        { sellerAccepted: { $ne: true } },
+        { sellerRejected: { $ne: true } },
+        {
+          $or: [
+            // Artículos con ofertas del administrador pendientes
+            {
+              'oferta_admin.estado_oferta': 'pendiente'
+            },
+            // Artículos con adminDecision pendientes (compatibilidad)
+            {
+              'adminDecision.reject': false,
+              'adminDecision.money': true,
+              'adminDecision.selectedOption': { $exists: false }
+            }
+          ]
+        }
+      ]
     })
-      .populate('seller', 'name email points logisticsLevel reputation')
+      .populate('id_vendedor', 'name email points logisticsLevel reputation')
       .sort({ createdAt: -1 });
 
     res.json({
@@ -975,6 +1011,76 @@ app.get('/api/articles/admin/pending', authMiddleware, async (req, res) => {
   }
 });
 
+// Endpoint para crear ofertas del administrador
+app.post('/api/ofertas-admin', authMiddleware, async (req, res) => {
+  try {
+    const { articulo_id, tipo_oferta, precio_ofertado, puntos_ofertados, comentarios } = req.body;
+
+    if (!articulo_id || !tipo_oferta) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID del artículo y tipo de oferta son requeridos'
+      });
+    }
+
+    // Buscar el artículo
+    const article = await Article.findById(articulo_id);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Crear la oferta del administrador
+    const ofertaAdmin = {
+      precio_ofertado: precio_ofertado || 0,
+      puntos_ofertados: puntos_ofertados || 0,
+      tipo_oferta: tipo_oferta,
+      fecha_oferta: new Date(),
+      estado_oferta: 'pendiente',
+      comentarios: comentarios || ''
+    };
+
+    // Actualizar el artículo con la oferta
+    article.oferta_admin = ofertaAdmin;
+    
+    // Actualizar adminDecision para compatibilidad
+    article.adminDecision = {
+      money: tipo_oferta === 'dinero' || tipo_oferta === 'ambos',
+      points: tipo_oferta === 'puntos' || tipo_oferta === 'ambos',
+      moneyPrice: precio_ofertado || 0,
+      pointsAmount: puntos_ofertados || 0,
+      reject: false,
+      finalPrice: 0,
+      finalPoints: 0
+    };
+    
+    // Actualizar el estado según el tipo de oferta
+    if (tipo_oferta === 'dinero') {
+      article.adminStatus = 'approved_money';
+    } else if (tipo_oferta === 'puntos') {
+      article.adminStatus = 'approved_points';
+    } else if (tipo_oferta === 'ambos') {
+      article.adminStatus = 'approved_both';
+    }
+
+    await article.save();
+
+    res.json({
+      success: true,
+      message: 'Oferta creada exitosamente',
+      data: article
+    });
+  } catch (error) {
+    console.error('Error creando oferta:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear la oferta'
+    });
+  }
+});
+
 app.put('/api/articles/admin/:id/approve', authMiddleware, async (req, res) => {
   try {
     const { money, points, moneyPrice, pointsAmount } = req.body;
@@ -1352,6 +1458,35 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// Endpoint para obtener artículos que son propiedad del admin (disponibles para compra)
+app.get('/api/articles/admin-owned', async (req, res) => {
+  try {
+    console.log('🔍 Buscando artículos con estado COMPRADO_POR_ADMIN...');
+    
+    // Buscar artículos que son propiedad del admin
+    const articles = await Article.find({ 
+      estado_articulo: 'COMPRADO_POR_ADMIN'
+    })
+      .populate('seller', 'name email points logisticsLevel reputation')
+      .populate('id_vendedor', 'name email points logisticsLevel reputation')
+      .sort({ createdAt: -1 });
+
+    console.log(`📦 Encontrados ${articles.length} artículos del admin`);
+    console.log('📋 Artículos:', articles.map(a => ({ id: a._id, title: a.title || a.nombre, estado: a.estado_articulo })));
+
+    res.json({
+      success: true,
+      data: articles
+    });
+  } catch (error) {
+    console.error('Error obteniendo artículos del admin:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener artículos del administrador'
+    });
+  }
+});
+
 // Ruta genérica para obtener artículo por ID (debe ir al final)
 app.get('/api/articles/:id', async (req, res) => {
   try {
@@ -1473,6 +1608,226 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
     });
   }
 });
+
+// Ruta para que el admin edite cualquier artículo
+app.put('/api/articles/admin/:id', authMiddleware, async (req, res) => {
+  try {
+    // Verificar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden editar artículos'
+      });
+    }
+
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Buscar el artículo
+    const article = await Article.findById(id);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Actualizar el artículo
+    const updatedArticle = await Article.findByIdAndUpdate(
+      id,
+      { ...updateData, updatedAt: new Date() },
+      { new: true, runValidators: true }
+    ).populate('id_vendedor', 'name email');
+
+    res.json({
+      success: true,
+      message: 'Artículo actualizado exitosamente',
+      data: updatedArticle
+    });
+
+  } catch (error) {
+    console.error('Error actualizando artículo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Ruta para obtener estadísticas del dashboard
+app.get('/api/admin/dashboard-stats', authMiddleware, async (req, res) => {
+  try {
+    // Verificar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden acceder a las estadísticas'
+      });
+    }
+
+    // Obtener estadísticas de artículos
+    const totalArticles = await Article.countDocuments();
+    const articlesEnVenta = await Article.countDocuments({ 
+      estado_articulo: { $in: ['EN_VENTA', 'EN_LOGISTICA'] } 
+    });
+    const articlesCanjeados = await Article.countDocuments({ 
+      estado_articulo: { $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_PUNTOS'] } 
+    });
+    const articlesPendientes = await Article.countDocuments({ 
+      estado_articulo: 'PENDIENTE_APROBACION_ADMIN' 
+    });
+
+    // Obtener estadísticas de usuarios
+    const totalUsers = await User.countDocuments();
+    const activeUsers = await User.countDocuments({ isActive: true });
+    const adminUsers = await User.countDocuments({ role: 'admin' });
+    const regularUsers = await User.countDocuments({ role: 'user' });
+
+    // Obtener estadísticas de puntos
+    const totalPoints = await User.aggregate([
+      { $group: { _id: null, total: { $sum: '$points' } } }
+    ]);
+    const totalPointsValue = totalPoints.length > 0 ? totalPoints[0].total : 0;
+
+    // Obtener transacciones del último mes
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    
+    const monthlyTransactions = await Article.aggregate([
+      {
+        $match: {
+          updatedAt: { $gte: lastMonth },
+          estado_articulo: { $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_DINERO', 'VENDIDO_A_TRASTALIA_PUNTOS'] }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$updatedAt' },
+            month: { $month: '$updatedAt' }
+          },
+          count: { $sum: 1 },
+          totalValue: { $sum: '$precio_propuesto_vendedor' }
+        }
+      },
+      { $sort: { '_id.year': -1, '_id.month': -1 } }
+    ]);
+
+    // Obtener artículos más populares por categoría
+    const popularCategories = await Article.aggregate([
+      { $group: { _id: '$categoria', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 }
+    ]);
+
+    // Obtener usuarios con más puntos
+    const topUsers = await User.find({ role: 'user' })
+      .sort({ points: -1 })
+      .limit(5)
+      .select('name email points');
+
+    res.json({
+      success: true,
+      data: {
+        articles: {
+          total: totalArticles,
+          enVenta: articlesEnVenta,
+          canjeados: articlesCanjeados,
+          pendientes: articlesPendientes
+        },
+        users: {
+          total: totalUsers,
+          active: activeUsers,
+          admins: adminUsers,
+          regular: regularUsers
+        },
+        points: {
+          total: totalPointsValue,
+          topUsers: topUsers
+        },
+        transactions: {
+          monthly: monthlyTransactions
+        },
+        categories: {
+          popular: popularCategories
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo estadísticas:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Ruta para transferir propiedad del artículo al admin cuando se aprueba
+app.put('/api/articles/transfer-ownership/:id', authMiddleware, async (req, res) => {
+  try {
+    // Verificar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden transferir propiedad'
+      });
+    }
+
+    const { id } = req.params;
+    const { transferToAdmin } = req.body;
+
+    // Buscar el artículo
+    const article = await Article.findById(id);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    if (transferToAdmin) {
+      // Buscar el usuario admin
+      const adminUser = await User.findOne({ role: 'admin' });
+      if (!adminUser) {
+        return res.status(404).json({
+          success: false,
+          message: 'Usuario administrador no encontrado'
+        });
+      }
+
+      // Transferir propiedad al admin
+      article.id_vendedor = adminUser._id;
+      article.estado_articulo = 'VENDIDO_A_TRASTALIA_DINERO'; // o VENDIDO_A_TRASTALIA_PUNTOS según corresponda
+      article.updatedAt = new Date();
+      
+      await article.save();
+
+      res.json({
+        success: true,
+        message: 'Propiedad transferida al administrador exitosamente',
+        data: {
+          articleId: article._id,
+          newOwner: adminUser.email,
+          status: article.estado_articulo
+        }
+      });
+    } else {
+      res.json({
+        success: true,
+        message: 'No se realizó transferencia de propiedad'
+      });
+    }
+
+  } catch (error) {
+    console.error('Error transfiriendo propiedad:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
 
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
