@@ -1,6 +1,14 @@
 <template>
-  <AdminLayout>
-    <div class="p-6">
+  <div class="min-h-screen xl:flex">
+    <app-sidebar />
+    <Backdrop />
+    <div
+      class="flex-1 transition-all duration-300 ease-in-out"
+      :class="[isExpanded || isHovered ? 'lg:ml-[290px]' : 'lg:ml-[90px]']"
+    >
+      <app-header />
+      <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+        <div class="p-6">
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -145,9 +153,9 @@
                 </div>
 
                 <!-- Información de la oferta del administrador -->
-                <div v-if="request.adminDecision && !request.adminDecision.reject" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div v-if="request.adminDecision && !request.adminDecision.reject && !request.adminDecision.selectedOption" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3 text-center sm:text-left">
-                    Decisión del Administrador
+                    Oferta del Administrador
                   </h4>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <!-- Oferta de dinero -->
@@ -177,7 +185,7 @@
                     </div>
                   </div>
                   <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center sm:text-left">
-                    Fecha de decisión: {{ formatDate(request.adminDecision.date) }}
+                    Fecha de oferta: {{ formatDate(request.adminDecision.date) }}
                   </p>
                 </div>
 
@@ -194,11 +202,11 @@
 
 
               <!-- Botones de acción -->
-              <div v-if="canShowActions(request)" class="mt-6 lg:mt-0 lg:ml-6 flex flex-col space-y-3">
-                <!-- Para venta directa (1c) y venta por puntos (1d) -->
-                <div v-if="isDirectSaleOrPoints(request)" class="space-y-3">
+              <div v-if="request.adminDecision && !request.adminDecision.reject && !request.adminDecision.selectedOption" class="mt-6 lg:mt-0 lg:ml-6 flex flex-col space-y-3">
+                <!-- Botones para aceptar/rechazar oferta -->
+                <div class="space-y-3">
                   <button 
-                    v-if="request.adminDecision && request.adminDecision.money && request.adminDecision.points"
+                    v-if="request.adminDecision.money && request.adminDecision.points"
                     @click="openSelectionModal(request)"
                     class="w-full inline-flex items-center justify-center px-4 py-3 sm:px-6 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
@@ -209,8 +217,8 @@
                     <span class="sm:hidden">Elegir Opción</span>
                   </button>
                   <button 
-                    v-else-if="request.adminDecision && request.adminDecision.money"
-                    @click="acceptOffer(request, 'money')"
+                    v-else-if="request.adminDecision.money"
+                    @click="acceptOffer(request, 'dinero')"
                     class="w-full inline-flex items-center justify-center px-4 py-3 sm:px-6 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,8 +228,8 @@
                     <span class="sm:hidden">Dinero (€{{ request.adminDecision.moneyPrice }})</span>
                   </button>
                   <button 
-                    v-else-if="request.adminDecision && request.adminDecision.points"
-                    @click="acceptOffer(request, 'points')"
+                    v-else-if="request.adminDecision.points"
+                    @click="acceptOffer(request, 'puntos')"
                     class="w-full inline-flex items-center justify-center px-4 py-3 sm:px-6 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,13 +248,6 @@
                     <span class="hidden sm:inline">Rechazar Oferta</span>
                     <span class="sm:hidden">Rechazar</span>
                   </button>
-                </div>
-
-                <!-- Para venta desde casa (1a) y centro logístico (1b) -->
-                <div v-else class="text-center">
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ getActionMessage(request) }}
-                  </p>
                 </div>
               </div>
             </div>
@@ -285,13 +286,13 @@
           <div class="space-y-6">
             <!-- Opción de dinero -->
             <div class="border-2 border-gray-200 dark:border-gray-600 rounded-xl p-6 hover:border-green-500 dark:hover:border-green-400 transition-all duration-200 cursor-pointer transform hover:scale-105 hover:shadow-lg" 
-                 :class="{ 'border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-900/20 shadow-lg scale-105': selectedOption === 'money' }"
-                 @click="selectOption('money')">
+                 :class="{ 'border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-900/20 shadow-lg scale-105': selectedOption === 'dinero' }"
+                 @click="selectOption('dinero')">
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                   <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center"
-                       :class="selectedOption === 'money' ? 'border-green-500 bg-green-500' : 'border-gray-300 dark:border-gray-600'">
-                    <div v-if="selectedOption === 'money'" class="w-3 h-3 rounded-full bg-white"></div>
+                       :class="selectedOption === 'dinero' ? 'border-green-500 bg-green-500' : 'border-gray-300 dark:border-gray-600'">
+                    <div v-if="selectedOption === 'dinero'" class="w-3 h-3 rounded-full bg-white"></div>
                   </div>
                   <div class="flex items-center space-x-3">
                     <div class="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
@@ -316,13 +317,13 @@
 
             <!-- Opción de puntos -->
             <div class="border-2 border-gray-200 dark:border-gray-600 rounded-xl p-6 hover:border-purple-500 dark:hover:border-purple-400 transition-all duration-200 cursor-pointer transform hover:scale-105 hover:shadow-lg"
-                 :class="{ 'border-purple-500 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20 shadow-lg scale-105': selectedOption === 'points' }"
-                 @click="selectOption('points')">
+                 :class="{ 'border-purple-500 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20 shadow-lg scale-105': selectedOption === 'puntos' }"
+                 @click="selectOption('puntos')">
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                   <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center"
-                       :class="selectedOption === 'points' ? 'border-purple-500 bg-purple-500' : 'border-gray-300 dark:border-gray-600'">
-                    <div v-if="selectedOption === 'points'" class="w-3 h-3 rounded-full bg-white"></div>
+                       :class="selectedOption === 'puntos' ? 'border-purple-500 bg-purple-500' : 'border-gray-300 dark:border-gray-600'">
+                    <div v-if="selectedOption === 'puntos'" class="w-3 h-3 rounded-full bg-white"></div>
                   </div>
                   <div class="flex items-center space-x-3">
                     <div class="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
@@ -369,14 +370,22 @@
         </div>
       </div>
     </div>
-
-  </AdminLayout>
+  </div>
+  </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import Backdrop from '@/components/layout/Backdrop.vue'
+import { useSidebar } from '@/composables/useSidebar'
+
+// Sidebar logic
+const { isExpanded, isHovered } = useSidebar()
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import OfferSelectionModal from '@/components/modals/OfferSelectionModal.vue'
 import type { PurchaseRequest, ESTADO_ARTICULO, MODO_VENTA, ADMIN_STATUS } from '@/types'
@@ -399,13 +408,14 @@ const filteredRequests = computed(() => {
   return requests.value.filter(request => {
     switch (selectedFilter.value) {
       case 'pending':
-        return request.estado_articulo === 'OFERTA_COMPRA_ENVIADA' && 
-               !request.sellerAccepted && 
-               !request.sellerRejected
+        return request.estado === 'oferta_enviada' && 
+               request.oferta_admin && 
+               request.oferta_admin.estado_oferta === 'pendiente'
       case 'accepted':
-        return request.sellerAccepted
+        return request.estado === 'vendido_a_admin_dinero' || 
+               request.estado === 'vendido_a_admin_puntos'
       case 'rejected':
-        return request.sellerRejected || (request.adminDecision && request.adminDecision.reject)
+        return request.estado === 'rechazado_por_vendedor'
       default:
         return true
     }
@@ -413,15 +423,22 @@ const filteredRequests = computed(() => {
 })
 
 const pendingCount = computed(() => 
-  requests.value.filter(r => r.estado_articulo === 'OFERTA_COMPRA_ENVIADA' && !r.sellerAccepted && !r.sellerRejected).length
+  requests.value.filter(r => 
+    r.estado === 'oferta_enviada' && 
+    r.oferta_admin && 
+    r.oferta_admin.estado_oferta === 'pendiente'
+  ).length
 )
 
 const acceptedCount = computed(() => 
-  requests.value.filter(r => r.sellerAccepted).length
+  requests.value.filter(r => 
+    r.estado === 'vendido_a_admin_dinero' || 
+    r.estado === 'vendido_a_admin_puntos'
+  ).length
 )
 
 const rejectedCount = computed(() => 
-  requests.value.filter(r => r.sellerRejected || (r.adminDecision && r.adminDecision.reject)).length
+  requests.value.filter(r => r.estado === 'rechazado_por_vendedor').length
 )
 
 // Métodos
@@ -453,30 +470,28 @@ const filterRequests = () => {
 
 const getStatusBadgeClass = (status: string) => {
   const classes: Record<string, string> = {
-    'DRAFT': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-    'EN_VENTA': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    'EN_LOGISTICA': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    'PENDIENTE_APROBACION_ADMIN': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-    'OFERTA_COMPRA_ENVIADA': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    'COMPRADO_POR_ADMIN': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    'EN_GALERIA_APTOS': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-    'VENDIDO': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
-    'RECHAZADO': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+    'en_venta': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    'solicitud_compra_pendiente': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+    'oferta_enviada': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    'vendido_a_comprador': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
+    'vendido_a_admin_dinero': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    'vendido_a_admin_puntos': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    'rechazado_por_admin': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    'rechazado_por_vendedor': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
   }
-  return classes[status] || classes['DRAFT']
+  return classes[status] || classes['en_venta']
 }
 
 const getStatusText = (status: string) => {
   const texts: Record<string, string> = {
-    'DRAFT': 'Borrador',
-    'EN_VENTA': 'En Venta',
-    'EN_LOGISTICA': 'En Logística',
-    'PENDIENTE_APROBACION_ADMIN': 'Pendiente Admin',
-    'OFERTA_COMPRA_ENVIADA': 'Oferta Enviada',
-    'COMPRADO_POR_ADMIN': 'Comprado por Admin',
-    'EN_GALERIA_APTOS': 'En Galería',
-    'VENDIDO': 'Vendido',
-    'RECHAZADO': 'Rechazado'
+    'en_venta': 'En Venta',
+    'solicitud_compra_pendiente': 'Solicitud Pendiente',
+    'oferta_enviada': 'Oferta Enviada',
+    'vendido_a_comprador': 'Vendido a Comprador',
+    'vendido_a_admin_dinero': 'Vendido a Admin (Dinero)',
+    'vendido_a_admin_puntos': 'Vendido a Admin (Puntos)',
+    'rechazado_por_admin': 'Rechazado por Admin',
+    'rechazado_por_vendedor': 'Rechazado por Vendedor'
   }
   return texts[status] || status
 }
@@ -558,7 +573,7 @@ const confirmSelection = () => {
 const acceptOffer = async (request: PurchaseRequest, option: string) => {
   try {
     // Mostrar toast de confirmación
-    const optionText = option === 'money' ? 
+    const optionText = option === 'dinero' ? 
       `€${request.adminDecision.moneyPrice}` : 
       `${request.adminDecision.pointsAmount} puntos`
     
@@ -568,6 +583,14 @@ const acceptOffer = async (request: PurchaseRequest, option: string) => {
       { duration: 3000 }
     )
 
+    console.log('🔍 Debug - Aceptando oferta:', {
+      articleId: request._id,
+      option: option,
+      token: authStore.token ? 'Presente' : 'Ausente',
+      authStore: authStore,
+      isAuthenticated: authStore.isAuthenticated
+    })
+
     const response = await fetch('/api/articles/accept-offer', {
       method: 'POST',
       headers: {
@@ -576,15 +599,17 @@ const acceptOffer = async (request: PurchaseRequest, option: string) => {
       },
       body: JSON.stringify({
         articleId: request._id,
-        selectedOption: option
+        selectedOption: option === 'dinero' ? 'money' : 'points'
       })
     })
+
+    console.log('🔍 Debug - Response status:', response.status)
 
     if (response.ok) {
       const result = await response.json()
       
       // Mostrar toast de éxito
-      if (option === 'money') {
+      if (option === 'dinero') {
         toast.success(
           '¡Oferta aceptada!',
           `Se transferirán €${request.adminDecision.moneyPrice} a tu cuenta bancaria. El artículo "${request.nombre}" ahora es propiedad de Trastalia.`,
@@ -608,10 +633,15 @@ const acceptOffer = async (request: PurchaseRequest, option: string) => {
       )
     }
   } catch (error) {
-    console.error('Error aceptando oferta:', error)
+    console.error('💥 Error aceptando oferta:', error)
+    console.error('💥 Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    })
     toast.error(
       'Error de conexión',
-      'No se pudo conectar con el servidor. Verifica tu conexión e inténtalo de nuevo.',
+      `No se pudo conectar con el servidor: ${error.message}`,
       { duration: 5000 }
     )
   }
@@ -626,15 +656,14 @@ const rejectOffer = async (request: PurchaseRequest) => {
   )
 
   try {
-    const response = await fetch('/api/articles/reject-offer', {
-      method: 'POST',
+    const response = await fetch(`/api/articles/reject-offer/${request._id}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authStore.token}`
       },
       body: JSON.stringify({
-        articleId: request._id,
-        reason: 'Rechazado por el vendedor'
+        comentarios: 'Rechazado por el vendedor'
       })
     })
 

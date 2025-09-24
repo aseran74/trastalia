@@ -207,7 +207,7 @@ const loadArticle = async () => {
   try {
     console.log('🔍 Cargando artículo con ID:', route.params.id)
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const url = `${API_BASE_URL}/api/articles/${route.params.id}`
+    const url = `/api/articles/${route.params.id}`
     console.log('🔗 URL de la API:', url)
     
     const response = await fetch(url, {

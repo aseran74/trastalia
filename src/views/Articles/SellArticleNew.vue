@@ -114,19 +114,22 @@
           <!-- Modalidad de venta -->
           <div class="space-y-4">
             <h3 class="text-lg font-medium text-black dark:text-white">Modalidad de Venta</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Elige cómo quieres vender tu artículo. Estas opciones son excluyentes.
+            </p>
             
             <!-- Venta directa desde casa -->
             <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
               <label class="flex items-center space-x-3">
                 <input
                   v-model="form.modo_venta"
-                  value="directa_casa"
+                  value="venta_desde_casa"
                   type="radio"
                   name="modo_venta"
                   class="text-blue-600 focus:ring-blue-500"
                 />
                 <div>
-                  <span class="font-medium text-black dark:text-white">Venta Directa desde Casa</span>
+                  <span class="font-medium text-black dark:text-white">Venta desde Casa</span>
                   <p class="text-sm text-gray-600 dark:text-gray-400">
                     El comprador te contacta directamente. Solo pagas gastos de envío.
                   </p>
@@ -139,7 +142,7 @@
               <label class="flex items-center space-x-3">
                 <input
                   v-model="form.modo_venta"
-                  value="centro_logistico"
+                  value="venta_desde_centro_logistico"
                   type="radio"
                   name="modo_venta"
                   class="text-green-600 focus:ring-green-500"
@@ -155,64 +158,90 @@
           </div>
 
           <!-- Opciones del centro logístico -->
-          <div v-if="form.modo_venta === 'centro_logistico'" class="space-y-4">
+          <div v-if="form.modo_venta === 'venta_desde_centro_logistico'" class="space-y-4">
             <h3 class="text-lg font-medium text-black dark:text-white">Opciones del Centro Logístico</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              Puedes seleccionar múltiples opciones. El administrador decidirá cuál aplicar.
+              Elige las opciones que te interesen. Puedes seleccionar múltiples opciones.
             </p>
             
-            <!-- Opción 1: Porcentaje fijo -->
+            <!-- Opción 1: Te lo guardamos hasta que lo vendas -->
             <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
               <label class="flex items-center space-x-3">
                 <input
                   v-model="form.opciones_logisticas"
-                  value="porcentaje_fijo"
+                  value="guardamos_hasta_vender"
                   type="checkbox"
                   class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
                 />
                 <div>
-                  <span class="font-medium text-black dark:text-white">Comisión por Venta (3%)</span>
+                  <span class="font-medium text-black dark:text-white">Te lo guardamos hasta que lo vendas</span>
                   <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Pagas 3% de comisión solo si se vende el artículo.
+                    Nosotros guardamos tu artículo y tú marcas el precio. Pagas una comisión del 3% solo si se vende.
                   </p>
                 </div>
               </label>
             </div>
 
-            <!-- Opción 2: Compra directa -->
+            <!-- Opción 2: Quieres que te lo compremos -->
             <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
               <label class="flex items-center space-x-3">
                 <input
                   v-model="form.opciones_logisticas"
-                  value="compra_directa"
+                  value="quieres_que_te_lo_compremos"
                   type="checkbox"
                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 />
                 <div>
-                  <span class="font-medium text-black dark:text-white">Compra Directa por Trastalia</span>
+                  <span class="font-medium text-black dark:text-white">Quieres que te lo compremos</span>
                   <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Te compramos el artículo directamente si nos interesa.
+                    Si nos interesa tu artículo, te lo compramos directamente.
                   </p>
                 </div>
               </label>
             </div>
 
-            <!-- Opción 3: Intercambio por puntos -->
-            <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
-              <label class="flex items-center space-x-3">
-                <input
-                  v-model="form.opciones_logisticas"
-                  value="intercambio_puntos"
-                  type="checkbox"
-                  class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                />
-                <div>
+            <!-- Sub-opciones cuando se selecciona "Quieres que te lo compremos" -->
+            <div v-if="form.opciones_logisticas.includes('quieres_que_te_lo_compremos')" class="ml-6 space-y-4 border-l-2 border-blue-200 pl-4">
+              <h4 class="text-md font-medium text-black dark:text-white">¿Cómo quieres que te lo compremos?</h4>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Estas opciones no son excluyentes. Puedes seleccionar ambas.
+              </p>
+              
+              <!-- Compra Directa por Trastalia -->
+              <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
+                <label class="flex items-center space-x-3">
+                  <input
+                    v-model="form.opciones_logisticas"
+                    value="compra_directa"
+                    type="checkbox"
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  />
+                  <div>
+                  <span class="font-medium text-black dark:text-white">Compra Directa por Trastalia</span>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Te compramos el artículo directamente si nos interesa. Verás tu artículo en solicitudes de compra y el precio que te ofrecemos.
+                  </p>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Intercambio por Puntos -->
+              <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
+                <label class="flex items-center space-x-3">
+                  <input
+                    v-model="form.opciones_logisticas"
+                    value="intercambio_puntos"
+                    type="checkbox"
+                    class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+                  />
+                  <div>
                   <span class="font-medium text-black dark:text-white">Intercambio por Puntos</span>
                   <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Recibe puntos para canjear por otros artículos.
+                    Recibe puntos para canjear por otros artículos. Verás tu artículo en solicitudes de compra y los puntos que te ofrecemos. Cada punto es el equivalente a 1€.
                   </p>
-                </div>
-              </label>
+                  </div>
+                </label>
+              </div>
             </div>
 
             <!-- Checkbox de descuento automático -->
@@ -274,7 +303,7 @@ interface ArticleForm {
   precio_propuesto_vendedor: number
   condicion: string
   ubicacion: string
-  modo_venta: 'directa_casa' | 'centro_logistico'
+  modo_venta: 'venta_desde_casa' | 'venta_desde_centro_logistico'
   opciones_logisticas: string[]
   acepta_descuento_admin: boolean
 }
@@ -294,7 +323,7 @@ const form = ref<ArticleForm>({
   precio_propuesto_vendedor: 0,
   condicion: '',
   ubicacion: '',
-  modo_venta: 'directa_casa',
+  modo_venta: 'venta_desde_casa',
   opciones_logisticas: [], // Array para múltiples opciones
   acepta_descuento_admin: false
 })
@@ -312,9 +341,9 @@ const submitArticle = async () => {
     // Determinar el estado inicial según el modo de venta y opciones logísticas
     let estado_inicial = 'DRAFT'
     
-    if (form.value.modo_venta === 'directa_casa') {
+    if (form.value.modo_venta === 'venta_desde_casa') {
       estado_inicial = 'EN_VENTA'
-    } else if (form.value.modo_venta === 'centro_logistico') {
+    } else if (form.value.modo_venta === 'venta_desde_centro_logistico') {
       // Si hay opciones logísticas seleccionadas (compra directa o intercambio por puntos)
       if (form.value.opciones_logisticas && form.value.opciones_logisticas.length > 0) {
         estado_inicial = 'PENDIENTE_APROBACION_ADMIN'

@@ -17,11 +17,20 @@ const router = createRouter({
       },
     },
     {
-      path: '/dashboard',
-      name: 'Ecommerce',
-      component: () => import('../views/Ecommerce.vue'),
+      path: '/test-signin',
+      name: 'TestSignin',
+      component: () => import('../views/Auth/TestSignin.vue'),
       meta: {
-        title: 'eCommerce Dashboard',
+        title: 'Test Login',
+        requiresAuth: false
+      },
+    },
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import('../views/Admin/RealDashboard.vue'),
+      meta: {
+        title: 'Dashboard de Administración',
         requiresAuth: true
       },
     },
@@ -40,6 +49,15 @@ const router = createRouter({
       component: () => import('../views/Articles/SellArticleNew.vue'),
       meta: {
         title: 'Vender Artículo',
+        requiresAuth: true
+      },
+    },
+    {
+      path: '/vender-articulo-nuevo',
+      name: 'Sell Article New Logic',
+      component: () => import('../views/Articles/SellArticleNewLogic.vue'),
+      meta: {
+        title: 'Vender Artículo - Nueva Lógica',
         requiresAuth: true
       },
     },
@@ -189,13 +207,33 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'Admin Dashboard',
-      component: () => import('../views/Admin/AdminDashboard.vue'),
+      component: () => import('../views/Admin/RealDashboard.vue'),
       meta: {
         title: 'Panel de Administración',
         requiresAuth: true,
         requiresAdmin: true
       },
     },
+      {
+        path: '/admin/articles-management',
+        name: 'Admin Articles Management',
+        component: () => import('../views/Admin/AdminDashboard.vue'),
+        meta: {
+          title: 'Editar Artículos',
+          requiresAuth: true,
+          requiresAdmin: true
+        },
+      },
+      {
+        path: '/admin/purchase-requests',
+        name: 'Manage Purchase Requests',
+        component: () => import('../views/Admin/ManagePurchaseRequests.vue'),
+        meta: {
+          title: 'Gestionar Solicitudes de Compra',
+          requiresAuth: true,
+          requiresAdmin: true
+        },
+      },
     {
       path: '/admin/articles',
       name: 'Admin Articles',
@@ -210,7 +248,7 @@ const router = createRouter({
     {
       path: '/signin',
       name: 'Signin',
-      component: () => import('../views/Auth/Login.vue'),
+      component: () => import('../views/Auth/Signin.vue'),
       meta: {
         title: 'Iniciar Sesión',
         requiresAuth: false
@@ -219,7 +257,7 @@ const router = createRouter({
     {
       path: '/signup',
       name: 'Signup',
-      component: () => import('../views/Auth/Register.vue'),
+      component: () => import('../views/Auth/Signup.vue'),
       meta: {
         title: 'Crear Cuenta',
         requiresAuth: false

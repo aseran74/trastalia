@@ -1,7 +1,7 @@
 <template>
   <router-link to="/" class="lg:hidden">
-    <img class="dark:hidden w-28 h-7 sm:w-32 sm:h-8" src="/images/logo.png" alt="Logo" />
-    <img class="hidden dark:block w-28 h-7 sm:w-32 sm:h-8" src="/images/logo.png" alt="Logo" />
+    <img class="dark:hidden h-16 w-auto sm:h-18" src="/images/Trastalia.png" alt="Logo" />
+    <img class="hidden dark:block h-16 w-auto sm:h-18" src="/images/Trastalia.png" alt="Logo" />
   </router-link>
 </template>
 

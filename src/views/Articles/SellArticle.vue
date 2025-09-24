@@ -4,9 +4,9 @@
       <!-- Header -->
       <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="text-title-md2 font-semibold text-black dark:text-white">
-            Vender Artículo
-          </h2>
+        <h2 class="text-title-md2 font-semibold text-black dark:text-white">
+          Vender Artículo
+        </h2>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Publica tu artículo para vender o intercambiar</p>
         </div>
       </div>
@@ -15,11 +15,11 @@
       <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <form @submit.prevent="submitArticle" class="space-y-6">
           <!-- Información básica -->
-          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <label class="mb-2 block text-sm font-medium text-black dark:text-white">
-                Título del artículo *
-              </label>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+              Título del artículo *
+            </label>
               <input
                 v-model="form.title"
                 type="text"
@@ -27,12 +27,12 @@
                 class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 placeholder="Ej: iPhone 12 Pro Max 256GB"
               />
-            </div>
+              </div>
 
-            <div>
-              <label class="mb-2 block text-sm font-medium text-black dark:text-white">
-                Categoría *
-              </label>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+              Categoría *
+            </label>
               <select
                 v-model="form.category"
                 required
@@ -48,64 +48,64 @@
                 <option value="juegos">Juegos</option>
                 <option value="electrónica">Electrónica</option>
               </select>
-            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+            Descripción *
+          </label>
+          <textarea
+            v-model="form.description"
+            required
+            rows="4"
+              class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              placeholder="Describe tu artículo en detalle..."
+          ></textarea>
+        </div>
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div>
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                Precio (€) *
+            </label>
+            <input
+                v-model.number="form.price"
+              type="number"
+              required
+              min="0"
+              step="0.01"
+                class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              placeholder="0.00"
+            />
           </div>
 
           <div>
             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
-              Descripción *
-            </label>
-            <textarea
-              v-model="form.description"
-              required
-              rows="4"
-              class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              placeholder="Describe tu artículo en detalle..."
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div>
-              <label class="mb-2 block text-sm font-medium text-black dark:text-white">
-                Precio (€) *
-              </label>
-              <input
-                v-model.number="form.price"
-                type="number"
-                required
-                min="0"
-                step="0.01"
-                class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                placeholder="0.00"
-              />
-            </div>
-
-            <div>
-              <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                 Condición *
-              </label>
-              <select
-                v-model="form.condition"
-                required
+            </label>
+            <select
+              v-model="form.condition"
+              required
                 class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              >
+            >
                 <option value="">Selecciona condición</option>
-                <option value="nuevo">Nuevo</option>
-                <option value="excelente">Excelente</option>
-                <option value="bueno">Bueno</option>
-                <option value="regular">Regular</option>
+              <option value="nuevo">Nuevo</option>
+              <option value="excelente">Excelente</option>
+              <option value="bueno">Bueno</option>
+              <option value="regular">Regular</option>
                 <option value="usado">Usado</option>
-              </select>
-            </div>
+            </select>
+        </div>
 
-            <div>
-              <GooglePlacesInput
-                v-model="form.location"
-                label="Ubicación"
+          <div>
+            <GooglePlacesInput
+              v-model="form.location"
+              label="Ubicación"
                 placeholder="Buscar ubicación..."
-                required
+              required
                 :search-options="{ types: ['geocode'], componentRestrictions: { country: 'es' } }"
-                @place-selected="handlePlaceSelected"
+              @place-selected="handlePlaceSelected"
                 class="w-full"
               />
             </div>
@@ -121,7 +121,7 @@
                 <div>
                   <h4 class="font-medium text-black dark:text-white">Venta desde casa</h4>
                   <p class="text-sm text-gray-600 dark:text-gray-400">Vende directamente desde tu domicilio</p>
-                </div>
+            </div>
                 <label class="relative inline-flex cursor-pointer items-center">
                   <input
                     v-model="form.saleOptions.fromHome"
@@ -132,14 +132,14 @@
                 </label>
               </div>
             </div>
-
+            
             <!-- Centro logístico (solo para admins) -->
             <div v-if="authStore.user?.role === 'admin'" class="rounded-lg border border-stroke p-4 dark:border-strokedark">
               <div class="flex items-center justify-between">
                 <div>
                   <h4 class="font-medium text-black dark:text-white">Centro logístico</h4>
                   <p class="text-sm text-gray-600 dark:text-gray-400">Envía tu artículo a un centro logístico</p>
-                </div>
+            </div>
                 <label class="relative inline-flex cursor-pointer items-center">
                   <input
                     v-model="form.saleOptions.fromLogisticsCenter"
@@ -166,7 +166,14 @@
                         {{ center.name }} - {{ center.city }}
                       </option>
                     </select>
-                  </div>
+                    <!-- Debug info -->
+                    <p v-if="logisticsCenters.length === 0" class="mt-1 text-xs text-red-600">
+                      No hay centros logísticos disponibles. Cargando...
+                    </p>
+                    <p v-else class="mt-1 text-xs text-green-600">
+                      {{ logisticsCenters.length }} centros disponibles
+                    </p>
+                </div>
 
                   <div>
                     <label class="mb-2 block text-sm font-medium text-black dark:text-white">
@@ -199,9 +206,9 @@
                     </label>
 
                     <label class="flex items-center">
-                      <input
+                  <input
                         v-model="form.trastaliaOptions.points"
-                        type="checkbox"
+                    type="checkbox"
                         class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
                       />
                       <span class="ml-2 text-sm text-black dark:text-white">Venta por puntos</span>
@@ -219,7 +226,7 @@
                       class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       placeholder="1000"
                     />
-                  </div>
+            </div>
 
                   <!-- Opciones de aceptación automática -->
                   <div v-if="form.trastaliaOptions.money || form.trastaliaOptions.points" class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -241,16 +248,16 @@
                       </label>
 
                       <label v-if="form.trastaliaOptions.points" class="flex items-center">
-                        <input
+                  <input
                           v-model="form.autoAcceptOptions.points"
-                          type="checkbox"
+                    type="checkbox"
                           class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-                        />
+                  />
                         <span class="ml-2 text-sm text-black dark:text-white">
                           Aceptar automáticamente ofertas de puntos (20% menos)
                         </span>
                       </label>
-                    </div>
+                </div>
                     
                     <p class="text-xs text-blue-600 dark:text-blue-300 mt-2">
                       Si no marcas estas opciones, siempre tendrás que validar manualmente las ofertas en "Solicitudes de Compra"
@@ -267,7 +274,7 @@
               type="button"
               @click="resetForm"
               class="inline-flex items-center justify-center rounded-md border border-stroke bg-white py-3 px-6 text-center font-medium text-black hover:bg-opacity-90 dark:border-strokedark dark:bg-boxdark dark:text-white"
-            >
+          >
               Cancelar
             </button>
             <button
@@ -278,9 +285,9 @@
               <span v-if="loading" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
               {{ loading ? 'Publicando...' : 'Publicar Artículo' }}
             </button>
-          </div>
-        </form>
-      </div>
+        </div>
+      </form>
+    </div>
     </div>
   </AdminLayout>
 </template>
@@ -336,6 +343,7 @@ const form = ref({
 // Cargar centros logísticos
 const loadLogisticsCenters = async () => {
   try {
+    console.log('Cargando centros logísticos...')
     const response = await fetch('/api/logistics-centers', {
       headers: {
         'Authorization': `Bearer ${authStore.token}`
@@ -344,7 +352,10 @@ const loadLogisticsCenters = async () => {
     
     if (response.ok) {
       const data = await response.json()
+      console.log('Centros logísticos cargados:', data)
       logisticsCenters.value = data.data || []
+    } else {
+      console.error('Error en la respuesta:', response.status, response.statusText)
     }
   } catch (error) {
     console.error('Error cargando centros logísticos:', error)
@@ -378,7 +389,7 @@ const submitArticle = async () => {
         adminStatus = 'approved_money'
       }
     }
-
+    
     const articleData = {
       title: form.value.title,
       description: form.value.description,
@@ -429,13 +440,13 @@ const submitArticle = async () => {
       },
       body: JSON.stringify(articleData)
     })
-
+    
     if (response.ok) {
       const data = await response.json()
-      
+    
       if (adminStatus === 'pending') {
         alert('Artículo enviado para revisión del administrador. Te notificaremos cuando sea aprobado.')
-      } else {
+    } else {
         alert('Artículo publicado exitosamente.')
       }
       
@@ -481,9 +492,7 @@ const resetForm = () => {
 
 // Lifecycle
 onMounted(() => {
-  // Solo cargar centros logísticos si el usuario es admin
-  if (authStore.user?.role === 'admin') {
-    loadLogisticsCenters()
-  }
+  // Cargar centros logísticos para todos los usuarios
+  loadLogisticsCenters()
 })
 </script>
