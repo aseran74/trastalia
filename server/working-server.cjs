@@ -65,6 +65,8 @@ const ArticleSchema = new mongoose.Schema({
       'PENDIENTE_APROBACION_ADMIN', 
       'OFERTA_COMPRA_ENVIADA', 
       'COMPRADO_POR_ADMIN', 
+      'VENDIDO_A_TRASTALIA_DINERO',
+      'VENDIDO_A_TRASTALIA_PUNTOS',
       'EN_GALERIA_APTOS', 
       'VENDIDO', 
       'RECHAZADO'
