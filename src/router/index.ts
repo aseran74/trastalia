@@ -253,6 +253,16 @@ const router = createRouter({
         },
       },
       {
+        path: '/admin/articulos',
+        name: 'Article Management',
+        component: () => import('../views/Admin/ArticleManagement.vue'),
+        meta: {
+          title: 'Gestión de Artículos',
+          requiresAuth: true,
+          requiresAdmin: true
+        },
+      },
+      {
         path: '/admin/articulos/:id/editar',
         name: 'Edit Article',
         component: () => import('../views/Admin/EditArticle.vue'),
