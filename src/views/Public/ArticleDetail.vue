@@ -24,16 +24,6 @@
       </div>
     </header>
 
-    <!-- Debug Info Always Visible -->
-    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded m-4 fixed top-20 left-4 right-4 z-50">
-      <strong>🔍 Debug Info (Fijo en pantalla):</strong> 
-      <br>Loading: {{ loading }}
-      <br>Article: {{ article ? 'Cargado' : 'No cargado' }}
-      <br>Route ID: {{ route.params.id }}
-      <br>API URL: {{ API_BASE_URL }}
-      <br>Timestamp: {{ new Date().toLocaleTimeString() }}
-    </div>
-
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center items-center min-h-96">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -41,10 +31,6 @@
 
     <!-- Article Detail -->
     <div v-else-if="article" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Debug Info -->
-      <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-        <strong>Debug:</strong> Artículo cargado: {{ article?.title || article?.nombre }}
-      </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Images -->
         <div class="space-y-4">
@@ -192,14 +178,6 @@
 
     <!-- Error -->
     <div v-else class="text-center py-12">
-      <!-- Debug Info -->
-      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 max-w-md mx-auto">
-        <strong>Debug:</strong> 
-        <br>Loading: {{ loading }}
-        <br>Article: {{ article ? 'Cargado' : 'No cargado' }}
-        <br>Route ID: {{ route.params.id }}
-      </div>
-      
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
       </svg>
@@ -218,7 +196,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import API_BASE_URL from '@/config/api.js'
 
@@ -227,42 +205,24 @@ const route = useRoute()
 
 // Estado reactivo
 const article = ref(null)
-const loading = ref(false)
+const loading = ref(true)
 const selectedImage = ref(null)
-const hasLoaded = ref(false) // Prevenir bucle infinito
-const isInitialized = ref(false) // Prevenir inicialización múltiple
 
 // Cargar artículo
 const loadArticle = async () => {
-  if (hasLoaded.value || isInitialized.value) {
-    console.log('🚫 Evitando carga duplicada')
-    return
-  }
-  
-  isInitialized.value = true
   loading.value = true
-  hasLoaded.value = true
+  article.value = null
   
   try {
     const articleId = route.params.id
     const url = `${API_BASE_URL}/api/articles/${articleId}`
     
-    console.log('🔍 Cargando artículo detalle:', {
-      articleId,
-      url,
-      API_BASE_URL
-    })
+    console.log('🔍 Cargando artículo detalle:', { articleId, url })
     
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json'
       }
-    })
-    
-    console.log('📡 Respuesta del servidor:', {
-      status: response.status,
-      ok: response.ok,
-      statusText: response.statusText
     })
     
     if (response.ok) {
@@ -289,15 +249,13 @@ const getArticleImage = (article) => {
     return article.fotos[0]
   }
   
-  // Generar imagen de Unsplash basada en la categoría
-  const category = article?.category || article?.categoria || 'product'
-  const searchTerm = encodeURIComponent(article?.title || article?.nombre || category)
-  return `https://source.unsplash.com/800x600/?${searchTerm}`
+  const title = article?.title || article?.nombre || 'Artículo'
+  return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
 }
 
 // Manejar error de imagen
 const handleImageError = (event) => {
-  event.target.src = '/images/placeholder-article.jpg'
+  event.target.src = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
 }
 
 // Obtener etiqueta de condición
@@ -377,7 +335,6 @@ const shareArticle = async () => {
       console.log('Error compartiendo:', error)
     }
   } else {
-    // Fallback: copiar URL al portapapeles
     navigator.clipboard.writeText(window.location.href)
     alert('URL copiada al portapapeles')
   }
@@ -385,8 +342,12 @@ const shareArticle = async () => {
 
 // Cargar artículo al montar el componente
 onMounted(() => {
-  console.log('🚀 Componente montado, cargando artículo...')
-  if (!isInitialized.value) {
+  loadArticle()
+})
+
+// Watch para cambios de ruta
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId && newId !== oldId) {
     loadArticle()
   }
 })
@@ -395,7 +356,7 @@ onMounted(() => {
 <style scoped>
 .aspect-w-16 {
   position: relative;
-  padding-bottom: 75%; /* 16:12 aspect ratio */
+  padding-bottom: 75%;
 }
 
 .aspect-h-12 {
