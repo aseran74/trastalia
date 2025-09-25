@@ -63,11 +63,11 @@
     </header>
 
     <!-- Hero Section -->
-    <div class="relative px-6 py-16 lg:py-24 pt-24">
+    <div class="relative px-6 py-16 lg:py-24 pt-32">
         <div class="mx-auto max-w-7xl">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <!-- Left Column -->
-            <div class="space-y-8">
+            <div class="space-y-8 pt-8">
               <div class="space-y-4">
                 <h1 class="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
                   Ha llegado una nueva manera de
