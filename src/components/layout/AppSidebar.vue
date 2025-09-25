@@ -352,7 +352,7 @@ const menuGroups = [
       {
         icon: ManageIcon,
         name: "Gestionar Artículos",
-        path: "/admin/articles",
+        path: "/admin/articulos",
       },
       {
         icon: LogisticsIcon,
