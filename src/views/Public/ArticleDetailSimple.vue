@@ -236,4 +236,3 @@ watch(() => route.params.id, (newId, oldId) => {
   }
 });
 </script>
-</script>
