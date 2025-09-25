@@ -158,6 +158,7 @@ const loadPublicArticles = async () => {
       const data = await response.json()
       articles.value = data.data || []
       console.log('✅ Artículos cargados:', articles.value.length)
+      console.log('📋 Primer artículo:', articles.value[0])
     } else {
       console.error('❌ Error del servidor:', response.status, response.statusText)
     }
@@ -165,7 +166,7 @@ const loadPublicArticles = async () => {
     console.error('❌ Error cargando artículos:', error)
   } finally {
     loading.value = false
-    console.log('🏁 Carga completada')
+    console.log('🏁 Carga completada - Loading:', loading.value, 'Articles:', articles.value.length)
   }
 }
 
@@ -180,7 +181,12 @@ const formatPrice = (price) => {
 
 // Manejar error de imagen
 const handleImageError = (event) => {
-  event.target.src = 'https://via.placeholder.com/400x300/cccccc/666666?text=Imagen+no+disponible'
+  const placeholderSrc = 'https://via.placeholder.com/400x300/cccccc/666666?text=Imagen+no+disponible'
+  
+  // ✅ CORRECCIÓN: Evita el bucle comprobando si ya estamos usando el placeholder
+  if (event.target.src !== placeholderSrc) {
+    event.target.src = placeholderSrc
+  }
 }
 
 // Obtener imagen del artículo
