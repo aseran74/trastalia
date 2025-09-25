@@ -12,9 +12,9 @@
           <!-- Header -->
           <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 class="text-title-md2 font-semibold text-black dark:text-white">
-              Dashboard de Administración
+              {{ isAdmin ? 'Dashboard de Administración' : 'Mi Panel de Usuario' }}
             </h2>
-            <div class="flex items-center space-x-2">
+            <div v-if="isAdmin" class="flex items-center space-x-2">
               <button 
                 @click="loadStats"
                 class="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-white hover:bg-opacity-90"
@@ -43,8 +43,8 @@
             </button>
           </div>
 
-          <!-- Dashboard Content -->
-          <div v-else-if="stats" class="space-y-6">
+          <!-- Dashboard Content para Admin -->
+          <div v-else-if="stats && isAdmin" class="space-y-6">
             <!-- Estadísticas principales -->
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <!-- Total de Artículos -->
@@ -231,6 +231,117 @@
               </div>
             </div>
           </div>
+
+          <!-- Dashboard Content para Usuarios Normales -->
+          <div v-else-if="!isAdmin" class="space-y-6">
+            <!-- Mensaje de bienvenida -->
+            <div class="rounded-lg border border-stroke bg-white p-8 shadow-default dark:border-strokedark dark:bg-boxdark text-center">
+              <div class="mx-auto mb-6 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-bold text-black dark:text-white mb-2">¡Bienvenido a Trastalia!</h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-6">Tu plataforma para vender y comprar artículos de segunda mano</p>
+            </div>
+
+            <!-- Acciones rápidas para usuarios -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <!-- Vender Artículo -->
+              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                  <div class="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                  </div>
+                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Vender Artículo</h3>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Sube tu artículo y recibe una oferta de Trastalia</p>
+                <router-link 
+                  to="/vender-articulo" 
+                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Crear artículo
+                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </router-link>
+              </div>
+
+              <!-- Comprar Artículos -->
+              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                  <div class="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                  </div>
+                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Comprar Artículos</h3>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Explora artículos disponibles para compra</p>
+                <router-link 
+                  to="/comprar-articulos" 
+                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Ver artículos
+                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </router-link>
+              </div>
+
+              <!-- Mis Solicitudes -->
+              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                  <div class="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                    <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                  </div>
+                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Mis Solicitudes</h3>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Gestiona tus solicitudes de compra</p>
+                <router-link 
+                  to="/mis-solicitudes-compra" 
+                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Ver solicitudes
+                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </router-link>
+              </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+              <h3 class="text-lg font-semibold text-black dark:text-white mb-4">¿Cómo funciona Trastalia?</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center">
+                  <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <span class="text-xl font-bold text-yellow-600">1</span>
+                  </div>
+                  <h4 class="font-semibold text-black dark:text-white mb-2">Sube tu artículo</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Describe y fotografía tu artículo</p>
+                </div>
+                <div class="text-center">
+                  <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <span class="text-xl font-bold text-yellow-600">2</span>
+                  </div>
+                  <h4 class="font-semibold text-black dark:text-white mb-2">Recibe una oferta</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Trastalia te hace una oferta justa</p>
+                </div>
+                <div class="text-center">
+                  <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <span class="text-xl font-bold text-yellow-600">3</span>
+                  </div>
+                  <h4 class="font-semibold text-black dark:text-white mb-2">Acepta y vende</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Recibe tu pago o puntos</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -252,7 +363,18 @@ const loading = ref(false)
 const error = ref(null)
 const stats = ref(null)
 
+// Detectar si el usuario es admin
+const isAdmin = computed(() => {
+  return authStore.user?.role === 'admin'
+})
+
 const loadStats = async () => {
+  // Solo cargar estadísticas si el usuario es admin
+  if (!isAdmin.value) {
+    loading.value = false
+    return
+  }
+  
   loading.value = true
   error.value = null
   
