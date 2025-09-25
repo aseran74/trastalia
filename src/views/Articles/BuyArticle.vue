@@ -285,32 +285,36 @@ const filteredArticles = computed(() => {
     // Usar precio_sugerido en lugar de price para la nueva lógica
     const price = article.precio_sugerido || article.price || 0
     
+    // Los artículos del admin que están disponibles para compra
+    const isAvailableForPurchase = article.estado_articulo === 'COMPRADO_POR_ADMIN' || 
+                                  article.estado_articulo === 'VENDIDO_A_TRASTALIA_DINERO' ||
+                                  article.estado_articulo === 'VENDIDO_A_TRASTALIA_PUNTOS'
+    
+    if (!isAvailableForPurchase) return false
+    
     // Filtrar por tipo de venta
     switch (filterType.value) {
       case 'money':
         return price > 0 && (
+          article.adminDecision?.money === true ||
           article.oferta_admin?.tipo_oferta === 'dinero' || 
-          article.oferta_admin?.tipo_oferta === 'ambos' ||
-          article.estado === 'en_venta' ||
-          article.estado === 'solicitud_compra_pendiente'
+          article.oferta_admin?.tipo_oferta === 'ambos'
         )
       case 'points':
         return price > 0 && (
+          article.adminDecision?.points === true ||
           article.oferta_admin?.tipo_oferta === 'puntos' || 
-          article.oferta_admin?.tipo_oferta === 'ambos' ||
-          article.estado === 'en_venta' ||
-          article.estado === 'solicitud_compra_pendiente'
+          article.oferta_admin?.tipo_oferta === 'ambos'
         )
       case 'both':
         return price > 0 && (
+          (article.adminDecision?.money === true || article.adminDecision?.points === true) ||
           article.oferta_admin?.tipo_oferta === 'dinero' || 
           article.oferta_admin?.tipo_oferta === 'puntos' || 
-          article.oferta_admin?.tipo_oferta === 'ambos' ||
-          article.estado === 'en_venta' ||
-          article.estado === 'solicitud_compra_pendiente'
+          article.oferta_admin?.tipo_oferta === 'ambos'
         )
       default:
-        return price > 0 && (article.estado === 'en_venta' || article.estado === 'solicitud_compra_pendiente')
+        return price > 0
     }
   })
 
