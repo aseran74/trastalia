@@ -24,6 +24,15 @@
       </div>
     </header>
 
+    <!-- Debug Info Always Visible -->
+    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded m-4">
+      <strong>Debug Info:</strong> 
+      <br>Loading: {{ loading }}
+      <br>Article: {{ article ? 'Cargado' : 'No cargado' }}
+      <br>Route ID: {{ route.params.id }}
+      <br>API URL: {{ API_BASE_URL }}
+    </div>
+
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center items-center min-h-96">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
