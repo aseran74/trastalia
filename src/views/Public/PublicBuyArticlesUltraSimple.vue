@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
+  <div class="min-h-screen bg-gray-100">
     <div class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-6">
@@ -19,90 +18,82 @@
       </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Header Section -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Artículos Disponibles - VERSIÓN ULTRA SIMPLE</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Artículos Disponibles</h1>
+        <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
           Descubre una amplia selección de artículos de segunda mano verificados y en excelente estado.
         </p>
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mt-4">
-          ✅ Esta es la versión ULTRA SIMPLE - Sin bucles - Sin computed - Sin watchers
+          ✅ VERSIÓN MEJORADA - Con plugins de Tailwind CSS y diseño moderno
         </div>
       </div>
 
-      <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Articles Grid - PRUEBA 5: Revertir a versión que funcionaba -->
-      <div v-else-if="articles.length > 0" class="py-6">
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          🧪 PRUEBA 5: Revertido a versión que funcionaba - El problema está en el CSS complejo
-        </div>
-        <div v-for="article in articles" :key="article._id" class="p-4 border-b bg-white rounded mb-2">
-          <div class="flex items-start space-x-4">
-            <!-- Imagen simple -->
-            <img
-              :src="getArticleImage(article)"
-              :alt="article.title || article.nombre"
-              class="w-20 h-20 object-cover rounded"
-              @error="handleImageError"
-            />
-            <!-- Info del artículo -->
-            <div class="flex-1">
-              <p class="text-lg font-bold">{{ article.title || article.nombre }}</p>
-              <p>{{ formatPrice(article.price || article.precio_propuesto_vendedor) }}</p>
-              <p class="text-sm text-gray-500">ID: {{ article._id }}</p>
-              
-              <!-- Badges -->
-              <div class="mt-2 space-x-2">
-                <span class="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">
-                  {{ getConditionLabel(article.condition || article.condicion) }}
-                </span>
-                <span class="bg-blue-500/90 text-white text-xs px-2 py-1 rounded-full font-medium">
-                  {{ getCategoryLabel(article.category || article.categoria) }}
-                </span>
-              </div>
-              
-              <!-- Botones -->
-              <div class="mt-3 space-y-2">
-                <button
-                  @click="viewArticle(article)"
-                  class="bg-blue-600 text-white py-1 px-3 rounded text-sm hover:bg-blue-700"
-                >
-                  Ver Detalles
-                </button>
-                <button
-                  @click="loginToBuy"
-                  class="border border-green-600 text-green-600 py-1 px-3 rounded text-sm hover:bg-green-600 hover:text-white"
-                >
-                  Comprar
-                </button>
-              </div>
+      <div v-else-if="articles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div 
+          v-for="article in articles" 
+          :key="article._id" 
+          class="group bg-white rounded-lg shadow-md overflow-hidden flex flex-col transition-transform duration-300 hover:shadow-xl hover:-translate-y-1"
+        >
+          <div class="relative">
+            <div class="aspect-video w-full">
+              <img
+                :src="getArticleImage(article)"
+                :alt="article.title || article.nombre"
+                class="w-full h-full object-cover"
+                @error="handleImageError"
+              />
+            </div>
+            <span class="absolute top-3 right-3 bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-full font-semibold shadow">
+              {{ getConditionLabel(article.condition || article.condicion) }}
+            </span>
+          </div>
+
+          <div class="p-4 flex flex-col flex-grow">
+            <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+              {{ getCategoryLabel(article.category || article.categoria) }}
+            </p>
+
+            <h3 class="mt-2 text-lg font-bold text-gray-900">
+              <span class="line-clamp-2">
+                {{ article.title || article.nombre }}
+              </span>
+            </h3>
+            
+            <p class="mt-4 text-2xl font-extrabold text-gray-800">
+              {{ formatPrice(article.price || article.precio_propuesto_vendedor) }}
+            </p>
+
+            <div class="mt-auto pt-4 flex gap-3">
+              <button
+                @click="viewArticle(article)"
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Ver Detalles
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- No Articles -->
       <div v-else class="text-center py-12">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-        </svg>
+         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+         </svg>
         <h3 class="mt-2 text-sm font-medium text-gray-900">No hay artículos disponibles</h3>
         <p class="mt-1 text-sm text-gray-500">No se encontraron artículos en este momento.</p>
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
+    <footer class="bg-gray-800 text-white py-12">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <img src="/images/Trastalia3.png" alt="Trastalia" class="h-16 w-auto mx-auto mb-4"/>
-          <p class="text-gray-400">© 2024 Trastalia. Todos los derechos reservados.</p>
+          <p class="text-gray-400">© 2025 Trastalia. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>
@@ -228,27 +219,3 @@ onMounted(() => {
   loadPublicArticles()
 })
 </script>
-
-<style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.aspect-w-16 {
-  position: relative;
-  padding-bottom: 75%;
-}
-
-.aspect-h-12 {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-</style>
