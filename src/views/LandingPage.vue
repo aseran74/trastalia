@@ -9,21 +9,21 @@
     >
       <!-- Navigation -->
       <nav class="relative z-10 px-2 py-1.5">
-        <div class="mx-auto max-w-3xl">
+        <div class="mx-auto max-w-2xl">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <img src="/images/Trastalia.png" alt="Trastalia" class="h-16 w-auto sm:h-18 md:h-20 lg:h-22">
+              <img src="/images/Trastalia.png" alt="Trastalia" class="h-12 w-auto sm:h-14 md:h-16 lg:h-18">
             </div>
             
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-3">
-              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Características</a>
-              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Cómo funciona</a>
-              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Precios</a>
+            <div class="hidden md:flex items-center space-x-2">
+              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors text-sm">Características</a>
+              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors text-sm">Cómo funciona</a>
+              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors text-sm">Precios</a>
               
               <!-- Menú de perfil si está logueado, botón de login si no -->
               <UserProfileMenu v-if="authStore.isAuthenticated" />
-              <router-link v-else to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+              <router-link v-else to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-md hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 text-sm">
                 Iniciar Sesión
               </router-link>
             </div>
