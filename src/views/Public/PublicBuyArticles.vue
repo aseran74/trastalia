@@ -47,7 +47,8 @@
 
       <!-- Filtros -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-        <div class="flex flex-wrap gap-4 items-center">
+        <!-- Filtros básicos -->
+        <div class="flex flex-wrap gap-4 items-center mb-6">
           <div class="flex-1 min-w-64">
             <input
               v-model="searchQuery"
@@ -78,6 +79,77 @@
             <option value="price-high">Precio: mayor a menor</option>
             <option value="name">Nombre A-Z</option>
           </select>
+        </div>
+
+        <!-- Filtros avanzados con sliders -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Filtro de Precio -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Rango de Precio: {{ formatPrice(priceRange[0]) }} - {{ formatPrice(priceRange[1]) }}
+            </label>
+            <div class="relative">
+              <input
+                type="range"
+                :min="minPrice"
+                :max="maxPrice"
+                v-model="priceRange[0]"
+                class="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                @input="updatePriceRange(0, $event.target.value)"
+              />
+              <input
+                type="range"
+                :min="minPrice"
+                :max="maxPrice"
+                v-model="priceRange[1]"
+                class="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                @input="updatePriceRange(1, $event.target.value)"
+              />
+            </div>
+            <div class="flex justify-between text-xs text-gray-500 mt-1">
+              <span>{{ formatPrice(minPrice) }}</span>
+              <span>{{ formatPrice(maxPrice) }}</span>
+            </div>
+          </div>
+
+          <!-- Filtro de Puntos -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Rango de Puntos: {{ formatNumber(pointsRange[0]) }} - {{ formatNumber(pointsRange[1]) }}
+            </label>
+            <div class="relative">
+              <input
+                type="range"
+                :min="minPoints"
+                :max="maxPoints"
+                v-model="pointsRange[0]"
+                class="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                @input="updatePointsRange(0, $event.target.value)"
+              />
+              <input
+                type="range"
+                :min="minPoints"
+                :max="maxPoints"
+                v-model="pointsRange[1]"
+                class="absolute w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                @input="updatePointsRange(1, $event.target.value)"
+              />
+            </div>
+            <div class="flex justify-between text-xs text-gray-500 mt-1">
+              <span>{{ formatNumber(minPoints) }}</span>
+              <span>{{ formatNumber(maxPoints) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón para resetear filtros -->
+        <div class="mt-4 flex justify-end">
+          <button
+            @click="resetFilters"
+            class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            Limpiar Filtros
+          </button>
         </div>
       </div>
 
@@ -199,6 +271,14 @@ const searchQuery = ref('')
 const filterCategory = ref('')
 const sortBy = ref('newest')
 
+// Filtros con sliders
+const priceRange = ref([0, 1000])
+const pointsRange = ref([0, 10000])
+const minPrice = ref(0)
+const maxPrice = ref(1000)
+const minPoints = ref(0)
+const maxPoints = ref(10000)
+
 // Cargar artículos públicos
 const loadPublicArticles = async () => {
   loading.value = true
@@ -218,6 +298,9 @@ const loadPublicArticles = async () => {
       const data = await response.json()
       articles.value = data.data || []
       console.log('✅ Artículos públicos cargados:', articles.value.length)
+      
+      // Calcular rangos después de cargar los artículos
+      calculateRanges()
     } else {
       const errorText = await response.text()
       console.error('❌ Error del servidor:', errorText)
@@ -250,6 +333,18 @@ const filteredArticles = computed(() => {
       }
     }
     
+    // Filtro por precio
+    const price = article.price || article.precio_propuesto_vendedor || 0
+    if (price < priceRange.value[0] || price > priceRange.value[1]) {
+      return false
+    }
+    
+    // Filtro por puntos (usando el precio como equivalente a puntos)
+    const points = article.price || article.precio_propuesto_vendedor || 0
+    if (points < pointsRange.value[0] || points > pointsRange.value[1]) {
+      return false
+    }
+    
     return true
   })
 
@@ -275,6 +370,59 @@ const formatPrice = (price) => {
   }).format(price)
 }
 
+// Formatear número
+const formatNumber = (num) => {
+  return new Intl.NumberFormat('es-ES').format(num)
+}
+
+// Calcular rangos de precio y puntos
+const calculateRanges = () => {
+  if (articles.value.length === 0) return
+  
+  const prices = articles.value.map(article => 
+    article.price || article.precio_propuesto_vendedor || 0
+  ).filter(price => price > 0)
+  
+  if (prices.length > 0) {
+    minPrice.value = Math.floor(Math.min(...prices))
+    maxPrice.value = Math.ceil(Math.max(...prices))
+    priceRange.value = [minPrice.value, maxPrice.value]
+    
+    minPoints.value = minPrice.value
+    maxPoints.value = maxPrice.value
+    pointsRange.value = [minPoints.value, maxPoints.value]
+  }
+}
+
+// Actualizar rango de precio
+const updatePriceRange = (index, value) => {
+  const numValue = parseInt(value)
+  if (index === 0) {
+    priceRange.value[0] = Math.min(numValue, priceRange.value[1] - 1)
+  } else {
+    priceRange.value[1] = Math.max(numValue, priceRange.value[0] + 1)
+  }
+}
+
+// Actualizar rango de puntos
+const updatePointsRange = (index, value) => {
+  const numValue = parseInt(value)
+  if (index === 0) {
+    pointsRange.value[0] = Math.min(numValue, pointsRange.value[1] - 1)
+  } else {
+    pointsRange.value[1] = Math.max(numValue, pointsRange.value[0] + 1)
+  }
+}
+
+// Resetear filtros
+const resetFilters = () => {
+  searchQuery.value = ''
+  filterCategory.value = ''
+  sortBy.value = 'newest'
+  priceRange.value = [minPrice.value, maxPrice.value]
+  pointsRange.value = [minPoints.value, maxPoints.value]
+}
+
 // Ver artículo
 const viewArticle = (article) => {
   // Por ahora, redirigir al login
@@ -297,5 +445,67 @@ onMounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Estilos para los sliders */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #3b82f6;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-track {
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+  border: none;
+}
+
+.slider::-moz-range-thumb {
+  background: #3b82f6;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+/* Asegurar que los sliders no se superpongan */
+.slider:first-of-type {
+  z-index: 2;
+}
+
+.slider:last-of-type {
+  z-index: 1;
 }
 </style>
