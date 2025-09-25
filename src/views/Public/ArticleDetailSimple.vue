@@ -1,151 +1,104 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
+    <div class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-4">
+        <div class="flex justify-between items-center py-6">
           <div class="flex items-center">
             <img src="/images/Trastalia3.png" alt="Trastalia" class="h-12 w-auto"/>
           </div>
-          <button @click="goBack" class="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Volver
-          </button>
+          <div class="flex items-center space-x-4">
+            <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+              ← Volver a Artículos
+            </router-link>
+            <router-link to="/signin" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+              Iniciar Sesión
+            </router-link>
+          </div>
         </div>
       </div>
-    </header>
-
-    <!-- Loading -->
-    <div v-if="loading" class="flex justify-center items-center min-h-96">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     </div>
 
-    <!-- Article Content -->
-    <div v-else-if="article" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <!-- Image -->
-        <div class="aspect-w-16 aspect-h-9">
-          <img 
-            :src="articleImage" 
-            :alt="article.title || article.nombre" 
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+
+      <!-- Article Detail -->
+      <div v-else-if="article" class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <!-- Article Image -->
+        <div class="aspect-w-16 aspect-h-12 bg-gray-200 relative">
+          <img
+            :src="getArticleImage(article)"
+            :alt="article.title || article.nombre"
             class="w-full h-96 object-cover"
             @error="handleImageError"
           />
         </div>
-        
-        <!-- Content -->
-        <div class="p-6">
+
+        <!-- Article Info -->
+        <div class="p-8">
           <h1 class="text-3xl font-bold text-gray-900 mb-4">
             {{ article.title || article.nombre }}
           </h1>
           
-          <p class="text-gray-700 text-lg mb-6">
+          <p class="text-gray-600 text-lg mb-6">
             {{ article.description || article.descripcion }}
           </p>
-          
+
           <!-- Price -->
-          <div class="text-3xl font-bold text-green-600 mb-6">
+          <div class="text-4xl font-bold text-green-600 mb-6">
             {{ formatPrice(article.price || article.precio_propuesto_vendedor) }}
           </div>
-          
-          <!-- Purchase Options -->
-          <div class="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 class="text-lg font-semibold mb-3">Opciones de compra:</h3>
-            <div class="space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="flex items-center text-green-600">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                  </svg>
-                  Dinero
-                </span>
-                <span class="font-semibold">{{ formatPrice(article.price || article.precio_propuesto_vendedor) }}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="flex items-center text-blue-600">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                  </svg>
-                  Puntos
-                </span>
-                <span class="font-semibold">{{ formatNumber(article.price || article.precio_propuesto_vendedor) }} pts</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Actions -->
-          <div class="flex space-x-4">
-            <button 
+
+          <!-- Action Buttons -->
+          <div class="space-y-4">
+            <button
               @click="loginToBuy"
-              class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              class="w-full bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition-colors duration-200 flex items-center justify-center text-lg"
             >
-              Iniciar Sesión para Comprar
-            </button>
-            <button 
-              @click="shareArticle"
-              class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-            >
-              Compartir
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+              </svg>
+              Comprar (Requiere Login)
             </button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Error State -->
-    <div v-else class="text-center py-12">
-      <h3 class="mt-2 text-sm font-medium text-gray-900">Artículo no encontrado</h3>
-      <div class="mt-6">
-        <button 
-          @click="goBack" 
-          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-        >
-          Volver a la lista
-        </button>
+      <!-- Error State -->
+      <div v-else class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">Artículo no encontrado</h3>
+        <p class="mt-1 text-sm text-gray-500">No se pudo cargar la información del artículo.</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import API_BASE_URL from '@/config/api.js'
 
 const router = useRouter()
 const route = useRoute()
 
+// Estado simple
 const article = ref(null)
-const loading = ref(true)
-const articleImage = ref('')
+const loading = ref(false)
 
-// Obtener imagen del artículo
-const getArticleImage = (articleData) => {
-  const imagePath = articleData?.image_url || articleData?.imagen
-  
-  if (imagePath) {
-    return `${API_BASE_URL.replace(/\/$/, '')}/${imagePath.replace(/^\//, '')}`
-  }
-  
-  const title = articleData?.title || articleData?.nombre || 'Artículo'
-  return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
-}
-
-const handleImageError = (event) => {
-  event.target.src = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
-}
-
+// Cargar artículo
 const loadArticle = async () => {
+  const articleId = route.params.id
+  if (!articleId) return
+
   loading.value = true
-  article.value = null
-  
   try {
-    const articleId = route.params.id
-    const url = `${API_BASE_URL}/api/articles/${articleId}`
-    
-    const response = await fetch(url, {
+    const response = await fetch(`/api/articles/${articleId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -155,62 +108,51 @@ const loadArticle = async () => {
     
     if (response.ok) {
       const data = await response.json()
-      if (data.success) {
-        article.value = data.data
-        articleImage.value = getArticleImage(data.data)
-      }
+      article.value = data.data || data
     } else {
-      console.error('Error del servidor:', response.status, response.statusText)
+      console.error('Error cargando artículo:', response.status)
     }
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error cargando artículo:', error)
   } finally {
     loading.value = false
   }
 }
 
+// Formatear precio
 const formatPrice = (price) => {
-  if (typeof price !== 'number') return 'N/A'
+  if (!price) return 'Precio no disponible'
   return new Intl.NumberFormat('es-ES', {
     style: 'currency',
     currency: 'EUR'
   }).format(price)
 }
 
-const formatNumber = (number) => {
-  if (typeof number !== 'number') return 'N/A'
-  return new Intl.NumberFormat('es-ES').format(number)
+// Manejar error de imagen
+const handleImageError = (event) => {
+  event.target.src = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
 }
 
-const goBack = () => {
-  router.back()
+// Obtener imagen del artículo
+const getArticleImage = (article) => {
+  if (article.images && article.images.length > 0) {
+    return article.images[0]
+  }
+  if (article.fotos && article.fotos.length > 0) {
+    return article.fotos[0]
+  }
+  
+  const title = article.title || article.nombre || 'Artículo'
+  return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
 }
 
+// Login para comprar
 const loginToBuy = () => {
   router.push('/signin')
 }
 
-const shareArticle = () => {
-  if (navigator.share && article.value) {
-    navigator.share({
-      title: article.value.title || article.value.nombre,
-      text: article.value.description || article.value.descripcion,
-      url: window.location.href
-    })
-  } else {
-    navigator.clipboard.writeText(window.location.href)
-    alert('URL copiada al portapapeles')
-  }
-}
-
 onMounted(() => {
   loadArticle()
-})
-
-watch(() => route.params.id, (newId, oldId) => {
-  if (newId && newId !== oldId) {
-    loadArticle()
-  }
 })
 </script>
 
@@ -220,7 +162,7 @@ watch(() => route.params.id, (newId, oldId) => {
   padding-bottom: 75%;
 }
 
-.aspect-h-9 {
+.aspect-h-12 {
   position: absolute;
   height: 100%;
   width: 100%;
