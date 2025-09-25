@@ -25,12 +25,13 @@
     </header>
 
     <!-- Debug Info Always Visible -->
-    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded m-4">
-      <strong>Debug Info:</strong> 
+    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded m-4 fixed top-20 left-4 right-4 z-50">
+      <strong>🔍 Debug Info (Fijo en pantalla):</strong> 
       <br>Loading: {{ loading }}
       <br>Article: {{ article ? 'Cargado' : 'No cargado' }}
       <br>Route ID: {{ route.params.id }}
       <br>API URL: {{ API_BASE_URL }}
+      <br>Timestamp: {{ new Date().toLocaleTimeString() }}
     </div>
 
     <!-- Loading -->
@@ -241,6 +242,9 @@ const loadArticle = async () => {
       url,
       API_BASE_URL
     })
+    
+    // Agregar delay para poder ver el debug
+    await new Promise(resolve => setTimeout(resolve, 2000))
     
     const response = await fetch(url, {
       headers: {
