@@ -4,7 +4,7 @@
       <!-- Logo de Trastalia -->
       <div class="flex justify-center mb-6">
         <img 
-          src="/images/Trastalia.png" 
+          src="/images/Trastalia3.png" 
           alt="Trastalia" 
           class="h-48 w-auto transform hover:scale-105 transition-all duration-300 drop-shadow-lg"
           @load="handleImageLoad"
