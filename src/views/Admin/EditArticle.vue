@@ -171,6 +171,93 @@
             </div>
           </div>
 
+          <!-- Imágenes -->
+          <div class="border-b border-gray-200 pb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Imágenes del Artículo</h2>
+            
+            <!-- Imágenes actuales -->
+            <div v-if="formData.images && formData.images.length > 0" class="mb-6">
+              <h3 class="text-sm font-medium text-gray-700 mb-3">Imágenes actuales:</h3>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div 
+                  v-for="(image, index) in formData.images" 
+                  :key="index"
+                  class="relative group"
+                >
+                  <img 
+                    :src="image" 
+                    :alt="`Imagen ${index + 1}`"
+                    class="w-full h-32 object-cover rounded-lg border border-gray-200"
+                  />
+                  <button
+                    @click="removeImage(index)"
+                    type="button"
+                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subir nuevas imágenes -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Agregar nuevas imágenes:</label>
+              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+                <div class="space-y-1 text-center">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <div class="flex text-sm text-gray-600">
+                    <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <span>Subir imágenes</span>
+                      <input 
+                        id="file-upload" 
+                        name="file-upload" 
+                        type="file" 
+                        class="sr-only" 
+                        multiple 
+                        accept="image/*"
+                        @change="handleFileUpload"
+                      />
+                    </label>
+                    <p class="pl-1">o arrastra y suelta aquí</p>
+                  </div>
+                  <p class="text-xs text-gray-500">PNG, JPG, GIF hasta 10MB cada una</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vista previa de nuevas imágenes -->
+            <div v-if="newImages.length > 0" class="mt-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-3">Nuevas imágenes (vista previa):</h3>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div 
+                  v-for="(image, index) in newImages" 
+                  :key="`new-${index}`"
+                  class="relative group"
+                >
+                  <img 
+                    :src="image.preview" 
+                    :alt="`Nueva imagen ${index + 1}`"
+                    class="w-full h-32 object-cover rounded-lg border border-gray-200"
+                  />
+                  <button
+                    @click="removeNewImage(index)"
+                    type="button"
+                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Ubicación y Logística -->
           <div class="border-b border-gray-200 pb-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Ubicación y Logística</h2>
@@ -262,8 +349,12 @@ const formData = ref({
   estado_articulo: '',
   adminStatus: '',
   ubicacion: '',
-  modo_venta: ''
+  modo_venta: '',
+  images: []
 })
+
+// Gestión de imágenes
+const newImages = ref([])
 
 // Cargar artículo
 const loadArticle = async () => {
@@ -297,7 +388,8 @@ const loadArticle = async () => {
         estado_articulo: article.value.estado_articulo || article.value.status || '',
         adminStatus: article.value.adminStatus || '',
         ubicacion: article.value.ubicacion || article.value.location || '',
-        modo_venta: article.value.modo_venta || article.value.saleMode || ''
+        modo_venta: article.value.modo_venta || article.value.saleMode || '',
+        images: article.value.images || article.value.fotos || []
       }
     } else {
       console.error('Error cargando artículo:', response.status)
@@ -341,6 +433,35 @@ const updateArticle = async () => {
   } finally {
     saving.value = false
   }
+}
+
+// Funciones para manejar imágenes
+const handleFileUpload = (event) => {
+  const files = Array.from(event.target.files)
+  
+  files.forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        newImages.value.push({
+          file: file,
+          preview: e.target.result
+        })
+      }
+      reader.readAsDataURL(file)
+    }
+  })
+  
+  // Limpiar el input
+  event.target.value = ''
+}
+
+const removeImage = (index) => {
+  formData.value.images.splice(index, 1)
+}
+
+const removeNewImage = (index) => {
+  newImages.value.splice(index, 1)
 }
 
 onMounted(() => {
