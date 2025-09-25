@@ -37,10 +37,10 @@
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Articles Grid - PRUEBA 2: Añadir imagen -->
+      <!-- Articles Grid - PRUEBA 3: Añadir badges y botones -->
       <div v-else-if="articles.length > 0" class="py-6">
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          🧪 PRUEBA 2: Añadiendo imagen para encontrar el error específico
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+          🧪 PRUEBA 3: Añadiendo badges y botones para encontrar el error específico
         </div>
         <div v-for="article in articles" :key="article._id" class="p-4 border-b bg-white rounded mb-2">
           <div class="flex items-start space-x-4">
@@ -56,6 +56,32 @@
               <p class="text-lg font-bold">{{ article.title || article.nombre }}</p>
               <p>{{ formatPrice(article.price || article.precio_propuesto_vendedor) }}</p>
               <p class="text-sm text-gray-500">ID: {{ article._id }}</p>
+              
+              <!-- Badges -->
+              <div class="mt-2 space-x-2">
+                <span class="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">
+                  {{ getConditionLabel(article.condition || article.condicion) }}
+                </span>
+                <span class="bg-blue-500/90 text-white text-xs px-2 py-1 rounded-full font-medium">
+                  {{ getCategoryLabel(article.category || article.categoria) }}
+                </span>
+              </div>
+              
+              <!-- Botones -->
+              <div class="mt-3 space-y-2">
+                <button
+                  @click="viewArticle(article)"
+                  class="bg-blue-600 text-white py-1 px-3 rounded text-sm hover:bg-blue-700"
+                >
+                  Ver Detalles
+                </button>
+                <button
+                  @click="loginToBuy"
+                  class="border border-green-600 text-green-600 py-1 px-3 rounded text-sm hover:bg-green-600 hover:text-white"
+                >
+                  Comprar
+                </button>
+              </div>
             </div>
           </div>
         </div>
