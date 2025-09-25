@@ -17,10 +17,10 @@
             <div class="flex justify-between items-start">
               <div>
                 <h1 class="text-3xl font-bold text-black dark:text-white">
-                  Mis Compras
+                  Mis Canjes
                 </h1>
                 <p class="text-gray-600 dark:text-gray-400">
-                  Artículos que has comprado con puntos
+                  Artículos que has canjeado con puntos
                 </p>
               </div>
             </div>
@@ -103,8 +103,8 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No tienes compras aún</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Explora artículos disponibles y compra con tus puntos.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No tienes canjes aún</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Explora artículos disponibles y canjea con tus puntos.</p>
             <div class="mt-6">
               <router-link 
                 to="/comprar-articulos" 
@@ -142,8 +142,8 @@ const loadPurchases = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const url = `${API_BASE_URL}/api/articles/my-purchases`
-    console.log('🔍 Cargando compras del usuario desde:', url)
+    const url = `${API_BASE_URL}/api/articles/my-exchanges`
+    console.log('🔍 Cargando canjes del usuario desde:', url)
     console.log('🔑 Token:', token ? 'Presente' : 'Ausente')
     
     const response = await fetch(url, {
@@ -157,15 +157,15 @@ const loadPurchases = async () => {
     
     if (response.ok) {
       const data = await response.json()
-      purchases.value = data.data.purchases || []
-      console.log('✅ Compras cargadas:', purchases.value.length)
+      purchases.value = data.data.exchanges || []
+      console.log('✅ Canjes cargados:', purchases.value.length)
     } else {
       const errorText = await response.text()
       console.error('❌ Error del servidor:', errorText)
-      console.error('Error cargando compras:', response.statusText)
+      console.error('Error cargando canjes:', response.statusText)
     }
   } catch (error) {
-    console.error('❌ Error cargando compras:', error)
+    console.error('❌ Error cargando canjes:', error)
   } finally {
     loading.value = false
   }

@@ -286,7 +286,7 @@ const menuGroups = [
       },
       {
         icon: ShoppingCartIcon,
-        name: "Mis Compras",
+        name: "Mis Canjes",
         path: "/mis-compras",
       },
       {
