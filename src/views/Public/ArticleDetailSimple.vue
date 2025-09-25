@@ -130,7 +130,12 @@ const formatPrice = (price) => {
 
 // Manejar error de imagen
 const handleImageError = (event) => {
-  event.target.src = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
+  const placeholderSrc = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
+  
+  // ✅ CORRECCIÓN: Evita el bucle comprobando si ya estamos usando el placeholder
+  if (event.target.src !== placeholderSrc) {
+    event.target.src = placeholderSrc
+  }
 }
 
 // Obtener imagen del artículo
