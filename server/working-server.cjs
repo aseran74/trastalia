@@ -1860,6 +1860,71 @@ app.put('/api/articles/transfer-ownership/:id', authMiddleware, async (req, res)
   }
 });
 
+// PUT /api/articles/:id - Actualizar artículo (solo admin)
+app.put('/api/articles/:id', authMiddleware, async (req, res) => {
+  try {
+    // Verificar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden editar artículos'
+      });
+    }
+
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Buscar el artículo
+    const article = await Article.findById(id);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Actualizar campos permitidos
+    const allowedFields = [
+      'nombre', 'title', 'descripcion', 'description', 'categoria', 'category',
+      'precio_propuesto_vendedor', 'price', 'precio_puntos', 'points',
+      'condicion', 'condition', 'ubicacion', 'location', 'modo_venta', 'saleMode',
+      'opciones_logisticas', 'logisticsOptions', 'acepta_descuento_admin',
+      'estado_articulo', 'status', 'adminStatus', 'images', 'fotos',
+      'tags', 'exchangeFor', 'directFromHome', 'logisticsCenterSale',
+      'trastaliaPurchase', 'pointsExchange', 'useLogisticsCenter'
+    ];
+
+    // Actualizar solo los campos permitidos
+    allowedFields.forEach(field => {
+      if (updateData[field] !== undefined) {
+        article[field] = updateData[field];
+      }
+    });
+
+    // Actualizar timestamp
+    article.updatedAt = new Date();
+
+    // Guardar cambios
+    await article.save();
+
+    // Poblar información del vendedor para la respuesta
+    await article.populate('id_vendedor', 'name email');
+
+    res.json({
+      success: true,
+      message: 'Artículo actualizado exitosamente',
+      data: article
+    });
+
+  } catch (error) {
+    console.error('Error actualizando artículo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor backend ejecutándose en puerto ${PORT}`);

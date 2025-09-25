@@ -94,6 +94,18 @@
 
             <!-- Action Buttons -->
             <div class="space-y-4">
+              <!-- Botón de edición para admin -->
+              <button
+                v-if="isAdmin"
+                @click="editArticle"
+                class="w-full bg-purple-600 text-white py-4 px-6 rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center text-lg font-semibold shadow-lg hover:shadow-xl"
+              >
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Editar Artículo (Admin)
+              </button>
+
               <button
                 @click="loginToBuy"
                 class="w-full bg-green-600 text-white py-4 px-6 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center justify-center text-lg font-semibold shadow-lg hover:shadow-xl"
@@ -141,6 +153,7 @@ const route = useRoute()
 // Estado simple
 const article = ref(null)
 const loading = ref(false)
+const isAdmin = ref(false)
 
 // Cargar artículo
 const loadArticle = async () => {
@@ -248,7 +261,27 @@ const loginToBuyWithPoints = () => {
   router.push('/signin')
 }
 
+// Verificar si el usuario es admin
+const checkAdminStatus = () => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      isAdmin.value = payload.role === 'admin'
+    } catch (error) {
+      console.error('Error verificando token:', error)
+      isAdmin.value = false
+    }
+  }
+}
+
+// Editar artículo
+const editArticle = () => {
+  router.push(`/admin/articulos/${article.value._id}/editar`)
+}
+
 onMounted(() => {
+  checkAdminStatus()
   loadArticle()
 })
 </script>
