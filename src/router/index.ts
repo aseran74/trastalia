@@ -17,6 +17,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/articulos',
+      name: 'Public Articles',
+      component: () => import('../views/Public/PublicBuyArticles.vue'),
+      meta: {
+        title: 'Artículos Disponibles - Trastalia',
+        requiresAuth: false
+      },
+    },
+    {
       path: '/test-signin',
       name: 'TestSignin',
       component: () => import('../views/Auth/TestSignin.vue'),
