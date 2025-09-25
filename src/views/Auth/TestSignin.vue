@@ -5,7 +5,7 @@
       <div class="bg-red-500 p-4 mb-4">
         <p class="text-white text-xl">LOGO AQUÍ - TEST</p>
         <img 
-          src="/images/Trastalia.png" 
+          src="/images/Trastalia3.png" 
           alt="Trastalia" 
           class="h-32 w-auto border-2 border-red-500"
           style="background-color: yellow;"

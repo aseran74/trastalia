@@ -12,7 +12,7 @@
         <div class="mx-auto max-w-5xl">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <img src="/images/Trastalia.png" alt="Trastalia" class="h-16 w-auto sm:h-18 md:h-20">
+              <img src="/images/Trastalia3.png" alt="Trastalia" class="h-16 w-auto sm:h-18 md:h-20">
             </div>
             
             <!-- Desktop Menu -->
@@ -342,7 +342,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div class="col-span-1 md:col-span-2">
             <div class="flex items-center space-x-2 mb-4">
-              <img src="/images/Trastalia.png" alt="Trastalia" class="h-24 w-auto sm:h-28 md:h-32 lg:h-36 brightness-0 invert">
+              <img src="/images/Trastalia3.png" alt="Trastalia" class="h-24 w-auto sm:h-28 md:h-32 lg:h-36 brightness-0 invert">
             </div>
             <p class="text-gray-400 mb-4">
               La plataforma revolucionaria para el comercio de segunda mano. 

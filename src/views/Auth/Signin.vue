@@ -4,7 +4,7 @@
       <!-- Logo de Trastalia -->
       <div class="flex justify-center mb-6">
         <img 
-          src="/images/Trastalia.png" 
+          src="/images/Trastalia3.png" 
           alt="Trastalia" 
           class="h-48 w-auto transform hover:scale-105 transition-all duration-300 drop-shadow-lg"
           @load="handleImageLoad"
@@ -15,6 +15,11 @@
       <h1 class="text-3xl font-bold text-center mb-2 text-gray-800">Iniciar Sesión</h1>
       
       <p class="text-center text-gray-600 mb-4">¡Bienvenido de vuelta a Trastalia!</p>
+      
+      <!-- Mensaje de error -->
+      <div v-if="error" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+        {{ error }}
+      </div>
       
       <!-- Formulario simple -->
       <form @submit.prevent="handleSubmit" class="space-y-4">
@@ -40,9 +45,11 @@
         
         <button 
           type="submit"
-          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          :disabled="loading"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Iniciar Sesión
+          <span v-if="loading">Iniciando sesión...</span>
+          <span v-else>Iniciar Sesión</span>
         </button>
       </form>
       
@@ -76,16 +83,34 @@
 
 <script setup>
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const email = ref('admin@trastalia.com')
 const password = ref('admin123456')
+const loading = ref(false)
+const error = ref('')
 
-const handleSubmit = () => {
-  console.log('Form submitted', {
-    email: email.value,
-    password: password.value
-  })
+const handleSubmit = async () => {
+  if (!email.value || !password.value) {
+    error.value = 'Por favor completa todos los campos'
+    return
+  }
+
+  loading.value = true
+  error.value = ''
+
+  try {
+    await authStore.login(email.value, password.value)
+    router.push('/dashboard')
+  } catch (err) {
+    error.value = err.message || 'Error al iniciar sesión'
+  } finally {
+    loading.value = false
+  }
 }
 
 const handleImageLoad = (event) => {

@@ -23,18 +23,18 @@
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="dark:hidden h-16 w-auto sm:h-18 lg:h-20"
-          src="/images/Trastalia.png"
+          src="/images/Trastalia3.png"
           alt="Logo"
         />
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="hidden dark:block h-16 w-auto sm:h-18 lg:h-20"
-          src="/images/Trastalia.png"
+          src="/images/Trastalia3.png"
           alt="Logo"
         />
         <img
           v-else
-          src="/images/Trastalia.png"
+          src="/images/Trastalia3.png"
           alt="Logo"
           class="h-12 w-auto"
         />
