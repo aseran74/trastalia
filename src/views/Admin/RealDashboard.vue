@@ -244,6 +244,7 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import Backdrop from '@/components/layout/Backdrop.vue'
 import { useSidebar } from '@/composables/useSidebar'
+import API_BASE_URL from '@/config/api.js'
 
 const authStore = useAuthStore()
 const { isExpanded, isHovered } = useSidebar()
@@ -256,21 +257,31 @@ const loadStats = async () => {
   error.value = null
   
   try {
-    const response = await fetch('/api/admin/dashboard-stats', {
+    const url = `${API_BASE_URL}/api/admin/dashboard-stats`
+    console.log('🔍 Cargando estadísticas desde:', url)
+    console.log('🔑 Token:', authStore.token ? 'Presente' : 'Ausente')
+    
+    const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${authStore.token}`
+        'Authorization': `Bearer ${authStore.token}`,
+        'Content-Type': 'application/json'
       }
     })
     
+    console.log('📊 Respuesta del servidor:', response.status, response.statusText)
+    
     if (!response.ok) {
-      throw new Error('Error al cargar las estadísticas')
+      const errorText = await response.text()
+      console.error('❌ Error del servidor:', errorText)
+      throw new Error(`Error ${response.status}: ${response.statusText}`)
     }
     
     const data = await response.json()
+    console.log('✅ Datos recibidos:', data)
     stats.value = data.data
   } catch (err) {
     error.value = err.message
-    console.error('Error cargando estadísticas:', err)
+    console.error('❌ Error cargando estadísticas:', err)
   } finally {
     loading.value = false
   }
