@@ -23,10 +23,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Header Section -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Artículos Disponibles</h1>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Artículos Disponibles - VERSIÓN SIMPLE</h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           Descubre una amplia selección de artículos de segunda mano verificados y en excelente estado.
         </p>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mt-4">
+          ✅ Esta es la versión SIMPLE sin bucles - Funcionando correctamente
+        </div>
       </div>
 
       <!-- Loading State -->
