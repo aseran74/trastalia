@@ -342,42 +342,38 @@ const loadPublicArticles = async () => {
   }
 }
 
-// Filtrar artículos
+// Filtrar artículos - versión simplificada
 const filteredArticles = computed(() => {
-  let filtered = articles.value.filter(article => {
-    // Filtro por búsqueda
-    if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase()
+  if (!articles.value || articles.value.length === 0) {
+    return []
+  }
+  
+  let filtered = [...articles.value]
+  
+  // Filtro por búsqueda
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(article => {
       const title = (article.title || article.nombre || '').toLowerCase()
       const description = (article.description || article.descripcion || '').toLowerCase()
-      if (!title.includes(query) && !description.includes(query)) {
-        return false
-      }
-    }
-    
-    // Filtro por categoría
-    if (filterCategory.value) {
+      return title.includes(query) || description.includes(query)
+    })
+  }
+  
+  // Filtro por categoría
+  if (filterCategory.value) {
+    filtered = filtered.filter(article => {
       const category = (article.category || article.categoria || '').toLowerCase()
-      if (category !== filterCategory.value.toLowerCase()) {
-        return false
-      }
-    }
-    
-    // Filtro por precio
+      return category === filterCategory.value.toLowerCase()
+    })
+  }
+  
+  // Filtro por precio
+  filtered = filtered.filter(article => {
     const price = article.price || article.precio_propuesto_vendedor || 0
-    if (price < priceRange.value[0] || price > priceRange.value[1]) {
-      return false
-    }
-    
-    // Filtro por puntos
-    const points = article.price || article.precio_propuesto_vendedor || 0
-    if (points < pointsRange.value[0] || points > pointsRange.value[1]) {
-      return false
-    }
-    
-    return true
+    return price >= priceRange.value[0] && price <= priceRange.value[1]
   })
-
+  
   // Ordenar
   switch (sortBy.value) {
     case 'price-low':
@@ -387,7 +383,7 @@ const filteredArticles = computed(() => {
     case 'name':
       return filtered.sort((a, b) => (a.title || a.nombre || '').localeCompare(b.title || b.nombre || ''))
     default:
-      return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      return filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
   }
 })
 
@@ -405,43 +401,56 @@ const formatNumber = (num) => {
   return new Intl.NumberFormat('es-ES').format(num)
 }
 
-// Calcular rangos de precio y puntos
+// Calcular rangos de precio y puntos - versión simplificada
 const calculateRanges = () => {
-  if (articles.value.length === 0) return
+  if (!articles.value || articles.value.length === 0) {
+    return
+  }
   
-  const prices = articles.value.map(article => 
-    article.price || article.precio_propuesto_vendedor || 0
-  ).filter(price => price > 0)
+  const prices = articles.value
+    .map(article => article.price || article.precio_propuesto_vendedor || 0)
+    .filter(price => price > 0)
   
   if (prices.length > 0) {
-    minPrice.value = Math.floor(Math.min(...prices))
-    maxPrice.value = Math.ceil(Math.max(...prices))
-    priceRange.value = [minPrice.value, maxPrice.value]
+    const min = Math.floor(Math.min(...prices))
+    const max = Math.ceil(Math.max(...prices))
     
-    minPoints.value = minPrice.value
-    maxPoints.value = maxPrice.value
-    pointsRange.value = [minPoints.value, maxPoints.value]
+    minPrice.value = min
+    maxPrice.value = max
+    priceRange.value = [min, max]
+    
+    minPoints.value = min
+    maxPoints.value = max
+    pointsRange.value = [min, max]
   }
 }
 
-// Actualizar rango de precio
+// Actualizar rango de precio - versión simplificada
 const updatePriceRange = (index, value) => {
-  const numValue = parseInt(value)
+  const numValue = parseInt(value) || 0
+  const newRange = [...priceRange.value]
+  
   if (index === 0) {
-    priceRange.value[0] = Math.min(numValue, priceRange.value[1] - 1)
+    newRange[0] = Math.min(numValue, newRange[1] - 1)
   } else {
-    priceRange.value[1] = Math.max(numValue, priceRange.value[0] + 1)
+    newRange[1] = Math.max(numValue, newRange[0] + 1)
   }
+  
+  priceRange.value = newRange
 }
 
-// Actualizar rango de puntos
+// Actualizar rango de puntos - versión simplificada
 const updatePointsRange = (index, value) => {
-  const numValue = parseInt(value)
+  const numValue = parseInt(value) || 0
+  const newRange = [...pointsRange.value]
+  
   if (index === 0) {
-    pointsRange.value[0] = Math.min(numValue, pointsRange.value[1] - 1)
+    newRange[0] = Math.min(numValue, newRange[1] - 1)
   } else {
-    pointsRange.value[1] = Math.max(numValue, pointsRange.value[0] + 1)
+    newRange[1] = Math.max(numValue, newRange[0] + 1)
   }
+  
+  pointsRange.value = newRange
 }
 
 // Resetear filtros
