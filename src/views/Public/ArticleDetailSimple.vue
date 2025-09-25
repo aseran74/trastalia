@@ -86,6 +86,13 @@ const loadArticle = async () => {
   }
 }
 
+const getArticleImage = (article) => {
+  if (article?.images && article.images.length > 0) return article.images[0]
+  if (article?.fotos && article.fotos.length > 0) return article.fotos[0]
+  const title = article?.title || article?.nombre || 'Artículo'
+  return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
+}
+
 const formatPrice = (price) => {
   return new Intl.NumberFormat('es-ES', {
     style: 'currency',
