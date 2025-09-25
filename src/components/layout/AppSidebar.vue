@@ -230,6 +230,7 @@ import BoxCubeIcon from "@/icons/BoxCubeIcon.vue";
 import ShoppingCartIcon from "@/icons/ShoppingCartIcon.vue";
 import SellIcon from "@/icons/SellIcon.vue";
 import CoinsIcon from "@/icons/CoinsIcon.vue";
+import CurrencyEuroIcon from "@/icons/CurrencyEuroIcon.vue";
 import RequestIcon from "@/icons/RequestIcon.vue";
 import WarehouseIcon from "@/icons/WarehouseIcon.vue";
 import MyItemsIcon from "@/icons/MyItemsIcon.vue";
