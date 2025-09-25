@@ -38,7 +38,7 @@
         <!-- Image -->
         <div class="aspect-w-16 aspect-h-9">
           <img 
-            :src="getArticleImage(article)" 
+            :src="articleImage" 
             :alt="article.title || article.nombre" 
             class="w-full h-96 object-cover"
             @error="handleImageError"
@@ -130,6 +130,7 @@ const route = useRoute()
 const article = ref(null)
 const loading = ref(false)
 const hasLoaded = ref(false)
+const articleImage = ref('')
 
 // Cargar artículo solo una vez
 const loadArticle = async () => {
@@ -161,6 +162,8 @@ const loadArticle = async () => {
       
       if (data.success) {
         article.value = data.data
+        // Calcular imagen una sola vez
+        articleImage.value = getArticleImage(data.data)
       }
     } else {
       console.error('❌ Error del servidor:', response.status, response.statusText)
@@ -174,14 +177,14 @@ const loadArticle = async () => {
 
 // Funciones auxiliares
 const getArticleImage = (article) => {
-  if (article?.images && article.images.length > 0) return article.images[0]
-  if (article?.fotos && article.fotos.length > 0) return article.fotos[0]
+  // Usar imagen placeholder simple para evitar bucles
   const title = article?.title || article?.nombre || 'Artículo'
   return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
 }
 
 const handleImageError = (event) => {
-  event.target.src = '/images/placeholder-article.jpg'
+  // Usar placeholder simple si falla la imagen
+  event.target.src = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
 }
 
 const formatPrice = (price) => {
