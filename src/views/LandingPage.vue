@@ -8,22 +8,22 @@
       ]"
     >
       <!-- Navigation -->
-      <nav class="relative z-10 px-4 py-3">
-        <div class="mx-auto max-w-5xl">
+      <nav class="relative z-10 px-2 py-1.5">
+        <div class="mx-auto max-w-3xl">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <img src="/images/Trastalia.png" alt="Trastalia" class="h-20 w-auto sm:h-24 md:h-28 lg:h-32">
+              <img src="/images/Trastalia.png" alt="Trastalia" class="h-16 w-auto sm:h-18 md:h-20 lg:h-22">
             </div>
             
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-6">
+            <div class="hidden md:flex items-center space-x-3">
               <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Características</a>
               <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Cómo funciona</a>
               <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Precios</a>
               
               <!-- Menú de perfil si está logueado, botón de login si no -->
               <UserProfileMenu v-if="authStore.isAuthenticated" />
-              <router-link v-else to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+              <router-link v-else to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
                 Iniciar Sesión
               </router-link>
             </div>
@@ -63,7 +63,7 @@
     </header>
 
     <!-- Hero Section -->
-    <div class="relative px-6 py-20 lg:py-32 pt-32">
+    <div class="relative px-6 py-16 lg:py-24 pt-24">
         <div class="mx-auto max-w-7xl">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <!-- Left Column -->
