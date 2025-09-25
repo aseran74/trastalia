@@ -24,7 +24,7 @@
                 </p>
               </div>
               <!-- Estadísticas -->
-              <div v-if="!loading && purchases.length > 0" class="text-right">
+              <div v-if="!loading" class="text-right">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                   <p class="text-sm text-gray-600 dark:text-gray-400">Total de canjes</p>
                   <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ totalExchanges }}</p>
@@ -176,12 +176,18 @@ const loadPurchases = async () => {
     
     if (response.ok) {
       const data = await response.json()
+      console.log('📄 Datos completos del servidor:', data)
       purchases.value = data.data.exchanges || []
       totalExchanges.value = data.data.totalExchanges || 0
       totalPointsSpent.value = data.data.totalPointsSpent || 0
       console.log('✅ Canjes cargados:', purchases.value.length)
       console.log('📊 Total canjes:', totalExchanges.value)
       console.log('💰 Puntos gastados:', totalPointsSpent.value)
+      console.log('🔍 Verificando valores reactivos:', {
+        purchases: purchases.value.length,
+        totalExchanges: totalExchanges.value,
+        totalPointsSpent: totalPointsSpent.value
+      })
     } else {
       const errorText = await response.text()
       console.error('❌ Error del servidor:', errorText)
@@ -202,15 +208,19 @@ const formatPoints = (points) => {
 
 // Obtener puntos de la compra
 const getPurchasePoints = (purchase) => {
-  // Prioridad 1: adminDecision.finalPoints (puntos realmente usados)
+  // Prioridad 1: pointsUsed (del servidor)
+  if (purchase.pointsUsed) {
+    return purchase.pointsUsed
+  }
+  // Prioridad 2: adminDecision.finalPoints (puntos realmente usados)
   if (purchase.adminDecision && purchase.adminDecision.finalPoints) {
     return purchase.adminDecision.finalPoints
   }
-  // Prioridad 2: adminDecision.pointsAmount
+  // Prioridad 3: adminDecision.pointsAmount
   if (purchase.adminDecision && purchase.adminDecision.pointsAmount) {
     return purchase.adminDecision.pointsAmount
   }
-  // Prioridad 3: campos directos
+  // Prioridad 4: campos directos
   if (purchase.precio_puntos) {
     return purchase.precio_puntos
   }
