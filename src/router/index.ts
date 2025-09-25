@@ -28,7 +28,7 @@ const router = createRouter({
       {
         path: '/articulos/:id',
         name: 'Article Detail',
-        component: () => import('../views/Public/ArticleDetail.vue'),
+        component: () => import('../views/Public/ArticleDetailSimple.vue'),
         meta: {
           title: 'Detalle del Artículo - Trastalia',
           requiresAuth: false
