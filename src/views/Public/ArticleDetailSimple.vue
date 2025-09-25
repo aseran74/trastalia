@@ -53,17 +53,31 @@ const loadArticle = async () => {
   
   try {
     const articleId = route.params.id
-    const url = `${API_BASE_URL}/api/articles/${articleId}`
+    // En desarrollo, usar ruta relativa para aprovechar el proxy de Vite
+    const url = API_BASE_URL ? `${API_BASE_URL}/api/articles/${articleId}` : `/api/articles/${articleId}`
     
     console.log('URL:', url)
+    console.log('API_BASE_URL:', API_BASE_URL)
     
-    const response = await fetch(url)
-    const data = await response.json()
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
     
-    console.log('Respuesta:', data)
+    console.log('Respuesta status:', response.status)
     
-    if (data.success) {
-      article.value = data.data
+    if (response.ok) {
+      const data = await response.json()
+      console.log('Respuesta:', data)
+      
+      if (data.success) {
+        article.value = data.data
+      }
+    } else {
+      console.error('Error del servidor:', response.status, response.statusText)
     }
   } catch (error) {
     console.error('Error:', error)

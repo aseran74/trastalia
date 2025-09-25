@@ -359,12 +359,16 @@ const maxPoints = ref(10000)
 const loadPublicArticles = async () => {
   loading.value = true
   try {
-    const url = `${API_BASE_URL}/api/articles/public`
+    // En desarrollo, usar ruta relativa para aprovechar el proxy de Vite
+    const url = API_BASE_URL ? `${API_BASE_URL}/api/articles/public` : '/api/articles/public'
     console.log('🔍 Cargando artículos públicos desde:', url)
+    console.log('🔧 API_BASE_URL:', API_BASE_URL)
     
     const response = await fetch(url, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     })
     
@@ -379,10 +383,15 @@ const loadPublicArticles = async () => {
       calculateRanges()
     } else {
       const errorText = await response.text()
-      console.error('❌ Error del servidor:', errorText)
+      console.error('❌ Error del servidor:', response.status, errorText)
     }
   } catch (error) {
     console.error('❌ Error cargando artículos públicos:', error)
+    console.error('❌ Error details:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    })
   } finally {
     loading.value = false
   }
