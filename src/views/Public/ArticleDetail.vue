@@ -215,21 +215,34 @@ const loadArticle = async () => {
     const articleId = route.params.id
     const url = `${API_BASE_URL}/api/articles/${articleId}`
     
+    console.log('🔍 Cargando artículo detalle:', {
+      articleId,
+      url,
+      API_BASE_URL
+    })
+    
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json'
       }
     })
     
+    console.log('📡 Respuesta del servidor:', {
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText
+    })
+    
     if (response.ok) {
       const data = await response.json()
+      console.log('✅ Datos del artículo:', data)
       article.value = data.data
       selectedImage.value = getArticleImage(data.data)
     } else {
-      console.error('Error cargando artículo:', response.statusText)
+      console.error('❌ Error cargando artículo:', response.statusText)
     }
   } catch (error) {
-    console.error('Error:', error)
+    console.error('❌ Error:', error)
   } finally {
     loading.value = false
   }
