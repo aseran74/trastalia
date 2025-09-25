@@ -9,46 +9,46 @@
       <app-header />
       <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
         <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-          <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 class="text-title-md2 font-semibold text-black dark:text-white">
-              Vender Artículo - Nueva Lógica
-            </h2>
-          </div>
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="text-title-md2 font-semibold text-black dark:text-white">
+        Vender Artículo - Nueva Lógica
+      </h2>
+    </div>
 
-          <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div class="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 class="font-medium text-black dark:text-white">
-                Información del Artículo
-              </h3>
-            </div>
-            
-            <form @submit.prevent="submitArticle" class="p-6.5">
-              <!-- Información básica -->
-              <div class="mb-4.5">
-                <label class="mb-2.5 block text-black dark:text-white">
-                  Nombre del artículo *
-                </label>
-                <input
-                  v-model="formData.nombre"
-                  type="text"
-                  placeholder="Ej: iPhone 13 Pro Max"
-                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                  required
-                />
-              </div>
+    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div class="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
+        <h3 class="font-medium text-black dark:text-white">
+          Información del Artículo
+        </h3>
+      </div>
+      
+      <form @submit.prevent="submitArticle" class="p-6.5">
+        <!-- Información básica -->
+        <div class="mb-4.5">
+          <label class="mb-2.5 block text-black dark:text-white">
+            Nombre del artículo *
+          </label>
+          <input
+            v-model="formData.nombre"
+            type="text"
+            placeholder="Ej: iPhone 13 Pro Max"
+            class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            required
+          />
+        </div>
 
-              <div class="mb-4.5">
-                <label class="mb-2.5 block text-black dark:text-white">
-                  Descripción *
-                </label>
-                <textarea
-                  v-model="formData.descripcion"
-                  rows="4"
-                  placeholder="Describe el estado, características y cualquier detalle relevante..."
-                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                  required
-                ></textarea>
-              </div>
+        <div class="mb-4.5">
+          <label class="mb-2.5 block text-black dark:text-white">
+            Descripción *
+          </label>
+          <textarea
+            v-model="formData.descripcion"
+            rows="4"
+            placeholder="Describe el estado, características y cualquier detalle relevante..."
+            class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            required
+          ></textarea>
+        </div>
 
               <!-- Subida de fotos -->
               <div class="mb-4.5">
@@ -106,92 +106,92 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div class="mb-4.5">
-                  <label class="mb-2.5 block text-black dark:text-white">
-                    Categoría *
-                  </label>
-                  <select
-                    v-model="formData.categoria"
-                    class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                    required
-                  >
-                    <option value="">Selecciona una categoría</option>
-                    <option value="tecnologia">Tecnología</option>
-                    <option value="hogar">Hogar</option>
-                    <option value="deportes">Deportes</option>
-                    <option value="moda">Moda</option>
-                    <option value="juegos">Juegos</option>
-                    <option value="libros">Libros</option>
-                    <option value="mascotas">Mascotas</option>
-                    <option value="otros">Otros</option>
-                  </select>
-                </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="mb-4.5">
+            <label class="mb-2.5 block text-black dark:text-white">
+              Categoría *
+            </label>
+            <select
+              v-model="formData.categoria"
+              class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            >
+              <option value="">Selecciona una categoría</option>
+              <option value="tecnologia">Tecnología</option>
+              <option value="hogar">Hogar</option>
+              <option value="deportes">Deportes</option>
+              <option value="moda">Moda</option>
+              <option value="juegos">Juegos</option>
+              <option value="libros">Libros</option>
+              <option value="mascotas">Mascotas</option>
+              <option value="otros">Otros</option>
+            </select>
+          </div>
 
-                <div class="mb-4.5">
-                  <label class="mb-2.5 block text-black dark:text-white">
-                    Condición *
-                  </label>
-                  <select
-                    v-model="formData.condicion"
-                    class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                    required
-                  >
-                    <option value="">Selecciona la condición</option>
-                    <option value="nuevo">Nuevo</option>
-                    <option value="excelente">Excelente</option>
-                    <option value="bueno">Bueno</option>
-                    <option value="aceptable">Aceptable</option>
-                  </select>
+          <div class="mb-4.5">
+            <label class="mb-2.5 block text-black dark:text-white">
+              Condición *
+            </label>
+            <select
+              v-model="formData.condicion"
+              class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            >
+              <option value="">Selecciona la condición</option>
+              <option value="nuevo">Nuevo</option>
+              <option value="excelente">Excelente</option>
+              <option value="bueno">Bueno</option>
+              <option value="aceptable">Aceptable</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="mb-4.5">
+            <label class="mb-2.5 block text-black dark:text-white">
+              Precio sugerido (€) *
+            </label>
+            <input
+              v-model.number="formData.precio_sugerido"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            />
+          </div>
+
+          <div class="mb-4.5">
+            <label class="mb-2.5 block text-black dark:text-white">
+              Ubicación *
+            </label>
+            <div class="relative">
+              <input
+                ref="locationInput"
+                v-model="formData.ubicacion"
+                type="text"
+                placeholder="Escribe tu ubicación..."
+                class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                required
+                @focus="initGooglePlaces"
+              />
+              <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <span class="text-xs text-gray-500 dark:text-gray-400">📍</span>
+              </div>
+              <div v-if="locationSuggestions.length > 0" class="absolute z-10 w-full mt-1 bg-white border border-stroke rounded-md shadow-lg dark:bg-boxdark dark:border-strokedark">
+                <div 
+                  v-for="(suggestion, index) in locationSuggestions" 
+                  :key="index"
+                  @click="selectLocation(suggestion)"
+                  class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  {{ suggestion.description }}
                 </div>
               </div>
-
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div class="mb-4.5">
-                  <label class="mb-2.5 block text-black dark:text-white">
-                    Precio sugerido (€) *
-                  </label>
-                  <input
-                    v-model.number="formData.precio_sugerido"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                    required
-                  />
-                </div>
-
-                <div class="mb-4.5">
-                  <label class="mb-2.5 block text-black dark:text-white">
-                    Ubicación *
-                  </label>
-                  <div class="relative">
-                    <input
-                      ref="locationInput"
-                      v-model="formData.ubicacion"
-                      type="text"
-                      placeholder="Escribe tu ubicación..."
-                      class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      required
-                      @focus="initGooglePlaces"
-                    />
-                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <span class="text-xs text-gray-500 dark:text-gray-400">📍</span>
-                    </div>
-                    <div v-if="locationSuggestions.length > 0" class="absolute z-10 w-full mt-1 bg-white border border-stroke rounded-md shadow-lg dark:bg-boxdark dark:border-strokedark">
-                      <div 
-                        v-for="(suggestion, index) in locationSuggestions" 
-                        :key="index"
-                        @click="selectLocation(suggestion)"
-                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        {{ suggestion.description }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            </div>
+          </div>
+        </div>
 
               <!-- Información sobre el centro logístico -->
               <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-900/20 dark:border-blue-800">
@@ -207,23 +207,23 @@
               </div>
 
               <!-- Opciones de venta desde Centro Logístico -->
-              <div class="mb-6">
-                <h4 class="mb-4 text-lg font-semibold text-black dark:text-white">
+        <div class="mb-6">
+          <h4 class="mb-4 text-lg font-semibold text-black dark:text-white">
                   ¿Cómo quieres vender tu artículo?
-                </h4>
-                
+          </h4>
+          
                 <div class="space-y-4">
                   <!-- Opción 1: Gestión de venta -->
-                  <div 
-                    class="cursor-pointer rounded-lg border-2 p-4 transition-all"
+            <div 
+              class="cursor-pointer rounded-lg border-2 p-4 transition-all"
                     :class="formData.tipo_venta === 'gestion_venta' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-stroke hover:border-primary/50'"
+                ? 'border-primary bg-primary/5' 
+                : 'border-stroke hover:border-primary/50'"
                     @click="formData.tipo_venta = 'gestion_venta'"
-                  >
-                    <div class="flex items-center space-x-3">
-                      <input
-                        type="radio"
+            >
+              <div class="flex items-center space-x-3">
+                <input
+                  type="radio"
                         v-model="formData.tipo_venta"
                         value="gestion_venta"
                         class="h-4 w-4 text-primary"
@@ -247,11 +247,11 @@
                         type="radio"
                         v-model="formData.tipo_venta"
                         value="compra"
-                        class="h-4 w-4 text-primary"
-                      />
+                  class="h-4 w-4 text-primary"
+                />
                       <div class="flex-1">
                         <h5 class="font-semibold text-black dark:text-white">🏢 Te lo compramos</h5>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
                           Puedes ofrecer tu articulo a Trastalia , si nos interesa te lo compramos.
                         </p>
                       </div>
@@ -276,62 +276,62 @@
                             <h6 class="font-medium text-black dark:text-white">💰 Por dinero</h6>
                             <p class="text-xs text-gray-600 dark:text-gray-400">
                               Pago inmediato en efectivo o transferencia
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                  </p>
+                </div>
+              </div>
+            </div>
 
-                      <div 
+            <div 
                         class="cursor-pointer rounded-lg border p-3 transition-all"
                         :class="formData.solicitar_compra_puntos 
-                          ? 'border-primary bg-primary/5' 
-                          : 'border-stroke hover:border-primary/50'"
+                ? 'border-primary bg-primary/5' 
+                : 'border-stroke hover:border-primary/50'"
                         @click="formData.solicitar_compra_puntos = !formData.solicitar_compra_puntos"
-                      >
-                        <div class="flex items-center space-x-3">
-                          <input
+            >
+              <div class="flex items-center space-x-3">
+                <input
                             type="checkbox"
                             v-model="formData.solicitar_compra_puntos"
-                            class="h-4 w-4 text-primary"
-                          />
+                  class="h-4 w-4 text-primary"
+                />
                           <div class="flex-1">
                             <h6 class="font-medium text-black dark:text-white">⭐ Por puntos</h6>
                             <p class="text-xs text-gray-600 dark:text-gray-400">
                               Puntos Trastalia para comprar otros articulos  (1 punto = 1 euro , valoraciones mas altas).
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  </p>
                 </div>
               </div>
-
+            </div>
+          </div>
+        </div>
+            </div>
+          </div>
+          
               <!-- Selección de centro logístico -->
-              <div class="mb-4.5">
-                <label class="mb-2.5 block text-black dark:text-white">
-                  Centro Logístico *
-                  <span v-if="userLocation" class="text-sm text-green-600 dark:text-green-400 ml-2">
-                    📍 Seleccionado automáticamente el más cercano
-                  </span>
-                </label>
-                <select
-                  v-model="formData.centro_logistico_id"
-                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                  required
-                >
-                  <option value="">Selecciona un centro logístico</option>
-                  <option 
-                    v-for="centro in centrosLogisticos" 
-                    :key="centro._id" 
-                    :value="centro._id"
-                  >
+          <div class="mb-4.5">
+            <label class="mb-2.5 block text-black dark:text-white">
+              Centro Logístico *
+              <span v-if="userLocation" class="text-sm text-green-600 dark:text-green-400 ml-2">
+                📍 Seleccionado automáticamente el más cercano
+              </span>
+            </label>
+            <select
+              v-model="formData.centro_logistico_id"
+              class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            >
+              <option value="">Selecciona un centro logístico</option>
+              <option 
+                v-for="centro in centrosLogisticos" 
+                :key="centro._id" 
+                :value="centro._id"
+              >
                     {{ centro.name }} - {{ centro.city }}
-                  </option>
-                </select>
-                <p v-if="userLocation" class="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                  Basado en tu ubicación actual
-                </p>
+              </option>
+            </select>
+            <p v-if="userLocation" class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+              Basado en tu ubicación actual
+            </p>
                 <!-- Debug info -->
                 <p v-if="centrosLogisticos.length === 0" class="mt-1 text-xs text-red-600">
                   No hay centros logísticos disponibles. Cargando...
@@ -339,28 +339,28 @@
                 <p v-else class="mt-1 text-xs text-green-600">
                   {{ centrosLogisticos.length }} centros logísticos disponibles
                 </p>
-              </div>
+        </div>
 
-              <!-- Botones de acción -->
-              <div class="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  @click="resetForm"
-                  class="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                >
-                  Limpiar
-                </button>
-                <button
-                  type="submit"
-                  :disabled="loading"
-                  class="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90 disabled:opacity-50"
-                >
-                  <span v-if="loading">Publicando...</span>
-                  <span v-else>Publicar Artículo</span>
-                </button>
-              </div>
-            </form>
-          </div>
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-4">
+          <button
+            type="button"
+            @click="resetForm"
+            class="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+          >
+            Limpiar
+          </button>
+          <button
+            type="submit"
+            :disabled="loading"
+            class="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90 disabled:opacity-50"
+          >
+            <span v-if="loading">Publicando...</span>
+            <span v-else>Publicar Artículo</span>
+          </button>
+        </div>
+      </form>
+    </div>
         </div>
       </div>
     </div>
