@@ -229,10 +229,15 @@ const route = useRoute()
 const article = ref(null)
 const loading = ref(false)
 const selectedImage = ref(null)
+const hasLoaded = ref(false) // Prevenir bucle infinito
 
 // Cargar artículo
 const loadArticle = async () => {
+  if (hasLoaded.value) return // Prevenir bucle infinito
+  
   loading.value = true
+  hasLoaded.value = true
+  
   try {
     const articleId = route.params.id
     const url = `${API_BASE_URL}/api/articles/${articleId}`
@@ -242,9 +247,6 @@ const loadArticle = async () => {
       url,
       API_BASE_URL
     })
-    
-    // Agregar delay para poder ver el debug
-    await new Promise(resolve => setTimeout(resolve, 2000))
     
     const response = await fetch(url, {
       headers: {
@@ -378,6 +380,7 @@ const shareArticle = async () => {
 
 // Cargar artículo al montar el componente
 onMounted(() => {
+  console.log('🚀 Componente montado, cargando artículo...')
   loadArticle()
 })
 </script>
