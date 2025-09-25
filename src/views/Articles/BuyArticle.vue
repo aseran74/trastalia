@@ -250,21 +250,30 @@ const loadArticles = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`/api/articles/admin-owned`, {
+    const url = `${API_BASE_URL}/api/articles/admin-owned`
+    console.log('🔍 Cargando artículos del admin desde:', url)
+    console.log('🔑 Token:', token ? 'Presente' : 'Ausente')
+    
+    const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     })
+    
+    console.log('📊 Respuesta del servidor:', response.status, response.statusText)
     
     if (response.ok) {
       const data = await response.json()
       articles.value = data.data || []
-      console.log('📦 Artículos del admin cargados:', articles.value.length)
+      console.log('✅ Artículos del admin cargados:', articles.value.length)
     } else {
+      const errorText = await response.text()
+      console.error('❌ Error del servidor:', errorText)
       console.error('Error cargando artículos del admin:', response.statusText)
     }
   } catch (error) {
-    console.error('Error cargando artículos del admin:', error)
+    console.error('❌ Error cargando artículos del admin:', error)
   } finally {
     loading.value = false
   }
