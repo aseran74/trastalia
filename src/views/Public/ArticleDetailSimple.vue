@@ -27,43 +27,94 @@
       </div>
 
       <!-- Article Detail -->
-      <div v-else-if="article" class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <!-- Article Image -->
-        <div class="aspect-w-16 aspect-h-12 bg-gray-200 relative">
-          <img
-            :src="getArticleImage(article)"
-            :alt="article.title || article.nombre"
-            class="w-full h-96 object-cover"
-            @error="handleImageError"
-          />
-        </div>
-
-        <!-- Article Info -->
-        <div class="p-8">
-          <h1 class="text-3xl font-bold text-gray-900 mb-4">
-            {{ article.title || article.nombre }}
-          </h1>
-          
-          <p class="text-gray-600 text-lg mb-6">
-            {{ article.description || article.descripcion }}
-          </p>
-
-          <!-- Price -->
-          <div class="text-4xl font-bold text-green-600 mb-6">
-            {{ formatPrice(article.price || article.precio_propuesto_vendedor) }}
+      <div v-else-if="article" class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Article Image -->
+          <div class="aspect-video bg-gray-200 relative">
+            <img
+              :src="getArticleImage(article)"
+              :alt="article.title || article.nombre"
+              class="w-full h-full object-cover"
+              @error="handleImageError"
+            />
+            <!-- Badges -->
+            <div class="absolute top-4 left-4 flex flex-col space-y-2">
+              <span class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                {{ getCategoryLabel(article.category || article.categoria) }}
+              </span>
+              <span class="bg-white/90 text-gray-800 text-xs px-3 py-1 rounded-full font-semibold">
+                {{ getConditionLabel(article.condition || article.condicion) }}
+              </span>
+            </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="space-y-4">
-            <button
-              @click="loginToBuy"
-              class="w-full bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition-colors duration-200 flex items-center justify-center text-lg"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
-              </svg>
-              Comprar (Requiere Login)
-            </button>
+          <!-- Article Info -->
+          <div class="p-8 flex flex-col justify-between">
+            <div>
+              <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                {{ article.title || article.nombre }}
+              </h1>
+              
+              <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+                {{ article.description || article.descripcion }}
+              </p>
+
+              <!-- Información adicional -->
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Categoría</h3>
+                  <p class="text-lg font-medium text-gray-900">{{ getCategoryLabel(article.category || article.categoria) }}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Estado</h3>
+                  <p class="text-lg font-medium text-gray-900">{{ getConditionLabel(article.condition || article.condicion) }}</p>
+                </div>
+              </div>
+
+              <!-- Precio y Puntos -->
+              <div class="mb-8">
+                <div class="text-4xl font-bold text-green-600 mb-4">
+                  {{ formatPrice(article.price || article.precio_propuesto_vendedor) }}
+                </div>
+                
+                <!-- Opción de puntos si está disponible -->
+                <div v-if="article.precio_puntos || article.points" class="flex items-center space-x-3">
+                  <span class="text-lg text-gray-600">o</span>
+                  <div class="flex items-center space-x-2 bg-yellow-50 px-4 py-2 rounded-lg">
+                    <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    <span class="text-2xl font-bold text-yellow-600">
+                      {{ formatPoints(article.precio_puntos || article.points) }} puntos
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-4">
+              <button
+                @click="loginToBuy"
+                class="w-full bg-green-600 text-white py-4 px-6 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center justify-center text-lg font-semibold shadow-lg hover:shadow-xl"
+              >
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+                </svg>
+                Comprar con Dinero
+              </button>
+              
+              <button
+                v-if="article.precio_puntos || article.points"
+                @click="loginToBuyWithPoints"
+                class="w-full bg-yellow-500 text-white py-4 px-6 rounded-lg hover:bg-yellow-600 transition-colors duration-200 flex items-center justify-center text-lg font-semibold shadow-lg hover:shadow-xl"
+              >
+                <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                Comprar con Puntos
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -128,6 +179,42 @@ const formatPrice = (price) => {
   }).format(price)
 }
 
+// Formatear puntos
+const formatPoints = (points) => {
+  if (!points) return '0'
+  return new Intl.NumberFormat('es-ES').format(points)
+}
+
+// Obtener etiqueta de condición
+const getConditionLabel = (condition) => {
+  const labels = {
+    'nuevo': 'Nuevo',
+    'como_nuevo': 'Como Nuevo',
+    'bueno': 'Bueno',
+    'aceptable': 'Aceptable'
+  }
+  return labels[condition] || condition || 'No especificado'
+}
+
+// Obtener etiqueta de categoría
+const getCategoryLabel = (category) => {
+  const labels = {
+    'tecnologia': 'Tecnología',
+    'hogar': 'Hogar',
+    'deportes': 'Deportes',
+    'juegos': 'Juegos',
+    'moda': 'Moda',
+    'libros': 'Libros',
+    'musica': 'Música',
+    'cocina': 'Cocina',
+    'jardineria': 'Jardinería',
+    'automoviles': 'Automóviles',
+    'belleza': 'Belleza',
+    'salud': 'Salud'
+  }
+  return labels[category] || category || 'General'
+}
+
 // Manejar error de imagen
 const handleImageError = (event) => {
   const placeholderSrc = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
@@ -156,24 +243,13 @@ const loginToBuy = () => {
   router.push('/signin')
 }
 
+// Login para comprar con puntos
+const loginToBuyWithPoints = () => {
+  router.push('/signin')
+}
+
 onMounted(() => {
   loadArticle()
 })
 </script>
 
-<style scoped>
-.aspect-w-16 {
-  position: relative;
-  padding-bottom: 75%;
-}
-
-.aspect-h-12 {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-</style>
