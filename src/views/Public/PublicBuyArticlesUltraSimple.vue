@@ -24,9 +24,6 @@
         <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
           Descubre una amplia selección de artículos de segunda mano verificados y en excelente estado.
         </p>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mt-4">
-          ✅ VERSIÓN MEJORADA - Con plugins de Tailwind CSS y diseño moderno
-        </div>
       </div>
 
       <div v-if="loading" class="flex justify-center py-12">

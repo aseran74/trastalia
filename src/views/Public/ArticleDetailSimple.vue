@@ -21,15 +21,6 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Debug info para admin -->
-      <div class="mb-6">
-        <div v-if="isAdmin" class="bg-purple-100 border border-purple-400 text-purple-700 px-4 py-3 rounded">
-          🔧 MODO ADMIN DETECTADO - Botón de edición disponible
-        </div>
-        <div v-else class="bg-gray-100 border border-gray-400 text-gray-700 px-4 py-3 rounded">
-          👤 Usuario normal - Botón de edición no disponible
-        </div>
-      </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
