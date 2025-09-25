@@ -1487,6 +1487,38 @@ app.get('/api/articles/admin-owned', async (req, res) => {
   }
 });
 
+// Ruta pública para obtener artículos disponibles para compra (sin autenticación)
+app.get('/api/articles/public', async (req, res) => {
+  try {
+    // Obtener artículos que son propiedad del admin y están disponibles para compra
+    const articles = await Article.find({
+      estado_articulo: { 
+        $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_DINERO', 'VENDIDO_A_TRASTALIA_PUNTOS'] 
+      },
+      // Solo artículos con precio válido
+      $or: [
+        { precio_propuesto_vendedor: { $gt: 0 } },
+        { price: { $gt: 0 } }
+      ]
+    })
+    .populate('id_vendedor', 'name email')
+    .sort({ createdAt: -1 })
+    .limit(50); // Limitar a 50 artículos para rendimiento
+
+    res.json({
+      success: true,
+      data: articles
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo artículos públicos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
 // Ruta genérica para obtener artículo por ID (debe ir al final)
 app.get('/api/articles/:id', async (req, res) => {
   try {
@@ -1821,38 +1853,6 @@ app.put('/api/articles/transfer-ownership/:id', authMiddleware, async (req, res)
 
   } catch (error) {
     console.error('Error transfiriendo propiedad:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
-});
-
-// Ruta pública para obtener artículos disponibles para compra (sin autenticación)
-app.get('/api/articles/public', async (req, res) => {
-  try {
-    // Obtener artículos que son propiedad del admin y están disponibles para compra
-    const articles = await Article.find({
-      estado_articulo: { 
-        $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_DINERO', 'VENDIDO_A_TRASTALIA_PUNTOS'] 
-      },
-      // Solo artículos con precio válido
-      $or: [
-        { precio_propuesto_vendedor: { $gt: 0 } },
-        { price: { $gt: 0 } }
-      ]
-    })
-    .populate('id_vendedor', 'name email')
-    .sort({ createdAt: -1 })
-    .limit(50); // Limitar a 50 artículos para rendimiento
-
-    res.json({
-      success: true,
-      data: articles
-    });
-
-  } catch (error) {
-    console.error('Error obteniendo artículos públicos:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'
