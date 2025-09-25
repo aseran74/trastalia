@@ -1606,8 +1606,8 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
       });
     }
 
-    // Actualizar el artículo
-    article.estado_articulo = 'COMPRADO_POR_ADMIN';
+    // Actualizar el artículo - marcar como comprado por usuario
+    article.estado_articulo = 'VENDIDO_A_TRASTALIA_PUNTOS';
     article.comprador = req.userId;
     article.comprador_tipo = 'usuario';
     article.adminDecision.selectedOption = 'points';
@@ -1623,6 +1623,13 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
     // Guardar cambios
     await article.save();
     await user.save();
+
+    console.log('✅ Artículo comprado con puntos:', {
+      articleId: article._id,
+      userId: req.userId,
+      pointsUsed: pointsAmount,
+      newStatus: article.estado_articulo
+    });
 
     res.json({
       success: true,
@@ -1642,6 +1649,36 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
   }
 });
 
+// Ruta para obtener los canjes del usuario (compras con puntos)
+app.get('/api/articles/my-exchanges', authMiddleware, async (req, res) => {
+  try {
+    console.log('🔍 Obteniendo canjes del usuario:', req.userId);
+    
+    // Buscar artículos comprados por el usuario con puntos
+    const exchanges = await Article.find({
+      comprador: req.userId,
+      comprador_tipo: 'usuario',
+      estado_articulo: 'VENDIDO_A_TRASTALIA_PUNTOS'
+    }).populate('id_vendedor', 'name email')
+      .sort({ updatedAt: -1 });
+
+    console.log('✅ Canjes encontrados:', exchanges.length);
+    
+    res.json({
+      success: true,
+      data: {
+        exchanges: exchanges
+      }
+    });
+  } catch (error) {
+    console.error('Error obteniendo canjes del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener los canjes del usuario'
+    });
+  }
+});
+
 // Ruta para obtener las compras del usuario
 app.get('/api/articles/my-purchases', authMiddleware, async (req, res) => {
   try {
@@ -1651,7 +1688,7 @@ app.get('/api/articles/my-purchases', authMiddleware, async (req, res) => {
     const purchases = await Article.find({
       comprador: req.userId,
       comprador_tipo: 'usuario',
-      estado_articulo: 'COMPRADO_POR_ADMIN'
+      estado_articulo: { $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_PUNTOS'] }
     }).populate('id_vendedor', 'name email')
       .sort({ updatedAt: -1 });
 
