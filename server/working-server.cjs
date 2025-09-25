@@ -1520,6 +1520,36 @@ app.get('/api/articles/public', async (req, res) => {
   }
 });
 
+// Ruta para obtener los canjes del usuario (compras con puntos) - DEBE IR ANTES DE LA RUTA GENÉRICA
+app.get('/api/articles/my-exchanges', authMiddleware, async (req, res) => {
+  try {
+    console.log('🔍 Obteniendo canjes del usuario:', req.userId);
+    
+    // Buscar artículos comprados por el usuario con puntos
+    const exchanges = await Article.find({
+      comprador: new mongoose.Types.ObjectId(req.userId),
+      comprador_tipo: 'usuario',
+      estado_articulo: 'VENDIDO_A_TRASTALIA_PUNTOS'
+    }).populate('id_vendedor', 'name email')
+      .sort({ updatedAt: -1 });
+
+    console.log('✅ Canjes encontrados:', exchanges.length);
+    
+    res.json({
+      success: true,
+      data: {
+        exchanges: exchanges
+      }
+    });
+  } catch (error) {
+    console.error('Error obteniendo canjes del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener los canjes del usuario'
+    });
+  }
+});
+
 // Ruta genérica para obtener artículo por ID (debe ir al final)
 app.get('/api/articles/:id', async (req, res) => {
   try {
@@ -1559,10 +1589,15 @@ app.get('/api/articles/:id', async (req, res) => {
 // Ruta para comprar artículo con puntos
 app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) => {
   console.log('🚀 Ruta purchase-with-points ejecutándose');
+  console.log('🔑 req.userId:', req.userId);
+  console.log('🔑 req.userRole:', req.userRole);
+  console.log('📦 req.body:', req.body);
+  
   try {
     const { articleId, pointsAmount } = req.body;
     
     if (!articleId || !pointsAmount) {
+      console.log('❌ Faltan datos requeridos:', { articleId, pointsAmount });
       return res.status(400).json({
         success: false,
         message: 'Faltan datos requeridos'
@@ -1641,43 +1676,16 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
       }
     });
   } catch (error) {
-    console.error('Error comprando artículo con puntos:', error);
+    console.error('❌ Error comprando artículo con puntos:', error);
+    console.error('❌ Stack trace:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Error al procesar la compra con puntos'
+      message: 'Error al procesar la compra con puntos',
+      error: error.message
     });
   }
 });
 
-// Ruta para obtener los canjes del usuario (compras con puntos)
-app.get('/api/articles/my-exchanges', authMiddleware, async (req, res) => {
-  try {
-    console.log('🔍 Obteniendo canjes del usuario:', req.userId);
-    
-    // Buscar artículos comprados por el usuario con puntos
-    const exchanges = await Article.find({
-      comprador: req.userId,
-      comprador_tipo: 'usuario',
-      estado_articulo: 'VENDIDO_A_TRASTALIA_PUNTOS'
-    }).populate('id_vendedor', 'name email')
-      .sort({ updatedAt: -1 });
-
-    console.log('✅ Canjes encontrados:', exchanges.length);
-    
-    res.json({
-      success: true,
-      data: {
-        exchanges: exchanges
-      }
-    });
-  } catch (error) {
-    console.error('Error obteniendo canjes del usuario:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error al obtener los canjes del usuario'
-    });
-  }
-});
 
 // Ruta para obtener las compras del usuario
 app.get('/api/articles/my-purchases', authMiddleware, async (req, res) => {
@@ -1686,7 +1694,7 @@ app.get('/api/articles/my-purchases', authMiddleware, async (req, res) => {
     
     // Buscar artículos comprados por el usuario
     const purchases = await Article.find({
-      comprador: req.userId,
+      comprador: new mongoose.Types.ObjectId(req.userId),
       comprador_tipo: 'usuario',
       estado_articulo: { $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_PUNTOS'] }
     }).populate('id_vendedor', 'name email')
