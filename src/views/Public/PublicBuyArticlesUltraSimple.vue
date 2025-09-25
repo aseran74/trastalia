@@ -37,15 +37,27 @@
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Articles Grid - VERSIÓN SIMPLIFICADA PARA DEBUG -->
+      <!-- Articles Grid - PRUEBA 2: Añadir imagen -->
       <div v-else-if="articles.length > 0" class="py-6">
-        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-          🧪 PRUEBA 1: Versión simplificada para encontrar el error de renderizado
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          🧪 PRUEBA 2: Añadiendo imagen para encontrar el error específico
         </div>
-        <div v-for="article in articles" :key="article._id" class="p-2 border-b">
-          <p class="text-lg font-bold">{{ article.title || article.nombre }}</p>
-          <p>{{ formatPrice(article.price || article.precio_propuesto_vendedor) }}</p>
-          <p class="text-sm text-gray-500">ID: {{ article._id }}</p>
+        <div v-for="article in articles" :key="article._id" class="p-4 border-b bg-white rounded mb-2">
+          <div class="flex items-start space-x-4">
+            <!-- Imagen simple -->
+            <img
+              :src="getArticleImage(article)"
+              :alt="article.title || article.nombre"
+              class="w-20 h-20 object-cover rounded"
+              @error="handleImageError"
+            />
+            <!-- Info del artículo -->
+            <div class="flex-1">
+              <p class="text-lg font-bold">{{ article.title || article.nombre }}</p>
+              <p>{{ formatPrice(article.price || article.precio_propuesto_vendedor) }}</p>
+              <p class="text-sm text-gray-500">ID: {{ article._id }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
