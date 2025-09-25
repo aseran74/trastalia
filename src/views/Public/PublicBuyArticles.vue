@@ -513,7 +513,7 @@ const handleImageError = (event) => {
   event.target.src = '/images/placeholder-article.jpg'
 }
 
-// Obtener imagen del artículo (con fallback a Unsplash)
+// Obtener imagen del artículo (con placeholder simple)
 const getArticleImage = (article) => {
   if (article.images && article.images.length > 0) {
     return article.images[0]
@@ -522,10 +522,10 @@ const getArticleImage = (article) => {
     return article.fotos[0]
   }
   
-  // Generar imagen de Unsplash basada en la categoría
+  // Usar placeholder simple en lugar de Unsplash
   const category = article.category || article.categoria || 'product'
-  const searchTerm = encodeURIComponent(article.title || article.nombre || category)
-  return `https://source.unsplash.com/400x300/?${searchTerm}`
+  const title = article.title || article.nombre || 'Artículo'
+  return `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(title)}`
 }
 
 // Obtener etiqueta de condición
