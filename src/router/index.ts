@@ -19,7 +19,7 @@ const router = createRouter({
       {
         path: '/articulos',
         name: 'Public Articles',
-        component: () => import('../views/Public/PublicBuyArticlesSimple.vue'),
+        component: () => import('../views/Public/PublicBuyArticlesUltraSimple.vue'),
         meta: {
           title: 'Artículos Disponibles - Trastalia',
           requiresAuth: false
