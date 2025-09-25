@@ -55,6 +55,10 @@ const ArticleSchema = new mongoose.Schema({
   // Identificación del vendedor
   id_vendedor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   
+  // Identificación del comprador
+  comprador: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  comprador_tipo: { type: String, enum: ['usuario', 'admin'] },
+  
   // Estado del artículo según el guion
   estado_articulo: { 
     type: String, 
@@ -279,6 +283,11 @@ const authMiddleware = (req, res, next) => {
           if (user) {
             req.userId = user._id.toString();
             req.userRole = user.role;
+            console.log('🔐 Middleware - Usuario autenticado:', {
+              userId: req.userId,
+              userRole: req.userRole,
+              email: user.email
+            });
             next();
           } else {
             res.status(401).json({
@@ -1580,7 +1589,9 @@ app.get('/api/articles/my-exchanges', authMiddleware, async (req, res) => {
       // Información adicional
       location: exchange.location || exchange.ubicacion,
       logisticsShip: exchange.logisticsShip,
-      logisticsShipLocation: exchange.logisticsShipLocation
+      logisticsShipLocation: exchange.logisticsShipLocation,
+      // Mantener adminDecision para compatibilidad con el frontend
+      adminDecision: exchange.adminDecision
     }));
     
     res.json({
@@ -1692,12 +1703,25 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
     }
 
     // Actualizar el artículo - marcar como vendido por puntos (desaparece de tienda)
+    console.log('🔄 Actualizando artículo:', {
+      articleId: article._id,
+      userId: req.userId,
+      userRole: req.userRole,
+      pointsAmount: pointsAmount
+    });
+    
     article.estado_articulo = 'VENDIDO_PUNTOS';
     article.comprador = req.userId;
     article.comprador_tipo = 'usuario';
     article.adminDecision.selectedOption = 'points';
     article.adminDecision.finalPoints = pointsAmount;
     article.sellerAccepted = true;
+    
+    console.log('📝 Datos antes de guardar:', {
+      estado: article.estado_articulo,
+      comprador: article.comprador,
+      comprador_tipo: article.comprador_tipo
+    });
     article.sellerAcceptedDate = new Date();
     article.updatedAt = new Date();
 
@@ -1708,6 +1732,14 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
     // Guardar cambios
     await article.save();
     await user.save();
+    
+    console.log('💾 Artículo guardado. Verificando datos guardados...');
+    const savedArticle = await Article.findById(articleId);
+    console.log('✅ Datos después de guardar:', {
+      estado: savedArticle.estado_articulo,
+      comprador: savedArticle.comprador,
+      comprador_tipo: savedArticle.comprador_tipo
+    });
 
     console.log('✅ Artículo comprado con puntos:', {
       articleId: article._id,
@@ -1736,6 +1768,48 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
   }
 });
 
+
+// Ruta para agregar puntos a un usuario (solo para testing)
+app.post('/api/users/add-points', authMiddleware, async (req, res) => {
+  try {
+    const { userId, points } = req.body;
+
+    // Solo permitir a admins o al propio usuario
+    if (req.userRole !== 'admin' && req.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permisos para modificar estos puntos'
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    user.points = (user.points || 0) + points;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Puntos agregados correctamente',
+      data: {
+        userId: user._id,
+        newPoints: user.points
+      }
+    });
+
+  } catch (error) {
+    console.error('Error agregando puntos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
 
 // Ruta para actualizar estado de envío de un artículo
 app.put('/api/articles/:id/shipping-status', authMiddleware, async (req, res) => {
