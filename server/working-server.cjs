@@ -1461,18 +1461,19 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
 // Endpoint para obtener artículos que son propiedad del admin (disponibles para compra)
 app.get('/api/articles/admin-owned', async (req, res) => {
   try {
-    console.log('🔍 Buscando artículos con estado COMPRADO_POR_ADMIN...');
+    console.log('🔍 Buscando artículos disponibles para compra...');
     
-    // Buscar artículos que son propiedad del admin
+    // Buscar artículos que son propiedad del admin y NO han sido comprados por usuarios
     const articles = await Article.find({ 
-      estado_articulo: 'COMPRADO_POR_ADMIN'
+      estado_articulo: 'COMPRADO_POR_ADMIN',
+      comprador: { $exists: false } // Excluir artículos ya comprados
     })
       .populate('seller', 'name email points logisticsLevel reputation')
       .populate('id_vendedor', 'name email points logisticsLevel reputation')
       .sort({ createdAt: -1 });
 
-    console.log(`📦 Encontrados ${articles.length} artículos del admin`);
-    console.log('📋 Artículos:', articles.map(a => ({ id: a._id, title: a.title || a.nombre, estado: a.estado_articulo })));
+    console.log(`📦 Encontrados ${articles.length} artículos disponibles para compra`);
+    console.log('📋 Artículos:', articles.map(a => ({ id: a._id, title: a.title || a.nombre, estado: a.estado_articulo, comprador: a.comprador })));
 
     res.json({
       success: true,
@@ -1637,6 +1638,36 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
     res.status(500).json({
       success: false,
       message: 'Error al procesar la compra con puntos'
+    });
+  }
+});
+
+// Ruta para obtener las compras del usuario
+app.get('/api/articles/my-purchases', authMiddleware, async (req, res) => {
+  try {
+    console.log('🔍 Obteniendo compras del usuario:', req.userId);
+    
+    // Buscar artículos comprados por el usuario
+    const purchases = await Article.find({
+      comprador: req.userId,
+      comprador_tipo: 'usuario',
+      estado_articulo: 'COMPRADO_POR_ADMIN'
+    }).populate('id_vendedor', 'name email')
+      .sort({ updatedAt: -1 });
+
+    console.log('✅ Compras encontradas:', purchases.length);
+    
+    res.json({
+      success: true,
+      data: {
+        purchases: purchases
+      }
+    });
+  } catch (error) {
+    console.error('Error obteniendo compras del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener las compras del usuario'
     });
   }
 });

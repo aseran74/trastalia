@@ -62,6 +62,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/mis-compras',
+      name: 'My Purchases',
+      component: () => import('../views/Articles/MyPurchases.vue'),
+      meta: {
+        title: 'Mis Compras - Trastalia',
+        requiresAuth: true
+      },
+    },
+    {
       path: '/vender-articulo',
       name: 'Vender Articulo',
       component: () => import('../views/Articles/SellArticleNew.vue'),
