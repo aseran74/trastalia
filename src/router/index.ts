@@ -61,15 +61,24 @@ const router = createRouter({
         requiresAuth: true
       },
     },
-    {
-      path: '/mis-compras',
-      name: 'My Purchases',
-      component: () => import('../views/Articles/MyPurchases.vue'),
-      meta: {
-        title: 'Mis Compras - Trastalia',
-        requiresAuth: true
+      {
+        path: '/mis-compras',
+        name: 'My Purchases',
+        component: () => import('../views/Articles/MyPurchases.vue'),
+        meta: {
+          title: 'Mis Canjes - Trastalia',
+          requiresAuth: true
+        },
       },
-    },
+      {
+        path: '/mis-compras-dinero',
+        name: 'My Money Purchases',
+        component: () => import('../views/Articles/MyMoneyPurchases.vue'),
+        meta: {
+          title: 'Mis Compras - Trastalia',
+          requiresAuth: true
+        },
+      },
     {
       path: '/vender-articulo',
       name: 'Vender Articulo',
@@ -328,9 +337,14 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
     next('/signin')
   } else if ((to.path === '/signin' || to.path === '/signup') && authStore.isAuthenticated) {
-    next('/dashboard')
+    // Redirigir según el rol del usuario
+    if (authStore.user?.role === 'admin') {
+      next('/dashboard')
+    } else {
+      next('/comprar-articulos')
+    }
   } else if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
-    next('/dashboard') // Redirigir a dashboard si no es admin
+    next('/comprar-articulos') // Redirigir a comprar artículos si no es admin
   } else {
     next()
   }

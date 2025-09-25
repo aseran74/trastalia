@@ -17,19 +17,19 @@
             <div class="flex justify-between items-start">
               <div>
                 <h1 class="text-3xl font-bold text-black dark:text-white">
-                  Mis Canjes
+                  Mis Compras
                 </h1>
                 <p class="text-gray-600 dark:text-gray-400">
-                  Historial de artículos canjeados con puntos
+                  Historial de artículos comprados con dinero
                 </p>
               </div>
               <!-- Estadísticas -->
               <div v-if="!loading && purchases.length > 0" class="text-right">
-                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Total de canjes</p>
-                  <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ totalExchanges }}</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Puntos gastados</p>
-                  <p class="text-lg font-semibold text-yellow-600 dark:text-yellow-400">{{ formatPoints(totalPointsSpent) }}</p>
+                <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Total de compras</p>
+                  <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ totalPurchases }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Dinero gastado</p>
+                  <p class="text-lg font-semibold text-green-600 dark:text-green-400">{{ formatMoney(totalSpent) }}</p>
                 </div>
               </div>
             </div>
@@ -37,52 +37,53 @@
 
           <!-- Loading -->
           <div v-if="loading" class="flex justify-center py-12">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           </div>
 
           <!-- Compras -->
           <div v-else-if="purchases.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             <div 
               v-for="purchase in purchases" 
-              :key="purchase._id" 
+              :key="purchase.id" 
               class="group bg-white rounded-lg shadow-md overflow-hidden flex flex-col transition-transform duration-300 hover:shadow-xl hover:-translate-y-1 dark:bg-boxdark"
             >
               <div class="relative">
                 <div class="aspect-video w-full">
                   <img
                     :src="getArticleImage(purchase)"
-                    :alt="purchase.title || purchase.nombre"
+                    :alt="purchase.title"
                     class="w-full h-full object-cover"
                     @error="handleImageError"
                   />
                 </div>
-                <span class="absolute top-3 right-3 text-white text-xs px-2 py-1 rounded-full font-semibold shadow" :class="getStatusBadgeClass(purchase.estado_articulo)">
-                  {{ getStatusLabel(purchase.estado_articulo) }}
+                <span class="absolute top-3 right-3 text-white text-xs px-2 py-1 rounded-full font-semibold shadow" :class="getStatusBadgeClass(purchase.currentStatus)">
+                  {{ getStatusLabel(purchase.currentStatus) }}
                 </span>
-                <span class="absolute top-3 left-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-semibold shadow">
-                  Con Puntos
+                <span class="absolute top-3 left-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold shadow">
+                  Con Dinero
                 </span>
               </div>
 
               <div class="p-4 flex flex-col flex-grow">
-                <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                  {{ getCategoryLabel(purchase.category || purchase.categoria) }}
+                <p class="text-xs font-semibold text-green-600 uppercase tracking-wide">
+                  {{ getCategoryLabel(purchase.category) }}
                 </p>
 
                 <h3 class="mt-2 text-lg font-bold text-gray-900 dark:text-white">
                   <span class="line-clamp-2">
-                    {{ purchase.title || purchase.nombre }}
+                    {{ purchase.title }}
                   </span>
                 </h3>
                 
-                <!-- Puntos utilizados -->
+                <!-- Precio pagado -->
                 <div class="mt-4 space-y-2">
                   <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="text-lg font-bold text-yellow-600">
-                      {{ formatPoints(getPurchasePoints(purchase)) }} puntos
+                    <span class="text-lg font-bold text-green-600">
+                      {{ formatMoney(purchase.purchasePrice) }}
                     </span>
                   </div>
                 </div>
@@ -95,18 +96,18 @@
                   Vendido por: {{ purchase.seller?.name || 'Usuario' }}
                 </div>
 
-                <!-- Fecha de canje -->
+                <!-- Fecha de compra -->
                 <div class="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                   </svg>
-                  Canjeado el {{ formatDate(purchase.exchangeDate || purchase.updatedAt) }}
+                  Comprado el {{ formatDate(purchase.purchaseDate) }}
                 </div>
 
                 <div class="mt-auto pt-4">
                   <button
                     @click="viewArticle(purchase)"
-                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors"
+                    class="w-full bg-green-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
                   >
                     Ver Detalles
                   </button>
@@ -120,12 +121,12 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No tienes canjes aún</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Explora artículos disponibles y canjea con tus puntos.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No tienes compras aún</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Explora artículos disponibles y compra con dinero.</p>
             <div class="mt-6">
               <router-link 
                 to="/comprar-articulos" 
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
               >
                 Ver Artículos Disponibles
               </router-link>
@@ -153,16 +154,16 @@ const { isExpanded, isHovered } = useSidebar()
 // Estado reactivo
 const purchases = ref([])
 const loading = ref(false)
-const totalExchanges = ref(0)
-const totalPointsSpent = ref(0)
+const totalPurchases = ref(0)
+const totalSpent = ref(0)
 
 // Cargar compras del usuario
 const loadPurchases = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const url = `${API_BASE_URL}/api/articles/my-exchanges`
-    console.log('🔍 Cargando canjes del usuario desde:', url)
+    const url = `${API_BASE_URL}/api/articles/my-purchases`
+    console.log('🔍 Cargando compras del usuario desde:', url)
     console.log('🔑 Token:', token ? 'Presente' : 'Ausente')
     
     const response = await fetch(url, {
@@ -176,48 +177,31 @@ const loadPurchases = async () => {
     
     if (response.ok) {
       const data = await response.json()
-      purchases.value = data.data.exchanges || []
-      totalExchanges.value = data.data.totalExchanges || 0
-      totalPointsSpent.value = data.data.totalPointsSpent || 0
-      console.log('✅ Canjes cargados:', purchases.value.length)
-      console.log('📊 Total canjes:', totalExchanges.value)
-      console.log('💰 Puntos gastados:', totalPointsSpent.value)
+      purchases.value = data.data.purchases || []
+      totalPurchases.value = data.data.totalPurchases || 0
+      totalSpent.value = data.data.totalSpent || 0
+      console.log('✅ Compras cargadas:', purchases.value.length)
+      console.log('📊 Total compras:', totalPurchases.value)
+      console.log('💰 Dinero gastado:', totalSpent.value)
     } else {
       const errorText = await response.text()
       console.error('❌ Error del servidor:', errorText)
-      console.error('Error cargando canjes:', response.statusText)
+      console.error('Error cargando compras:', response.statusText)
     }
   } catch (error) {
-    console.error('❌ Error cargando canjes:', error)
+    console.error('❌ Error cargando compras:', error)
   } finally {
     loading.value = false
   }
 }
 
-// Formatear puntos
-const formatPoints = (points) => {
-  if (!points) return '0'
-  return new Intl.NumberFormat('es-ES').format(points)
-}
-
-// Obtener puntos de la compra
-const getPurchasePoints = (purchase) => {
-  // Prioridad 1: adminDecision.finalPoints (puntos realmente usados)
-  if (purchase.adminDecision && purchase.adminDecision.finalPoints) {
-    return purchase.adminDecision.finalPoints
-  }
-  // Prioridad 2: adminDecision.pointsAmount
-  if (purchase.adminDecision && purchase.adminDecision.pointsAmount) {
-    return purchase.adminDecision.pointsAmount
-  }
-  // Prioridad 3: campos directos
-  if (purchase.precio_puntos) {
-    return purchase.precio_puntos
-  }
-  if (purchase.points) {
-    return purchase.points
-  }
-  return 0
+// Formatear dinero
+const formatMoney = (amount) => {
+  if (!amount) return '0,00 €'
+  return new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(amount)
 }
 
 // Obtener etiqueta de categoría
@@ -244,11 +228,8 @@ const getArticleImage = (article) => {
   if (article.images && article.images.length > 0) {
     return article.images[0]
   }
-  if (article.fotos && article.fotos.length > 0) {
-    return article.fotos[0]
-  }
   
-  const title = article.title || article.nombre || 'Artículo'
+  const title = article.title || 'Artículo'
   return `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(title)}`
 }
 
@@ -273,7 +254,7 @@ const formatDate = (date) => {
 // Obtener etiqueta del estado
 const getStatusLabel = (status) => {
   const labels = {
-    'VENDIDO_PUNTOS': 'Comprado',
+    'VENDIDO_DINERO': 'Comprado',
     'ENVIADO': 'Enviado',
     'ENTREGADO': 'Entregado',
     'RECHAZADO_ENVIO': 'Rechazado'
@@ -284,7 +265,7 @@ const getStatusLabel = (status) => {
 // Obtener clase CSS del badge según el estado
 const getStatusBadgeClass = (status) => {
   const classes = {
-    'VENDIDO_PUNTOS': 'bg-green-500',
+    'VENDIDO_DINERO': 'bg-green-500',
     'ENVIADO': 'bg-yellow-500',
     'ENTREGADO': 'bg-blue-500',
     'RECHAZADO_ENVIO': 'bg-red-500'
@@ -294,7 +275,7 @@ const getStatusBadgeClass = (status) => {
 
 // Ver artículo
 const viewArticle = (article) => {
-  window.open(`/articulos/${article._id}`, '_blank')
+  window.open(`/articulos/${article.id}`, '_blank')
 }
 
 // Cargar compras al montar el componente

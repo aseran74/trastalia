@@ -71,6 +71,10 @@ const ArticleSchema = new mongoose.Schema({
       // Estados de venta final (artículo desaparece de tienda)
       'VENDIDO_PUNTOS',
       'VENDIDO_DINERO',
+      // Estados de seguimiento de envío
+      'ENVIADO',
+      'ENTREGADO',
+      'RECHAZADO_ENVIO',
       'EN_GALERIA_APTOS', 
       'VENDIDO', 
       'RECHAZADO'
@@ -1545,16 +1549,46 @@ app.get('/api/articles/my-exchanges', authMiddleware, async (req, res) => {
     const exchanges = await Article.find({
       comprador: new mongoose.Types.ObjectId(req.userId),
       comprador_tipo: 'usuario',
-      estado_articulo: 'VENDIDO_PUNTOS'
+      estado_articulo: { 
+        $in: ['VENDIDO_PUNTOS', 'ENVIADO', 'ENTREGADO', 'RECHAZADO_ENVIO'] 
+      }
     }).populate('id_vendedor', 'name email')
       .sort({ updatedAt: -1 });
 
     console.log('✅ Canjes encontrados:', exchanges.length);
     
+    // Formatear datos para el historial de canjes
+    const history = exchanges.map(exchange => ({
+      id: exchange._id,
+      title: exchange.title || exchange.nombre,
+      description: exchange.description || exchange.descripcion,
+      category: exchange.category || exchange.categoria,
+      condition: exchange.condition || exchange.condicion,
+      images: exchange.images || exchange.fotos,
+      // Información del canje
+      exchangeDate: exchange.updatedAt,
+      pointsUsed: exchange.adminDecision?.finalPoints || exchange.adminDecision?.pointsAmount || 0,
+      paymentMethod: 'Puntos',
+      // Información del vendedor
+      seller: {
+        id: exchange.id_vendedor._id,
+        name: exchange.id_vendedor.name,
+        email: exchange.id_vendedor.email
+      },
+      // Estado actual
+      currentStatus: exchange.estado_articulo,
+      // Información adicional
+      location: exchange.location || exchange.ubicacion,
+      logisticsShip: exchange.logisticsShip,
+      logisticsShipLocation: exchange.logisticsShipLocation
+    }));
+    
     res.json({
       success: true,
       data: {
-        exchanges: exchanges
+        exchanges: history,
+        totalExchanges: history.length,
+        totalPointsSpent: history.reduce((sum, exchange) => sum + (exchange.pointsUsed || 0), 0)
       }
     });
   } catch (error) {
@@ -1703,32 +1737,115 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
 });
 
 
-// Ruta para obtener las compras del usuario
+// Ruta para actualizar estado de envío de un artículo
+app.put('/api/articles/:id/shipping-status', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { status } = req.body
+
+    // Validar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden actualizar el estado de envío'
+      })
+    }
+
+    // Validar estado
+    const validStatuses = ['ENVIADO', 'ENTREGADO', 'RECHAZADO_ENVIO']
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Estado de envío no válido'
+      })
+    }
+
+    // Buscar el artículo
+    const article = await Article.findById(id)
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      })
+    }
+
+    // Actualizar estado
+    article.estado_articulo = status
+    await article.save()
+
+    res.json({
+      success: true,
+      message: 'Estado de envío actualizado correctamente',
+      data: {
+        articleId: id,
+        newStatus: status
+      }
+    })
+
+  } catch (error) {
+    console.error('Error actualizando estado de envío:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    })
+  }
+})
+
+// Ruta para obtener el historial de compras con dinero del usuario
 app.get('/api/articles/my-purchases', authMiddleware, async (req, res) => {
   try {
-    console.log('🔍 Obteniendo compras del usuario:', req.userId);
+    console.log('🔍 Obteniendo historial de compras con dinero del usuario:', req.userId);
     
-    // Buscar artículos comprados por el usuario
+    // Buscar artículos comprados por el usuario con dinero
     const purchases = await Article.find({
       comprador: new mongoose.Types.ObjectId(req.userId),
       comprador_tipo: 'usuario',
-      estado_articulo: { $in: ['VENDIDO_PUNTOS', 'VENDIDO_DINERO'] }
+      estado_articulo: 'VENDIDO_DINERO'
     }).populate('id_vendedor', 'name email')
       .sort({ updatedAt: -1 });
 
-    console.log('✅ Compras encontradas:', purchases.length);
+    console.log('✅ Compras con dinero encontradas:', purchases.length);
+    
+    // Formatear datos para el historial
+    const history = purchases.map(purchase => ({
+      id: purchase._id,
+      title: purchase.title || purchase.nombre,
+      description: purchase.description || purchase.descripcion,
+      category: purchase.category || purchase.categoria,
+      condition: purchase.condition || purchase.condicion,
+      images: purchase.images || purchase.fotos,
+      // Información de la compra
+      purchaseDate: purchase.updatedAt,
+      purchasePrice: purchase.adminDecision?.finalPrice || purchase.price || purchase.precio_propuesto_vendedor,
+      paymentMethod: 'Dinero',
+      // Información del vendedor
+      seller: {
+        id: purchase.id_vendedor._id,
+        name: purchase.id_vendedor.name,
+        email: purchase.id_vendedor.email
+      },
+      // Estado actual
+      currentStatus: purchase.estado_articulo,
+      // Información adicional
+      location: purchase.location || purchase.ubicacion,
+      logisticsShip: purchase.logisticsShip,
+      logisticsShipLocation: purchase.logisticsShipLocation
+    }));
     
     res.json({
       success: true,
       data: {
-        purchases: purchases
+        purchases: history,
+        totalPurchases: history.length,
+        totalSpent: history.reduce((sum, purchase) => sum + (purchase.purchasePrice || 0), 0)
       }
     });
+
   } catch (error) {
-    console.error('Error obteniendo compras del usuario:', error);
+    console.error('Error obteniendo historial de compras:', error);
     res.status(500).json({
       success: false,
-      message: 'Error al obtener las compras del usuario'
+      message: 'Error interno del servidor'
     });
   }
 });
