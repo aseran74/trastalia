@@ -230,11 +230,16 @@ const article = ref(null)
 const loading = ref(false)
 const selectedImage = ref(null)
 const hasLoaded = ref(false) // Prevenir bucle infinito
+const isInitialized = ref(false) // Prevenir inicialización múltiple
 
 // Cargar artículo
 const loadArticle = async () => {
-  if (hasLoaded.value) return // Prevenir bucle infinito
+  if (hasLoaded.value || isInitialized.value) {
+    console.log('🚫 Evitando carga duplicada')
+    return
+  }
   
+  isInitialized.value = true
   loading.value = true
   hasLoaded.value = true
   
@@ -381,7 +386,9 @@ const shareArticle = async () => {
 // Cargar artículo al montar el componente
 onMounted(() => {
   console.log('🚀 Componente montado, cargando artículo...')
-  loadArticle()
+  if (!isInitialized.value) {
+    loadArticle()
+  }
 })
 </script>
 
