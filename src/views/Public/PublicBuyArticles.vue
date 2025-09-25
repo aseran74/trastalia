@@ -128,8 +128,8 @@
             />
           </div>
           <div class="flex justify-between text-xs text-gray-400 mt-2">
-            <span>{{ formatPrice(minPrice) }}</span>
-            <span>{{ formatPrice(maxPrice) }}</span>
+            <span class="bg-gray-100 px-2 py-1 rounded text-gray-600 font-medium">Min: {{ formatPrice(minPrice) }}</span>
+            <span class="bg-gray-100 px-2 py-1 rounded text-gray-600 font-medium">Max: {{ formatPrice(maxPrice) }}</span>
           </div>
         </div>
 
@@ -178,8 +178,8 @@
             />
           </div>
           <div class="flex justify-between text-xs text-gray-400 mt-2">
-            <span>{{ formatNumber(minPoints) }}</span>
-            <span>{{ formatNumber(maxPoints) }}</span>
+            <span class="bg-gray-100 px-2 py-1 rounded text-gray-600 font-medium">Min: {{ formatNumber(minPoints) }}</span>
+            <span class="bg-gray-100 px-2 py-1 rounded text-gray-600 font-medium">Max: {{ formatNumber(maxPoints) }}</span>
           </div>
         </div>
         </div>
@@ -205,20 +205,27 @@
         <div 
           v-for="article in filteredArticles" 
           :key="article._id"
-          class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+          class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
         >
           <!-- Article Image -->
-          <div class="aspect-w-16 aspect-h-12 bg-gray-200">
+          <div class="aspect-w-16 aspect-h-12 bg-gray-200 relative">
             <img
-              v-if="article.images && article.images.length > 0"
-              :src="article.images[0]"
+              :src="getArticleImage(article)"
               :alt="article.title || article.nombre"
               class="w-full h-48 object-cover"
+              @error="handleImageError"
             />
-            <div v-else class="w-full h-48 bg-gray-200 flex items-center justify-center">
-              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <!-- Badge de condición -->
+            <div class="absolute top-2 right-2">
+              <span class="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">
+                {{ getConditionLabel(article.condition || article.condicion) }}
+              </span>
+            </div>
+            <!-- Badge de categoría -->
+            <div class="absolute top-2 left-2">
+              <span class="bg-blue-500/90 text-white text-xs px-2 py-1 rounded-full font-medium">
+                {{ getCategoryLabel(article.category || article.categoria) }}
+              </span>
             </div>
           </div>
 
@@ -232,22 +239,42 @@
               {{ article.description || article.descripcion }}
             </p>
 
+            <!-- Precio y ubicación -->
             <div class="flex items-center justify-between mb-3">
-              <span class="text-sm text-gray-500 capitalize">
-                {{ article.category || article.categoria }}
-              </span>
-              <span class="text-sm text-gray-500 capitalize">
-                {{ article.condition || article.condicion }}
-              </span>
-            </div>
-
-            <!-- Price -->
-            <div class="flex items-center justify-between mb-4">
-              <div class="text-2xl font-bold text-primary">
+              <div class="text-2xl font-bold text-green-600">
                 {{ formatPrice(article.price || article.precio_propuesto_vendedor) }}
               </div>
-              <div class="text-sm text-gray-500">
+              <div class="text-sm text-gray-500 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
                 {{ article.location || article.ubicacion }}
+              </div>
+            </div>
+
+            <!-- Opciones de compra -->
+            <div class="bg-gray-50 rounded-lg p-3 mb-4">
+              <div class="text-sm font-medium text-gray-700 mb-2">Opciones de compra:</div>
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="flex items-center text-green-600">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                    Dinero
+                  </span>
+                  <span class="font-semibold">{{ formatPrice(article.price || article.precio_propuesto_vendedor) }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="flex items-center text-blue-600">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    </svg>
+                    Puntos
+                  </span>
+                  <span class="font-semibold">{{ formatNumber(article.price || article.precio_propuesto_vendedor) }} pts</span>
+                </div>
               </div>
             </div>
 
@@ -255,15 +282,22 @@
             <div class="space-y-2">
               <button
                 @click="viewArticle(article)"
-                class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary/90 transition-colors duration-200"
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
               >
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
                 Ver Detalles
               </button>
               
               <button
                 @click="loginToBuy"
-                class="w-full border border-primary text-primary py-2 px-4 rounded-md hover:bg-primary hover:text-white transition-colors duration-200"
+                class="w-full border border-green-600 text-green-600 py-2 px-4 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 flex items-center justify-center"
               >
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+                </svg>
                 Comprar (Requiere Login)
               </button>
             </div>
@@ -465,10 +499,59 @@ const resetFilters = () => {
   pointsRange.value = [minPoints.value, maxPoints.value]
 }
 
+// Manejar error de imagen
+const handleImageError = (event) => {
+  event.target.src = '/images/placeholder-article.jpg'
+}
+
+// Obtener imagen del artículo (con fallback a Unsplash)
+const getArticleImage = (article) => {
+  if (article.images && article.images.length > 0) {
+    return article.images[0]
+  }
+  if (article.fotos && article.fotos.length > 0) {
+    return article.fotos[0]
+  }
+  
+  // Generar imagen de Unsplash basada en la categoría
+  const category = article.category || article.categoria || 'product'
+  const searchTerm = encodeURIComponent(article.title || article.nombre || category)
+  return `https://source.unsplash.com/400x300/?${searchTerm}`
+}
+
+// Obtener etiqueta de condición
+const getConditionLabel = (condition) => {
+  const labels = {
+    'nuevo': 'Nuevo',
+    'como_nuevo': 'Como Nuevo',
+    'bueno': 'Bueno',
+    'aceptable': 'Aceptable'
+  }
+  return labels[condition] || condition
+}
+
+// Obtener etiqueta de categoría
+const getCategoryLabel = (category) => {
+  const labels = {
+    'tecnologia': 'Tecnología',
+    'hogar': 'Hogar',
+    'deportes': 'Deportes',
+    'juegos': 'Juegos',
+    'moda': 'Moda',
+    'libros': 'Libros',
+    'musica': 'Música',
+    'cocina': 'Cocina',
+    'jardineria': 'Jardinería',
+    'automoviles': 'Automóviles',
+    'belleza': 'Belleza',
+    'salud': 'Salud'
+  }
+  return labels[category] || category
+}
+
 // Ver artículo
 const viewArticle = (article) => {
-  // Por ahora, redirigir al login
-  router.push('/signin')
+  router.push(`/articulos/${article._id}`)
 }
 
 // Login para comprar
