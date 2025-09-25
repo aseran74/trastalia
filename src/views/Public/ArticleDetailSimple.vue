@@ -17,16 +17,6 @@
       </div>
     </header>
 
-    <!-- Debug Info -->
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 m-4 rounded">
-      <strong>🔍 Debug Info:</strong> 
-      <br>Loading: {{ loading }}
-      <br>Article: {{ article ? 'Cargado' : 'No cargado' }}
-      <br>Route ID: {{ route.params.id }}
-      <br>API URL: {{ API_BASE_URL }}
-      <br>Timestamp: {{ new Date().toLocaleTimeString() }}
-    </div>
-
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center items-center min-h-96">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -128,40 +118,32 @@ const router = useRouter()
 const route = useRoute()
 
 const article = ref(null)
-const loading = ref(true) // Inicia en true para mostrar el spinner desde el principio
+const loading = ref(true)
 const articleImage = ref('')
 
-// --- FUNCIÓN CORREGIDA ---
-// Esta función ahora prioriza la imagen real del artículo.
+// Obtener imagen del artículo
 const getArticleImage = (articleData) => {
-  // AJUSTA 'image_url' al nombre de la propiedad que contiene la imagen en tu API
-  const imagePath = articleData?.image_url || articleData?.imagen; 
+  const imagePath = articleData?.image_url || articleData?.imagen
   
-  // 1. Si el artículo tiene una ruta de imagen, construye la URL completa
   if (imagePath) {
-    // Asegúrate de que la URL base termina sin '/' y el path empieza con '/'
-    // para evitar dobles barras (ej: 'http://api.com//images/...')
-    return `${API_BASE_URL.replace(/\/$/, '')}/${imagePath.replace(/^\//, '')}`;
+    return `${API_BASE_URL.replace(/\/$/, '')}/${imagePath.replace(/^\//, '')}`
   }
   
-  // 2. Si no hay imagen, genera un placeholder como fallback
-  const title = articleData?.title || articleData?.nombre || 'Artículo';
-  return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`;
+  const title = articleData?.title || articleData?.nombre || 'Artículo'
+  return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
 }
 
 const handleImageError = (event) => {
-  // Si la imagen principal falla, mostramos un único placeholder de error.
-  // Esto evita bucles si el primer placeholder también falla.
-  event.target.src = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible';
+  event.target.src = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
 }
 
 const loadArticle = async () => {
-  loading.value = true;
-  article.value = null; // Resetea el artículo para evitar mostrar datos antiguos
+  loading.value = true
+  article.value = null
   
   try {
-    const articleId = route.params.id;
-    const url = `${API_BASE_URL}/api/articles/${articleId}`;
+    const articleId = route.params.id
+    const url = `${API_BASE_URL}/api/articles/${articleId}`
     
     const response = await fetch(url, {
       method: 'GET',
@@ -169,46 +151,43 @@ const loadArticle = async () => {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
-    });
+    })
     
     if (response.ok) {
-      const data = await response.json();
+      const data = await response.json()
       if (data.success) {
-        article.value = data.data;
-        // La llamada es la misma, pero la lógica dentro de getArticleImage es ahora correcta
-        articleImage.value = getArticleImage(data.data);
+        article.value = data.data
+        articleImage.value = getArticleImage(data.data)
       }
     } else {
-      console.error('Error del servidor:', response.status, response.statusText);
+      console.error('Error del servidor:', response.status, response.statusText)
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error:', error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
-// ... (el resto de tus funciones como formatPrice, goBack, etc., están bien y no necesitan cambios) ...
-
 const formatPrice = (price) => {
-  if (typeof price !== 'number') return 'N/A';
+  if (typeof price !== 'number') return 'N/A'
   return new Intl.NumberFormat('es-ES', {
     style: 'currency',
     currency: 'EUR'
-  }).format(price);
+  }).format(price)
 }
 
 const formatNumber = (number) => {
-  if (typeof number !== 'number') return 'N/A';
-  return new Intl.NumberFormat('es-ES').format(number);
+  if (typeof number !== 'number') return 'N/A'
+  return new Intl.NumberFormat('es-ES').format(number)
 }
 
 const goBack = () => {
-  router.back();
+  router.back()
 }
 
 const loginToBuy = () => {
-  router.push('/signin');
+  router.push('/signin')
 }
 
 const shareArticle = () => {
@@ -217,22 +196,37 @@ const shareArticle = () => {
       title: article.value.title || article.value.nombre,
       text: article.value.description || article.value.descripcion,
       url: window.location.href
-    });
+    })
   } else {
-    navigator.clipboard.writeText(window.location.href);
-    alert('URL copiada al portapapeles');
+    navigator.clipboard.writeText(window.location.href)
+    alert('URL copiada al portapapeles')
   }
 }
 
-
 onMounted(() => {
-  loadArticle();
-});
+  loadArticle()
+})
 
 watch(() => route.params.id, (newId, oldId) => {
-  // Este watch es útil si navegas de un artículo a otro sin cambiar de página
   if (newId && newId !== oldId) {
-    loadArticle();
+    loadArticle()
   }
-});
+})
 </script>
+
+<style scoped>
+.aspect-w-16 {
+  position: relative;
+  padding-bottom: 75%;
+}
+
+.aspect-h-9 {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+</style>
