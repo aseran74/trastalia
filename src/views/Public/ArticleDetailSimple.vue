@@ -21,6 +21,16 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Debug info para admin -->
+      <div class="mb-6">
+        <div v-if="isAdmin" class="bg-purple-100 border border-purple-400 text-purple-700 px-4 py-3 rounded">
+          🔧 MODO ADMIN DETECTADO - Botón de edición disponible
+        </div>
+        <div v-else class="bg-gray-100 border border-gray-400 text-gray-700 px-4 py-3 rounded">
+          👤 Usuario normal - Botón de edición no disponible
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -264,14 +274,23 @@ const loginToBuyWithPoints = () => {
 // Verificar si el usuario es admin
 const checkAdminStatus = () => {
   const token = localStorage.getItem('token')
+  console.log('🔍 Verificando admin status...')
+  console.log('Token encontrado:', !!token)
+  
   if (token) {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]))
+      console.log('Payload del token:', payload)
+      console.log('Rol del usuario:', payload.role)
       isAdmin.value = payload.role === 'admin'
+      console.log('¿Es admin?', isAdmin.value)
     } catch (error) {
       console.error('Error verificando token:', error)
       isAdmin.value = false
     }
+  } else {
+    console.log('No hay token en localStorage')
+    isAdmin.value = false
   }
 }
 
