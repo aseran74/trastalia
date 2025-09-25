@@ -290,6 +290,11 @@ const menuGroups = [
         path: "/mis-compras",
       },
       {
+        icon: CurrencyEuroIcon,
+        name: "Mis Compras",
+        path: "/mis-compras-dinero",
+      },
+      {
         icon: CoinsIcon,
         name: "Mis Puntos",
         path: "/mis-transacciones-puntos",
