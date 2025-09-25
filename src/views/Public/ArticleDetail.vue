@@ -31,6 +31,10 @@
 
     <!-- Article Detail -->
     <div v-else-if="article" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Debug Info -->
+      <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+        <strong>Debug:</strong> Artículo cargado: {{ article?.title || article?.nombre }}
+      </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Images -->
         <div class="space-y-4">
@@ -178,6 +182,14 @@
 
     <!-- Error -->
     <div v-else class="text-center py-12">
+      <!-- Debug Info -->
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 max-w-md mx-auto">
+        <strong>Debug:</strong> 
+        <br>Loading: {{ loading }}
+        <br>Article: {{ article ? 'Cargado' : 'No cargado' }}
+        <br>Route ID: {{ route.params.id }}
+      </div>
+      
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
       </svg>
