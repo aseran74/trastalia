@@ -65,8 +65,12 @@ const ArticleSchema = new mongoose.Schema({
       'PENDIENTE_APROBACION_ADMIN', 
       'OFERTA_COMPRA_ENVIADA', 
       'COMPRADO_POR_ADMIN', 
-      'VENDIDO_A_TRASTALIA_DINERO',
-      'VENDIDO_A_TRASTALIA_PUNTOS',
+      // Estados de transferencia a Trastalia (artículo sigue en tienda)
+      'TRASPASADO_A_TRASTALIA_POR_PUNTOS',
+      'TRASPASADO_A_TRASTALIA_POR_DINERO',
+      // Estados de venta final (artículo desaparece de tienda)
+      'VENDIDO_PUNTOS',
+      'VENDIDO_DINERO',
       'EN_GALERIA_APTOS', 
       'VENDIDO', 
       'RECHAZADO'
@@ -1465,10 +1469,16 @@ app.get('/api/articles/admin-owned', async (req, res) => {
   try {
     console.log('🔍 Buscando artículos disponibles para compra...');
     
-    // Buscar artículos que son propiedad del admin y NO han sido comprados por usuarios
+    // Buscar artículos que son propiedad del admin y están disponibles para compra
     const articles = await Article.find({ 
-      estado_articulo: 'COMPRADO_POR_ADMIN',
-      comprador: { $exists: false } // Excluir artículos ya comprados
+      estado_articulo: { 
+        $in: [
+          'COMPRADO_POR_ADMIN',
+          'TRASPASADO_A_TRASTALIA_POR_PUNTOS',
+          'TRASPASADO_A_TRASTALIA_POR_DINERO'
+        ]
+      },
+      comprador: { $exists: false } // Excluir artículos ya vendidos
     })
       .populate('seller', 'name email points logisticsLevel reputation')
       .populate('id_vendedor', 'name email points logisticsLevel reputation')
@@ -1496,7 +1506,11 @@ app.get('/api/articles/public', async (req, res) => {
     // Obtener artículos que son propiedad del admin y están disponibles para compra
     const articles = await Article.find({
       estado_articulo: { 
-        $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_DINERO', 'VENDIDO_A_TRASTALIA_PUNTOS'] 
+        $in: [
+          'COMPRADO_POR_ADMIN',
+          'TRASPASADO_A_TRASTALIA_POR_PUNTOS',
+          'TRASPASADO_A_TRASTALIA_POR_DINERO'
+        ]
       },
       // Solo artículos con precio válido
       $or: [
@@ -1531,7 +1545,7 @@ app.get('/api/articles/my-exchanges', authMiddleware, async (req, res) => {
     const exchanges = await Article.find({
       comprador: new mongoose.Types.ObjectId(req.userId),
       comprador_tipo: 'usuario',
-      estado_articulo: 'VENDIDO_A_TRASTALIA_PUNTOS'
+      estado_articulo: 'VENDIDO_PUNTOS'
     }).populate('id_vendedor', 'name email')
       .sort({ updatedAt: -1 });
 
@@ -1643,8 +1657,8 @@ app.post('/api/articles/purchase-with-points', authMiddleware, async (req, res) 
       });
     }
 
-    // Actualizar el artículo - marcar como comprado por usuario
-    article.estado_articulo = 'VENDIDO_A_TRASTALIA_PUNTOS';
+    // Actualizar el artículo - marcar como vendido por puntos (desaparece de tienda)
+    article.estado_articulo = 'VENDIDO_PUNTOS';
     article.comprador = req.userId;
     article.comprador_tipo = 'usuario';
     article.adminDecision.selectedOption = 'points';
@@ -1698,7 +1712,7 @@ app.get('/api/articles/my-purchases', authMiddleware, async (req, res) => {
     const purchases = await Article.find({
       comprador: new mongoose.Types.ObjectId(req.userId),
       comprador_tipo: 'usuario',
-      estado_articulo: { $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_PUNTOS'] }
+      estado_articulo: { $in: ['VENDIDO_PUNTOS', 'VENDIDO_DINERO'] }
     }).populate('id_vendedor', 'name email')
       .sort({ updatedAt: -1 });
 
@@ -1781,7 +1795,7 @@ app.get('/api/admin/dashboard-stats', authMiddleware, async (req, res) => {
       estado_articulo: { $in: ['EN_VENTA', 'EN_LOGISTICA'] } 
     });
     const articlesCanjeados = await Article.countDocuments({ 
-      estado_articulo: { $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_PUNTOS'] } 
+      estado_articulo: { $in: ['VENDIDO_PUNTOS', 'VENDIDO_DINERO'] } 
     });
     const articlesPendientes = await Article.countDocuments({ 
       estado_articulo: 'PENDIENTE_APROBACION_ADMIN' 
@@ -1807,7 +1821,7 @@ app.get('/api/admin/dashboard-stats', authMiddleware, async (req, res) => {
       {
         $match: {
           updatedAt: { $gte: lastMonth },
-          estado_articulo: { $in: ['COMPRADO_POR_ADMIN', 'VENDIDO_A_TRASTALIA_DINERO', 'VENDIDO_A_TRASTALIA_PUNTOS'] }
+          estado_articulo: { $in: ['VENDIDO_PUNTOS', 'VENDIDO_DINERO'] }
         }
       },
       {
