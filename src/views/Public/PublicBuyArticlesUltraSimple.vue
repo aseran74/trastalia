@@ -37,72 +37,15 @@
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Articles Grid -->
-      <div v-else-if="articles.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div 
-          v-for="article in articles" 
-          :key="article._id"
-          class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
-        >
-          <!-- Article Image -->
-          <div class="aspect-w-16 aspect-h-12 bg-gray-200 relative">
-            <img
-              :src="getArticleImage(article)"
-              :alt="article.title || article.nombre"
-              class="w-full h-48 object-cover"
-              @error="handleImageError"
-            />
-            <div class="absolute top-2 right-2">
-              <span class="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">
-                {{ getConditionLabel(article.condition || article.condicion) }}
-              </span>
-            </div>
-            <div class="absolute top-2 left-2">
-              <span class="bg-blue-500/90 text-white text-xs px-2 py-1 rounded-full font-medium">
-                {{ getCategoryLabel(article.category || article.categoria) }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Article Info -->
-          <div class="p-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-              {{ article.title || article.nombre }}
-            </h3>
-            
-            <p class="text-gray-600 text-sm mb-3 line-clamp-2">
-              {{ article.description || article.descripcion }}
-            </p>
-
-            <!-- Precio -->
-            <div class="text-2xl font-bold text-green-600 mb-4">
-              {{ formatPrice(article.price || article.precio_propuesto_vendedor) }}
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="space-y-2">
-              <button
-                @click="viewArticle(article)"
-                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
-              >
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-                Ver Detalles
-              </button>
-              
-              <button
-                @click="loginToBuy"
-                class="w-full border border-green-600 text-green-600 py-2 px-4 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 flex items-center justify-center"
-              >
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
-                </svg>
-                Comprar (Requiere Login)
-              </button>
-            </div>
-          </div>
+      <!-- Articles Grid - VERSIÓN SIMPLIFICADA PARA DEBUG -->
+      <div v-else-if="articles.length > 0" class="py-6">
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+          🧪 PRUEBA 1: Versión simplificada para encontrar el error de renderizado
+        </div>
+        <div v-for="article in articles" :key="article._id" class="p-2 border-b">
+          <p class="text-lg font-bold">{{ article.title || article.nombre }}</p>
+          <p>{{ formatPrice(article.price || article.precio_propuesto_vendedor) }}</p>
+          <p class="text-sm text-gray-500">ID: {{ article._id }}</p>
         </div>
       </div>
 
