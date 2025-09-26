@@ -71,47 +71,17 @@
             <!-- Left Column -->
             <div class="space-y-8 pt-8">
               <div class="space-y-6">
-                <!-- Problema actual -->
-                <div class="space-y-3">
-                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
-                    ¿Cansado de subir artículos y que nadie te escriba?
-                  </div>
-                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
-                    Publicas, esperas… y al final, nada.
-                  </div>
-                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
-                    Vender en apps de segunda mano no debería ser tan complicado.
-                  </div>
-                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
-                    Tu trastero no debería parecer un mercadillo.
-                  </div>
-                </div>
-
-                <!-- Separador -->
-                <div class="w-16 h-1 bg-gradient-to-r from-red-500 to-blue-500 rounded-full"></div>
-
-                <!-- Solución -->
-                <div class="space-y-3">
-                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
-                    Vende tus artículos en segundos, sin regateos ni chats eternos.
-                  </div>
-                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
-                    Tu espacio vale más: libera sitio y gana dinero o puntos al instante.
-                  </div>
-                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
-                    Haz sitio en tu casa sin perder tiempo.
-                  </div>
-                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
-                    Con nosotros decides: dinero directo o puntos para canjear.
-                  </div>
-                </div>
-
                 <!-- Título principal -->
                 <h1 class="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
                   <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     Rápido. Fácil. Sin chats.
                   </span>
                 </h1>
+                
+                <!-- Subtítulo -->
+                <p class="text-2xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Vende tus artículos en segundos, sin regateos ni chats eternos.
+                </p>
                 
                 <!-- Frases cortas y pegadizas -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
