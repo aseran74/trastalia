@@ -72,7 +72,7 @@
             <div class="space-y-8 pt-8">
               <div class="space-y-6">
                 <!-- Título principal -->
-                <h1 class="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
+                <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
                   Ha llegado otra manera de vender artículos
                   <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     de segunda mano
