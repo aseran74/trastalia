@@ -82,6 +82,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import API_BASE_URL from '@/config/api'
 
 const authStore = useAuthStore()
 const balance = ref(null)
@@ -94,9 +95,13 @@ const loadBalance = async () => {
     const token = authStore.token
     console.log('🔍 PointsBalance - Token obtenido:', token ? 'Sí' : 'No')
     
-    const response = await fetch('/api/user/points-balance', {
+    const url = `${API_BASE_URL}/api/user/points-balance`
+    console.log('🔍 PointsBalance - URL de la API:', url)
+    
+    const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     })
 

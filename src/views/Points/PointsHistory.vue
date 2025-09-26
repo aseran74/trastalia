@@ -157,6 +157,7 @@ import { ref, onMounted } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import PointsBalance from '@/components/PointsBalance.vue'
 import { useAuthStore } from '@/stores/auth'
+import API_BASE_URL from '@/config/api'
 
 const authStore = useAuthStore()
 
@@ -189,9 +190,13 @@ const loadTransactions = async (page = 1) => {
     if (filters.value.type) queryParams.append('type', filters.value.type)
     if (filters.value.status) queryParams.append('status', filters.value.status)
 
-    const response = await fetch(`/api/user/points-transactions?${queryParams}`, {
+    const url = `${API_BASE_URL}/api/user/points-transactions?${queryParams}`
+    console.log('🔍 URL de la API:', url)
+    
+    const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     })
 

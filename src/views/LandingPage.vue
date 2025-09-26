@@ -70,18 +70,64 @@
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <!-- Left Column -->
             <div class="space-y-8 pt-8">
-              <div class="space-y-4">
+              <div class="space-y-6">
+                <!-- Problema actual -->
+                <div class="space-y-3">
+                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
+                    ¿Cansado de subir artículos y que nadie te escriba?
+                  </div>
+                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
+                    Publicas, esperas… y al final, nada.
+                  </div>
+                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
+                    Vender en apps de segunda mano no debería ser tan complicado.
+                  </div>
+                  <div class="text-lg text-red-600 dark:text-red-400 font-medium">
+                    Tu trastero no debería parecer un mercadillo.
+                  </div>
+                </div>
+
+                <!-- Separador -->
+                <div class="w-16 h-1 bg-gradient-to-r from-red-500 to-blue-500 rounded-full"></div>
+
+                <!-- Solución -->
+                <div class="space-y-3">
+                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
+                    Vende tus artículos en segundos, sin regateos ni chats eternos.
+                  </div>
+                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
+                    Tu espacio vale más: libera sitio y gana dinero o puntos al instante.
+                  </div>
+                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
+                    Haz sitio en tu casa sin perder tiempo.
+                  </div>
+                  <div class="text-2xl text-green-600 dark:text-green-400 font-bold">
+                    Con nosotros decides: dinero directo o puntos para canjear.
+                  </div>
+                </div>
+
+                <!-- Título principal -->
                 <h1 class="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
-                  Ha llegado una nueva manera de
                   <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    vender artículos
+                    Rápido. Fácil. Sin chats.
                   </span>
-                  de Segunda Mano
                 </h1>
-                <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  La plataforma revolucionaria que combina compra, venta e intercambio con un sistema de puntos único. 
-                  Vende, compra o intercambia artículos de forma inteligente y sostenible.
-                </p>
+                
+                <!-- Frases cortas y pegadizas -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    De trastos a dinero en un clic.
+                  </div>
+                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                    Menos espera, más espacio.
+                  </div>
+                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                    Convierte tus cosas en valor real.
+                  </div>
+                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                    Olvídate de los mensajes que nunca acaban.
+                  </div>
+                </div>
               </div>
               
               <div class="flex flex-col sm:flex-row gap-4">
@@ -257,6 +303,140 @@
       </div>
     </section>
 
+    <!-- Comparison Section -->
+    <section class="py-20 px-6 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            Comparación Directa
+          </h2>
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Ve por qué Trastalia es diferente a Wallapop y otras apps de segunda mano
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <!-- Problemas con otras apps -->
+          <div class="space-y-6">
+            <h3 class="text-3xl font-bold text-red-600 dark:text-red-400 mb-6">
+              Otras Apps (Wallapop, etc.)
+            </h3>
+            <div class="space-y-4">
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✗</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Olvídate de los mensajes que nunca acaban</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✗</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Aquí no regateas: aceptas la oferta y listo</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✗</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Deja de esperar compradores fantasma: nosotros te compramos ya</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✗</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Chatear durante días para vender un artículo de 20€</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✗</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Publicar y esperar que alguien se interese</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Solución de Trastalia -->
+          <div class="space-y-6">
+            <h3 class="text-3xl font-bold text-green-600 dark:text-green-400 mb-6">
+              Con Trastalia
+            </h3>
+            <div class="space-y-4">
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✓</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Rápido. Fácil. Sin chats.</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✓</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>De trastos a dinero en un clic.</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✓</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Menos espera, más espacio.</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✓</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Convierte tus cosas en valor real.</strong>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-sm">✓</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Decides: dinero directo o puntos para canjear</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Call to action en la comparación -->
+        <div class="text-center mt-12">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl max-w-4xl mx-auto">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              ¿Listo para cambiar tu forma de vender?
+            </h3>
+            <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">
+              Únete a la revolución del comercio de segunda mano
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <router-link to="/signup" class="bg-gradient-to-r from-green-600 to-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                Empezar Ahora
+              </router-link>
+              <router-link to="/articulos" class="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-xl text-lg font-semibold hover:border-green-600 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300">
+                Ver Artículos
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- How it Works Section -->
     <section id="how-it-works" class="py-20 px-6 bg-gray-50 dark:bg-gray-800">
       <div class="mx-auto max-w-7xl">
@@ -322,21 +502,46 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 px-6">
+    <section class="py-20 px-6 bg-gradient-to-br from-blue-600 via-purple-600 to-green-600">
       <div class="mx-auto max-w-4xl text-center">
-        <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-          ¿Listo para Revolucionar tu Comercio?
+        <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">
+          Deja de Esperar.
+          <br>
+          <span class="text-yellow-300">Empieza a Vender.</span>
         </h2>
-        <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
-          Únete a miles de usuarios que ya están disfrutando de la nueva forma de vender artículos de segunda mano
+        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          <strong>Rápido. Fácil. Sin chats.</strong><br>
+          Convierte tus trastos en dinero real en segundos, no en días.
         </p>
+        
+        <!-- Frases destacadas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-w-3xl mx-auto">
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
+            <div class="text-lg font-bold">De trastos a dinero en un clic</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
+            <div class="text-lg font-bold">Menos espera, más espacio</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
+            <div class="text-lg font-bold">Convierte tus cosas en valor real</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
+            <div class="text-lg font-bold">Olvídate de los mensajes que nunca acaban</div>
+          </div>
+        </div>
+
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <router-link to="/signup" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-            Comenzar Ahora
+          <router-link to="/signup" class="bg-white text-blue-600 px-8 py-4 rounded-xl text-lg font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+            🚀 Empezar Gratis Ahora
           </router-link>
-          <router-link to="/signin" class="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-xl text-lg font-semibold hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
-            Ya tengo cuenta
+          <router-link to="/articulos" class="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300">
+            Ver Artículos Disponibles
           </router-link>
+        </div>
+        
+        <!-- Garantía -->
+        <div class="mt-8 text-blue-100">
+          <p class="text-sm">✅ Sin compromisos • ✅ Sin chats eternos • ✅ Dinero al instante</p>
         </div>
       </div>
     </section>
@@ -350,8 +555,9 @@
               <img src="/images/Trastalia3.png" alt="Trastalia" class="h-24 w-auto sm:h-28 md:h-32 lg:h-36 brightness-0 invert">
             </div>
             <p class="text-gray-400 mb-4">
-              La plataforma revolucionaria para el comercio de segunda mano. 
-              Vende, compra e intercambia de forma inteligente y sostenible.
+              <strong>Rápido. Fácil. Sin chats.</strong><br>
+              La plataforma que convierte tus trastos en dinero real en segundos. 
+              Deja de esperar compradores fantasma.
             </p>
           </div>
           
