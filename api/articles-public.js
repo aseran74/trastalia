@@ -1,4 +1,4 @@
-// Función serverless específica para /api/articles/public
+// Función serverless específica para /api/articles-public
 export default function handler(req, res) {
   // Configurar CORS
   res.setHeader('Access-Control-Allow-Credentials', true);

@@ -316,7 +316,7 @@ const maxPoints = ref(10000)
 const loadPublicArticles = async () => {
   loading.value = true
   try {
-    const url = API_BASE_URL ? `${API_BASE_URL}/api/articles/public` : '/api/articles/public'
+    const url = API_BASE_URL ? `${API_BASE_URL}/api/articles-public` : '/api/articles-public'
     console.log('🔍 Cargando artículos públicos desde:', url)
     
     const response = await fetch(url, {
