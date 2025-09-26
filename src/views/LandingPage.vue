@@ -274,108 +274,119 @@
     </section>
 
     <!-- Comparison Section -->
-    <section class="py-20 px-6 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20">
+    <section class="py-20 px-6 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
       <div class="mx-auto max-w-7xl">
         <div class="text-center mb-16">
-          <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            Comparación Directa
+          <h2 class="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            ¿Por qué elegir 
+            <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Trastalia
+            </span>?
           </h2>
           <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Ve por qué Trastalia es diferente a Wallapop y otras apps de segunda mano
+            La diferencia es clara: mientras otros te hacen esperar, nosotros te pagamos al instante
           </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- Problemas con otras apps -->
-          <div class="space-y-6">
-            <h3 class="text-3xl font-bold text-red-600 dark:text-red-400 mb-6">
-              Otras Apps (Wallapop, etc.)
-            </h3>
-            <div class="space-y-4">
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✗</span>
+          <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border-2 border-red-100 dark:border-red-900/30">
+            <div class="text-center mb-8">
+              <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-3xl">😤</span>
+              </div>
+              <h3 class="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
+                Otras Apps
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400">Wallapop, Milanuncios, etc.</p>
+            </div>
+            
+            <div class="space-y-6">
+              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-lg font-bold">✗</span>
                 </div>
                 <div class="text-lg text-gray-700 dark:text-gray-300">
                   <strong>Olvídate de los mensajes que nunca acaban</strong>
                 </div>
               </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✗</span>
-                </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Aquí no regateas: aceptas la oferta y listo</strong>
-                </div>
-              </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✗</span>
-                </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Deja de esperar compradores fantasma: nosotros te compramos ya</strong>
-                </div>
-              </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✗</span>
+              
+              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-lg font-bold">✗</span>
                 </div>
                 <div class="text-lg text-gray-700 dark:text-gray-300">
                   <strong>Chatear durante días para vender un artículo de 20€</strong>
                 </div>
               </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✗</span>
+              
+              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-lg font-bold">✗</span>
                 </div>
                 <div class="text-lg text-gray-700 dark:text-gray-300">
                   <strong>Publicar y esperar que alguien se interese</strong>
+                </div>
+              </div>
+              
+              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span class="text-white text-lg font-bold">✗</span>
+                </div>
+                <div class="text-lg text-gray-700 dark:text-gray-300">
+                  <strong>Regateos interminables y compradores fantasma</strong>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Solución de Trastalia -->
-          <div class="space-y-6">
-            <h3 class="text-3xl font-bold text-green-600 dark:text-green-400 mb-6">
-              Con Trastalia
-            </h3>
-            <div class="space-y-4">
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✓</span>
+          <div class="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-3xl p-8 shadow-xl border-2 border-green-200 dark:border-green-800/30 relative overflow-hidden">
+            <!-- Decoración de fondo -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400 to-blue-400 rounded-full opacity-10 -translate-y-16 translate-x-16"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-blue-400 to-purple-400 rounded-full opacity-10 translate-y-12 -translate-x-12"></div>
+            
+            <div class="text-center mb-8 relative z-10">
+              <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <span class="text-3xl">🚀</span>
+              </div>
+              <h3 class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
+                Con Trastalia
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400">La revolución del comercio de segunda mano</p>
+            </div>
+            
+            <div class="space-y-6 relative z-10">
+              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
+                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                  <span class="text-white text-lg font-bold">✓</span>
                 </div>
                 <div class="text-lg text-gray-700 dark:text-gray-300">
                   <strong>Rápido. Fácil. Sin chats.</strong>
                 </div>
               </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✓</span>
+              
+              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
+                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                  <span class="text-white text-lg font-bold">✓</span>
                 </div>
                 <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>De trastos a dinero en un clic.</strong>
+                  <strong>De trastos a dinero en un clic</strong>
                 </div>
               </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✓</span>
+              
+              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
+                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                  <span class="text-white text-lg font-bold">✓</span>
                 </div>
                 <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Menos espera, más espacio.</strong>
+                  <strong>Menos espera, más espacio</strong>
                 </div>
               </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✓</span>
-                </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Convierte tus cosas en valor real.</strong>
-                </div>
-              </div>
-              <div class="flex items-start space-x-3">
-                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-sm">✓</span>
+              
+              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
+                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
+                  <span class="text-white text-lg font-bold">✓</span>
                 </div>
                 <div class="text-lg text-gray-700 dark:text-gray-300">
                   <strong>Decides: dinero directo o puntos para canjear</strong>
