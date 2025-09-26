@@ -72,6 +72,8 @@ const ArticleSchema = new mongoose.Schema({
       // Estados de transferencia a Trastalia (artículo sigue en tienda)
       'TRASPASADO_A_TRASTALIA_POR_PUNTOS',
       'TRASPASADO_A_TRASTALIA_POR_DINERO',
+      // Estado pendiente de valoración de precio para tienda
+      'PENDIENTE_VALORACION_PRECIO_TIENDA',
       // Estados de venta final (artículo desaparece de tienda)
       'VENDIDO_PUNTOS',
       'VENDIDO_DINERO',
@@ -733,15 +735,18 @@ app.post('/api/articles/accept-offer', authMiddleware, async (req, res) => {
     } else {
       estadoArticulo = 'TRASPASADO_A_TRASTALIA_POR_PUNTOS';
     }
+    
+    // Después de transferir, el artículo debe pasar a estado pendiente de valoración
+    const estadoFinal = 'PENDIENTE_VALORACION_PRECIO_TIENDA';
 
-    // Actualizar el artículo - Transferir a Trastalia
+    // Actualizar el artículo - Transferir a Trastalia y marcar como pendiente de valoración
     const updatedArticle = await Article.findByIdAndUpdate(
       articleId,
       {
         sellerAccepted: true,
         sellerAcceptedDate: new Date(),
         status: 'comprado_por_trastalia',
-        estado_articulo: estadoArticulo,
+        estado_articulo: estadoFinal, // Usar el estado final pendiente de valoración
         // Transferir propiedad al administrador
         id_vendedor: adminUser._id,
         seller: adminUser._id,
@@ -753,7 +758,14 @@ app.post('/api/articles/accept-offer', authMiddleware, async (req, res) => {
         fecha_transferencia: new Date(),
         // Agregar campos para identificar el comprador (Trastalia)
         comprador: adminUser._id,
-        comprador_tipo: 'admin'
+        comprador_tipo: 'admin',
+        // Agregar información de la transferencia original
+        transferencia_original: {
+          tipo: selectedOption,
+          precio: selectedOption === 'money' ? article.adminDecision.moneyPrice : 0,
+          puntos: selectedOption === 'points' ? article.adminDecision.pointsAmount : 0,
+          fecha: new Date()
+        }
       },
       { new: true }
     ).populate('seller', 'name email points logisticsLevel reputation');
@@ -770,6 +782,80 @@ app.post('/api/articles/accept-offer', authMiddleware, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al aceptar la oferta'
+    });
+  }
+});
+
+// Ruta para que el admin valore el precio de venta en tienda
+app.post('/api/articles/set-store-price', authMiddleware, async (req, res) => {
+  try {
+    const { articleId, storePrice, storePoints } = req.body;
+    
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden valorar precios de tienda'
+      });
+    }
+    
+    if (!articleId) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID del artículo es requerido'
+      });
+    }
+    
+    if (!storePrice && !storePoints) {
+      return res.status(400).json({
+        success: false,
+        message: 'Debe especificar al menos un precio de venta (dinero o puntos)'
+      });
+    }
+    
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+    
+    if (article.estado_articulo !== 'PENDIENTE_VALORACION_PRECIO_TIENDA') {
+      return res.status(400).json({
+        success: false,
+        message: 'Este artículo no está pendiente de valoración de precio'
+      });
+    }
+    
+    // Actualizar el artículo con los precios de tienda
+    const updatedArticle = await Article.findByIdAndUpdate(
+      articleId,
+      {
+        estado_articulo: 'COMPRADO_POR_ADMIN', // Volver al estado de disponible en tienda
+        // Precios de venta en tienda
+        precio_venta_tienda: storePrice || 0,
+        puntos_venta_tienda: storePoints || 0,
+        // Fecha de valoración
+        fecha_valoracion_tienda: new Date(),
+        // Actualizar adminDecision con precios finales de tienda
+        'adminDecision.storePrice': storePrice || 0,
+        'adminDecision.storePoints': storePoints || 0,
+        'adminDecision.storePriceSet': true,
+        'adminDecision.storePriceDate': new Date()
+      },
+      { new: true }
+    ).populate('seller', 'name email points logisticsLevel reputation');
+    
+    res.json({
+      success: true,
+      message: 'Precio de tienda establecido correctamente. El artículo ya está disponible para la venta.',
+      data: updatedArticle
+    });
+  } catch (error) {
+    console.error('Error estableciendo precio de tienda:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al establecer el precio de tienda'
     });
   }
 });
@@ -1507,6 +1593,41 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// Endpoint para obtener artículos pendientes de valoración de precio
+app.get('/api/articles/pending-price-valuation', authMiddleware, async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden acceder a esta información'
+      });
+    }
+    
+    console.log('🔍 Buscando artículos pendientes de valoración de precio...');
+    
+    // Buscar artículos pendientes de valoración
+    const articles = await Article.find({ 
+      estado_articulo: 'PENDIENTE_VALORACION_PRECIO_TIENDA'
+    })
+      .populate('seller', 'name email points logisticsLevel reputation')
+      .populate('id_vendedor', 'name email points logisticsLevel reputation')
+      .sort({ fecha_transferencia: -1 });
+
+    console.log(`📦 Encontrados ${articles.length} artículos pendientes de valoración`);
+    
+    res.json({
+      success: true,
+      data: articles
+    });
+  } catch (error) {
+    console.error('Error obteniendo artículos pendientes de valoración:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
 // Endpoint para obtener artículos que son propiedad del admin (disponibles para compra)
 app.get('/api/articles/admin-owned', async (req, res) => {
   try {
@@ -1518,7 +1639,8 @@ app.get('/api/articles/admin-owned', async (req, res) => {
         $in: [
           'COMPRADO_POR_ADMIN',
           'TRASPASADO_A_TRASTALIA_POR_PUNTOS',
-          'TRASPASADO_A_TRASTALIA_POR_DINERO'
+          'TRASPASADO_A_TRASTALIA_POR_DINERO',
+          'PENDIENTE_VALORACION_PRECIO_TIENDA'
         ]
       },
       comprador: { $exists: false } // Excluir artículos ya vendidos

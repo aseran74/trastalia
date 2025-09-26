@@ -366,6 +366,11 @@ const menuGroups = [
         path: "/admin/articulos",
       },
       {
+        icon: PieChartIcon,
+        name: "Pendientes Valoración",
+        path: "/admin/articulos/pendientes-valoracion",
+      },
+      {
         icon: LogisticsIcon,
         name: "Centros Logísticos",
         path: "/centros-logisticos",
