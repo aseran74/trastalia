@@ -17,9 +17,9 @@
             
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-6">
-              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Características</a>
-              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Cómo funciona</a>
-              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Precios</a>
+              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Inicio</router-link>
+              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Categorías</a>
+              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Destacados</a>
               <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
               
               <!-- Menú de perfil si está logueado, botón de login si no -->
@@ -50,8 +50,9 @@
           <div v-if="mobileMenuOpen" class="md:hidden mt-4 py-4 border-t border-gray-200 dark:border-gray-700">
             <div class="flex flex-col space-y-4">
               
-              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Cómo funciona</a>
-              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Precios</a>
+              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Inicio</router-link>
+              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Categorías</a>
+              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Destacados</a>
               <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Ver Artículos</router-link>
               
               <!-- Botón de login para móvil si no está logueado -->
@@ -118,6 +119,73 @@
           </div>
         </div>
       </div>
+
+      <!-- Sección de Categorías -->
+      <section id="categorias" class="mb-16">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Categorías Populares</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">Explora artículos por categoría</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div class="text-2xl mb-2">📱</div>
+            <div class="text-sm font-medium text-gray-700">Tecnología</div>
+          </div>
+          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div class="text-2xl mb-2">👕</div>
+            <div class="text-sm font-medium text-gray-700">Ropa</div>
+          </div>
+          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div class="text-2xl mb-2">🏠</div>
+            <div class="text-sm font-medium text-gray-700">Hogar</div>
+          </div>
+          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div class="text-2xl mb-2">🚗</div>
+            <div class="text-sm font-medium text-gray-700">Automóviles</div>
+          </div>
+          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div class="text-2xl mb-2">🎮</div>
+            <div class="text-sm font-medium text-gray-700">Gaming</div>
+          </div>
+          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div class="text-2xl mb-2">📚</div>
+            <div class="text-sm font-medium text-gray-700">Libros</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección de Destacados -->
+      <section id="destacados" class="mb-16">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Artículos Destacados</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">Los artículos más populares de la semana</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-center">
+              <div class="text-4xl mb-4">🏆</div>
+              <h3 class="font-semibold text-gray-900 mb-2">Más Vendidos</h3>
+              <p class="text-sm text-gray-600">Los artículos con más compras</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-center">
+              <div class="text-4xl mb-4">⭐</div>
+              <h3 class="font-semibold text-gray-900 mb-2">Mejor Valorados</h3>
+              <p class="text-sm text-gray-600">Los artículos con mejor calidad</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-center">
+              <div class="text-4xl mb-4">🆕</div>
+              <h3 class="font-semibold text-gray-900 mb-2">Recién Llegados</h3>
+              <p class="text-sm text-gray-600">Los artículos más recientes</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div v-if="loading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -477,6 +545,21 @@ onMounted(() => {
   
   // Add scroll event listener
   window.addEventListener('scroll', handleScroll)
+  
+  // Smooth scrolling for anchor links
+  const links = document.querySelectorAll('a[href^="#"]')
+  links.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault()
+      const target = document.querySelector(link.getAttribute('href') || '')
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }
+    })
+  })
 })
 
 onUnmounted(() => {
