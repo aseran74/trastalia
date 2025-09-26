@@ -138,7 +138,7 @@
                       <button
                         v-if="request.adminStatus === 'pending'"
                         @click="openOfferModal(request)"
-                        class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
                       >
                         Hacer Oferta
                       </button>
@@ -258,7 +258,7 @@
           <button
             @click="submitOffer"
             :disabled="!isOfferValid"
-            class="flex-1 bg-primary hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 px-4 rounded-md text-sm font-semibold transition-colors"
+            class="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 px-4 rounded-md text-sm font-semibold transition-colors"
           >
             Enviar Oferta
           </button>
