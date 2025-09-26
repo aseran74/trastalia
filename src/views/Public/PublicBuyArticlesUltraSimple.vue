@@ -1,24 +1,70 @@
 <template>
   <div class="min-h-screen bg-gray-100">
-    <div class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-6">
-          <div class="flex items-center">
-            <img src="/images/Trastalia3.png" alt="Trastalia" class="h-12 w-auto"/>
+    <!-- Header -->
+    <header 
+      :class="[
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        isScrolled ? 'bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm' : 'bg-transparent'
+      ]"
+    >
+      <!-- Navigation -->
+      <nav class="relative z-10 px-4 py-3">
+        <div class="mx-auto max-w-5xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <img src="/images/Trastalia3.png" alt="Trastalia" class="h-16 w-auto sm:h-18 md:h-20">
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-6">
+              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Características</a>
+              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Cómo funciona</a>
+              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Precios</a>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
+              
+              <!-- Menú de perfil si está logueado, botón de login si no -->
+              <UserProfileMenu v-if="authStore.isAuthenticated" />
+              <router-link v-else to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                Iniciar Sesión
+              </router-link>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center space-x-4">
+              
+              <UserProfileMenu v-if="authStore.isAuthenticated" />
+              
+              <!-- Botón de menú hamburguesa -->
+              <button
+                @click="toggleMobileMenu"
+                class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div class="flex items-center space-x-4">
-            <router-link to="/" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              Inicio
-            </router-link>
-            <router-link to="/signin" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-              Iniciar Sesión
-            </router-link>
+
+          <!-- Mobile Menu -->
+          <div v-if="mobileMenuOpen" class="md:hidden mt-4 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex flex-col space-y-4">
+              
+              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Cómo funciona</a>
+              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Precios</a>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Ver Artículos</router-link>
+              
+              <!-- Botón de login para móvil si no está logueado -->
+              <router-link v-if="!authStore.isAuthenticated" to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-center" @click="mobileMenuOpen = false">
+                Iniciar Sesión
+              </router-link>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </nav>
+    </header>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
       <div class="text-center mb-12">
         <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Artículos Disponibles</h1>
         <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
@@ -197,11 +243,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import UserProfileMenu from '@/components/landing/UserProfileMenu.vue'
 import API_BASE_URL from '@/config/api'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 // Estado ultra simple - solo lo esencial
 const articles = ref([])
@@ -211,6 +260,10 @@ const loading = ref(false)
 const showLoginModal = ref(false)
 const selectedArticle = ref(null)
 const purchaseType = ref('money') // 'money' o 'points'
+
+// Estados para la navbar
+const mobileMenuOpen = ref(false)
+const isScrolled = ref(false)
 
 // Cargar artículos públicos - versión ultra simple
 const loadPublicArticles = async () => {
@@ -362,8 +415,24 @@ const goToRegister = () => {
   router.push('/signup')
 }
 
+// Funciones para la navbar
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+}
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50
+}
+
 onMounted(() => {
   console.log('🎯 Componente montado, cargando artículos...')
   loadPublicArticles()
+  
+  // Add scroll event listener
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
