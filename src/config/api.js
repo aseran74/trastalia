@@ -1,7 +1,7 @@
 // Configuración de la API
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
   (import.meta.env.PROD 
-    ? 'https://web-production-08299.up.railway.app' 
+    ? 'https://trastalia.vercel.app' 
     : ''); // En desarrollo local, usar rutas relativas para el proxy de Vite
 
 // Función para obtener la URL base de la API
