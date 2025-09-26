@@ -1,11 +1,20 @@
 <template>
-  <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-    <ToastContainer />
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="text-title-md2 font-semibold text-black dark:text-white">
-        Gestionar Solicitudes de Compra
-      </h2>
-    </div>
+  <div class="min-h-screen xl:flex">
+    <app-sidebar />
+    <Backdrop />
+    <div
+      class="flex-1 transition-all duration-300 ease-in-out"
+      :class="[isExpanded || isHovered ? 'lg:ml-[290px]' : 'lg:ml-[90px]']"
+    >
+      <app-header />
+      <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+        <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+          <ToastContainer />
+          <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-title-md2 font-semibold text-black dark:text-white">
+              Gestionar Solicitudes de Compra
+            </h2>
+          </div>
 
     <!-- Filtros -->
     <div class="mb-6 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -280,9 +289,16 @@ import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import ToastContainer from '@/components/ui/ToastContainer.vue'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import Backdrop from '@/components/layout/Backdrop.vue'
+import { useSidebar } from '@/composables/useSidebar'
 
 const authStore = useAuthStore()
 const toast = useToast()
+
+// Sidebar state
+const { isExpanded, isHovered } = useSidebar()
 
 const articles = ref([])
 const loading = ref(false)
@@ -318,7 +334,7 @@ const loadArticles = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch('/api/articles/admin/pending', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/admin/pending`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -364,7 +380,7 @@ const submitOffer = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch('/api/ofertas-admin', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ofertas-admin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

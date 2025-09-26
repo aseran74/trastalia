@@ -1,11 +1,20 @@
 <template>
-  <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-    <ToastContainer />
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="text-title-md2 font-semibold text-black dark:text-white">
-        Artículos Pendientes de Valoración
-      </h2>
-    </div>
+  <div class="min-h-screen xl:flex">
+    <app-sidebar />
+    <Backdrop />
+    <div
+      class="flex-1 transition-all duration-300 ease-in-out"
+      :class="[isExpanded || isHovered ? 'lg:ml-[290px]' : 'lg:ml-[90px]']"
+    >
+      <app-header />
+      <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+        <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+          <ToastContainer />
+          <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-title-md2 font-semibold text-black dark:text-white">
+              Artículos Pendientes de Valoración
+            </h2>
+          </div>
     
     <div class="mb-6 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
       <p class="text-gray-600 dark:text-gray-300">
@@ -140,17 +149,24 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import ToastContainer from '@/components/ui/ToastContainer.vue'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import Backdrop from '@/components/layout/Backdrop.vue'
+import { useSidebar } from '@/composables/useSidebar'
 
 const authStore = useAuthStore()
 const articles = ref([])
 const loading = ref(false)
 const priceForms = reactive({})
 
+// Sidebar state
+const { isExpanded, isHovered } = useSidebar()
+
 // Cargar artículos pendientes de valoración
 const loadPendingArticles = async () => {
   loading.value = true
   try {
-    const response = await fetch('/api/articles/pending-price-valuation', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/pending-price-valuation`, {
       headers: {
         'Authorization': `Bearer ${authStore.token}`
       }
@@ -187,7 +203,7 @@ const setStorePrice = async (articleId) => {
   }
   
   try {
-    const response = await fetch('/api/articles/set-store-price', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/set-store-price`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
