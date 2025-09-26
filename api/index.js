@@ -527,3 +527,8 @@ app.get('/api/articles/:id', (req, res) => {
 
 // Exportar la app para Vercel
 module.exports = app;
+
+// Para Vercel, también necesitamos exportar el handler
+module.exports.handler = (req, res) => {
+  app(req, res);
+};
