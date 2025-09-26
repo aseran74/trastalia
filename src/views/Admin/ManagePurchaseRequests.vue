@@ -399,8 +399,11 @@ const submitOffer = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        articleId: selectedRequest.value._id,
-        ...offerData.value
+        articulo_id: selectedRequest.value._id,
+        tipo_oferta: offerData.value.tipo_oferta,
+        precio_ofertado: offerData.value.precio_ofertado,
+        puntos_ofertados: offerData.value.puntos_ofertados,
+        comentarios: offerData.value.comentarios
       })
     })
     
