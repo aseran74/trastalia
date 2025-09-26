@@ -65,11 +65,58 @@
     </header>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-      <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Artículos Disponibles</h1>
-        <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-          Descubre una amplia selección de artículos de segunda mano verificados y en excelente estado.
-        </p>
+      <!-- Hero Section Mejorado -->
+      <div class="text-center mb-16">
+        <div class="relative">
+          <!-- Badge superior -->
+          <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 text-sm font-semibold mb-6 shadow-sm">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            Artículos Verificados
+          </div>
+          
+          <!-- Título principal -->
+          <h1 class="text-5xl lg:text-7xl font-bold tracking-tight text-gray-900 mb-6">
+            Artículos
+            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
+              Disponibles
+            </span>
+          </h1>
+          
+          <!-- Subtítulo mejorado -->
+          <p class="text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
+            Descubre una <span class="font-semibold text-gray-800">amplia selección</span> de artículos de segunda mano 
+            <span class="font-semibold text-blue-600">verificados</span> y en 
+            <span class="font-semibold text-green-600">excelente estado</span>
+          </p>
+          
+          <!-- Estadísticas rápidas -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto mb-8">
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div class="text-2xl font-bold text-blue-600">1000+</div>
+              <div class="text-sm text-gray-600">Artículos</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div class="text-2xl font-bold text-purple-600">500+</div>
+              <div class="text-sm text-gray-600">Usuarios</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div class="text-2xl font-bold text-green-600">95%</div>
+              <div class="text-sm text-gray-600">Satisfacción</div>
+            </div>
+          </div>
+          
+          <!-- CTA buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+              🔍 Explorar Artículos
+            </button>
+            <button class="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl text-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-all duration-300">
+              📱 Ver en App
+            </button>
+          </div>
+        </div>
       </div>
 
       <div v-if="loading" class="flex justify-center py-12">
