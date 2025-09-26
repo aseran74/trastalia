@@ -137,7 +137,7 @@ const loadPublicArticles = async () => {
   loading.value = true
   
   try {
-    const baseUrl = API_BASE_URL ? `${API_BASE_URL}/api/articles-public` : '/api/articles-public'
+    const baseUrl = API_BASE_URL ? `${API_BASE_URL}/api/articles/public` : '/api/articles/public'
     const url = `${baseUrl}?t=${Date.now()}`
     console.log('🔍 Cargando artículos desde:', url)
     console.log('🔧 API_BASE_URL:', API_BASE_URL)
