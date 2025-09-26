@@ -137,8 +137,12 @@ const loadPublicArticles = async () => {
   loading.value = true
   
   try {
-    const url = API_BASE_URL ? `${API_BASE_URL}/api/articles-public` : '/api/articles-public'
+    const baseUrl = API_BASE_URL ? `${API_BASE_URL}/api/articles-public` : '/api/articles-public'
+    const url = `${baseUrl}?t=${Date.now()}`
     console.log('🔍 Cargando artículos desde:', url)
+    console.log('🔧 API_BASE_URL:', API_BASE_URL)
+    console.log('🔧 PROD:', import.meta.env.PROD)
+    console.log('🔧 DEV:', import.meta.env.DEV)
     
     const response = await fetch(url, {
       method: 'GET',
@@ -157,6 +161,8 @@ const loadPublicArticles = async () => {
       console.log('📋 Primer artículo:', articles.value[0])
     } else {
       console.error('❌ Error del servidor:', response.status, response.statusText)
+      const errorText = await response.text()
+      console.error('❌ Error response body:', errorText)
     }
   } catch (error) {
     console.error('❌ Error cargando artículos:', error)
