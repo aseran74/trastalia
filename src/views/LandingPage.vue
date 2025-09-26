@@ -78,27 +78,6 @@
                     de segunda mano
                   </span>
                 </h1>
-                
-                <!-- Subtítulo -->
-                <p class="text-2xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Vende tus artículos en segundos, sin regateos ni chats eternos.
-                </p>
-                
-                <!-- Frases cortas y pegadizas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                    De trastos a dinero en un clic.
-                  </div>
-                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-                    Menos espera, más espacio.
-                  </div>
-                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                    Convierte tus cosas en valor real.
-                  </div>
-                  <div class="text-xl font-bold text-gray-800 dark:text-gray-200 bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
-                    Olvídate de los mensajes que nunca acaban.
-                  </div>
-                </div>
               </div>
               
               <div class="flex flex-col sm:flex-row gap-4">
