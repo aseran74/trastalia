@@ -123,6 +123,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import API_BASE_URL from '@/config/api'
 
 const router = useRouter()
 
@@ -136,7 +137,10 @@ const loadPublicArticles = async () => {
   loading.value = true
   
   try {
-    const response = await fetch('/api/articles/public', {
+    const url = API_BASE_URL ? `${API_BASE_URL}/api/articles-public` : '/api/articles-public'
+    console.log('🔍 Cargando artículos desde:', url)
+    
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
