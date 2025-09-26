@@ -462,50 +462,6 @@
       </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-20 px-6 bg-gradient-to-br from-blue-600 via-purple-600 to-green-600">
-      <div class="mx-auto max-w-4xl text-center">
-        <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">
-          Deja de Esperar.
-          <br>
-          <span class="text-yellow-300">Empieza a Vender.</span>
-        </h2>
-        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-          <strong>Rápido. Fácil. Sin chats.</strong><br>
-          Convierte tus trastos en dinero real en segundos, no en días.
-        </p>
-        
-        <!-- Frases destacadas -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-w-3xl mx-auto">
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
-            <div class="text-lg font-bold">De trastos a dinero en un clic</div>
-          </div>
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
-            <div class="text-lg font-bold">Menos espera, más espacio</div>
-          </div>
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
-            <div class="text-lg font-bold">Convierte tus cosas en valor real</div>
-          </div>
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white">
-            <div class="text-lg font-bold">Olvídate de los mensajes que nunca acaban</div>
-          </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <router-link to="/signup" class="bg-white text-blue-600 px-8 py-4 rounded-xl text-lg font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
-            🚀 Empezar Gratis Ahora
-          </router-link>
-          <router-link to="/articulos" class="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300">
-            Ver Artículos Disponibles
-          </router-link>
-        </div>
-        
-        <!-- Garantía -->
-        <div class="mt-8 text-blue-100">
-          <p class="text-sm">✅ Sin compromisos • ✅ Sin chats eternos • ✅ Dinero al instante</p>
-        </div>
-      </div>
-    </section>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12 px-6">
