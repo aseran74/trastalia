@@ -139,7 +139,7 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import ToastContainer from '@/components/ToastContainer.vue'
+import ToastContainer from '@/components/ui/ToastContainer.vue'
 
 const authStore = useAuthStore()
 const articles = ref([])
