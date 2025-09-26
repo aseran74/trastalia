@@ -16,183 +16,168 @@
             </h2>
           </div>
 
-    <!-- Filtros -->
-    <div class="mb-6 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div>
-          <label class="mb-2.5 block text-black dark:text-white">Estado</label>
-          <select v-model="filters.estado" class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
-            <option value="">Todos los estados</option>
-            <option value="pending">Pendiente de Revisión</option>
-            <option value="approved_money">Aprobado (Dinero)</option>
-            <option value="approved_points">Aprobado (Puntos)</option>
-            <option value="approved_both">Aprobado (Ambas opciones)</option>
-            <option value="rejected">Rechazado</option>
-          </select>
-        </div>
-        <div>
-          <label class="mb-2.5 block text-black dark:text-white">Categoría</label>
-          <select v-model="filters.categoria" class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
-            <option value="">Todas las categorías</option>
-            <option value="tecnologia">Tecnología</option>
-            <option value="hogar">Hogar</option>
-            <option value="deportes">Deportes</option>
-            <option value="moda">Moda</option>
-            <option value="juegos">Juegos</option>
-            <option value="libros">Libros</option>
-            <option value="mascotas">Mascotas</option>
-            <option value="otros">Otros</option>
-          </select>
-        </div>
-        <div class="flex items-end">
-          <button @click="loadArticles" class="w-full rounded bg-primary py-3 px-6 font-medium text-gray hover:bg-opacity-90">
-            Filtrar
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lista de artículos -->
-    <div v-if="loading" class="text-center py-8">
-      <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">Cargando artículos...</p>
-    </div>
-
-    <div v-else-if="filteredArticles.length === 0" class="text-center py-8">
-      <p class="text-gray-600 dark:text-gray-400">No hay artículos que coincidan con los filtros.</p>
-    </div>
-
-    <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <div 
-        v-for="article in filteredArticles" 
-        :key="article._id"
-        class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
-      >
-        <!-- Imagen del artículo -->
-        <div class="aspect-w-16 aspect-h-9 bg-gray-200 dark:bg-gray-700 rounded-t-sm">
-          <img 
-            v-if="article.images && article.images.length > 0"
-            :src="article.images[0]" 
-            :alt="article.title"
-            class="w-full h-48 object-cover rounded-t-sm"
-          />
-          <div v-else class="w-full h-48 flex items-center justify-center text-gray-500">
-            <span>Sin imagen</span>
-          </div>
-        </div>
-
-        <!-- Información del artículo -->
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-black dark:text-white mb-2">
-            {{ article.title }}
-          </h3>
-          
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-            {{ article.description }}
-          </p>
-
-          <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Precio sugerido:</span>
-              <span class="font-semibold text-black dark:text-white">€{{ article.price }}</span>
-            </div>
-            
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Categoría:</span>
-              <span class="capitalize">{{ article.category }}</span>
-            </div>
-            
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Condición:</span>
-              <span class="capitalize">{{ article.condition }}</span>
-            </div>
-            
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Ubicación:</span>
-              <span class="capitalize">{{ article.location || 'No especificada' }}</span>
-            </div>
-            
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Estado:</span>
-              <span 
-                class="px-2 py-1 rounded text-xs font-medium"
-                :class="getEstadoClass(article.adminStatus)"
-              >
-                {{ getEstadoText(article.adminStatus) }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Información del vendedor -->
-          <div class="border-t border-stroke dark:border-strokedark pt-3 mb-4">
-            <div class="flex items-center space-x-3">
-              <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                {{ article.seller.name.charAt(0).toUpperCase() }}
-              </div>
+          <!-- Filtros -->
+          <div class="mb-6 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <p class="text-sm font-medium text-black dark:text-white">{{ article.seller.name }}</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">{{ article.seller.email }}</p>
+                <label class="mb-2.5 block text-black dark:text-white">Estado</label>
+                <select v-model="filters.estado" class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
+                  <option value="">Todos los estados</option>
+                  <option value="pending">Pendiente de Revisión</option>
+                  <option value="approved_money">Aprobado (Dinero)</option>
+                  <option value="approved_points">Aprobado (Puntos)</option>
+                  <option value="approved_both">Aprobado (Ambas opciones)</option>
+                  <option value="rejected">Rechazado</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="mb-2.5 block text-black dark:text-white">Categoría</label>
+                <select v-model="filters.categoria" class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
+                  <option value="">Todas las categorías</option>
+                  <option value="tecnologia">Tecnología</option>
+                  <option value="hogar">Hogar</option>
+                  <option value="deportes">Deportes</option>
+                  <option value="juegos">Juegos</option>
+                  <option value="moda">Moda</option>
+                  <option value="libros">Libros</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="mb-2.5 block text-black dark:text-white">Ordenar por</label>
+                <select v-model="filters.ordenar" class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
+                  <option value="fecha_desc">Más recientes</option>
+                  <option value="fecha_asc">Más antiguos</option>
+                  <option value="precio_desc">Mayor precio</option>
+                  <option value="precio_asc">Menor precio</option>
+                </select>
               </div>
             </div>
           </div>
 
-          <!-- Oferta del administrador (si existe) -->
-          <div v-if="article.oferta_admin && article.oferta_admin.precio_ofertado" class="border-t border-stroke dark:border-strokedark pt-3 mb-4">
-            <h4 class="text-sm font-semibold text-black dark:text-white mb-2">Oferta del Administrador</h4>
-            <div class="space-y-1 text-sm">
-              <div v-if="article.oferta_admin.precio_ofertado" class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Precio ofertado:</span>
-                <span class="font-semibold text-green-600">€{{ article.oferta_admin.precio_ofertado }}</span>
-              </div>
-              <div v-if="article.oferta_admin.puntos_ofertados" class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Puntos ofertados:</span>
-                <span class="font-semibold text-blue-600">{{ article.oferta_admin.puntos_ofertados.toLocaleString() }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Estado:</span>
-                <span 
-                  class="px-2 py-1 rounded text-xs font-medium"
-                  :class="getOfertaEstadoClass(article.oferta_admin.estado_oferta)"
-                >
-                  {{ getOfertaEstadoText(article.oferta_admin.estado_oferta) }}
-                </span>
-              </div>
+          <!-- Loading state -->
+          <div v-if="loading" class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="flex justify-center items-center py-12">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
           </div>
 
-          <!-- Acciones -->
-          <div class="flex space-x-2">
-            <button
-              v-if="article.adminStatus === 'pending'"
-              @click="createOffer(article)"
-              class="flex-1 rounded bg-primary py-2 px-3 text-sm font-medium text-gray hover:bg-opacity-90"
+          <!-- Empty state -->
+          <div v-else-if="filteredRequests.length === 0" class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="text-center py-12">
+              <div class="text-gray-400 dark:text-gray-500 mb-4">
+                <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-medium text-black dark:text-white mb-2">No hay solicitudes</h3>
+              <p class="text-gray-500 dark:text-gray-400">No se encontraron solicitudes de compra con los filtros seleccionados.</p>
+            </div>
+          </div>
+
+          <!-- Requests list -->
+          <div v-else class="space-y-6">
+            <div 
+              v-for="request in filteredRequests" 
+              :key="request._id"
+              class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark overflow-hidden hover:shadow-lg transition-shadow duration-200"
             >
-              Crear Oferta
-            </button>
-            
-            <button
-              v-if="article.adminStatus === 'approved_money' || article.adminStatus === 'approved_points' || article.adminStatus === 'approved_both'"
-              @click="viewDetails(article)"
-              class="flex-1 rounded border border-stroke py-2 px-3 text-sm font-medium text-black hover:bg-gray-50 dark:border-strokedark dark:text-white dark:hover:bg-boxdark"
-            >
-              Ver Detalles
-            </button>
+              <div class="p-6">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  <!-- Article Info -->
+                  <div class="flex-1">
+                    <div class="flex items-start gap-4">
+                      <!-- Article Image -->
+                      <div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0">
+                        <img 
+                          v-if="request.images && request.images.length > 0"
+                          :src="request.images[0]" 
+                          :alt="request.title || request.nombre"
+                          class="w-full h-full object-cover rounded-lg"
+                          @error="handleImageError"
+                        />
+                        <div v-else class="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                          <svg class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      </div>
+                      
+                      <!-- Article Details -->
+                      <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-black dark:text-white mb-2">
+                          {{ request.title || request.nombre }}
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">
+                          {{ request.description || request.descripcion }}
+                        </p>
+                        <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                          <span><strong>Vendedor:</strong> {{ request.id_vendedor?.name || request.seller?.name || 'Usuario' }}</span>
+                          <span><strong>Fecha:</strong> {{ formatDate(request.createdAt) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Status and Actions -->
+                  <div class="flex flex-col gap-3 lg:items-end">
+                    <!-- Status Badge -->
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Estado:</span>
+                      <span 
+                        :class="getStatusClass(request.adminStatus)"
+                        class="px-3 py-1 rounded-full text-xs font-semibold"
+                      >
+                        {{ getStatusText(request.adminStatus) }}
+                      </span>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                      <button
+                        v-if="request.adminStatus === 'pending'"
+                        @click="openOfferModal(request)"
+                        class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
+                      >
+                        Hacer Oferta
+                      </button>
+                      
+                      <button
+                        v-if="request.adminStatus === 'pending'"
+                        @click="rejectRequest(request)"
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
+                      >
+                        Rechazar
+                      </button>
+                      
+                      <button
+                        @click="viewRequest(request)"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
+                      >
+                        Ver Detalles
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal para crear oferta -->
-    <div v-if="showOfferModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <!-- Offer Modal -->
+    <div v-if="showOfferModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-boxdark rounded-lg p-6 w-full max-w-md mx-4">
         <h3 class="text-lg font-semibold text-black dark:text-white mb-4">
-          Crear Oferta para {{ selectedArticle?.title }}
+          Hacer Oferta
         </h3>
         
-        <form @submit.prevent="submitOffer">
-          <div class="mb-4">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
-              Tipo de oferta
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-black dark:text-white mb-2">
+              Tipo de Oferta
             </label>
             <div class="space-y-2">
               <label class="flex items-center space-x-2">
@@ -252,33 +237,32 @@
 
           <div class="mb-4">
             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
-              Comentarios
+              Comentarios (opcional)
             </label>
             <textarea
               v-model="offerData.comentarios"
               rows="3"
               class="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 font-medium outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              placeholder="Comentarios sobre la oferta..."
+              placeholder="Añade comentarios sobre tu oferta..."
             ></textarea>
           </div>
-
-          <div class="flex justify-end space-x-3">
-            <button
-              type="button"
-              @click="closeOfferModal"
-              class="rounded border border-stroke py-2 px-4 text-sm font-medium text-black hover:bg-gray-50 dark:border-strokedark dark:text-white dark:hover:bg-boxdark"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              :disabled="loading"
-              class="rounded bg-primary py-2 px-4 text-sm font-medium text-gray hover:bg-opacity-90 disabled:opacity-50"
-            >
-              Crear Oferta
-            </button>
-          </div>
-        </form>
+        </div>
+        
+        <div class="flex space-x-3 mt-6">
+          <button
+            @click="closeOfferModal"
+            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md text-sm font-semibold transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="submitOffer"
+            :disabled="!isOfferValid"
+            class="flex-1 bg-primary hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 px-4 rounded-md text-sm font-semibold transition-colors"
+          >
+            Enviar Oferta
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -297,18 +281,21 @@ import { useSidebar } from '@/composables/useSidebar'
 const authStore = useAuthStore()
 const toast = useToast()
 
-// Sidebar state
+// Sidebar logic
 const { isExpanded, isHovered } = useSidebar()
 
-const articles = ref([])
+// Estado reactivo
+const requests = ref([])
 const loading = ref(false)
+const showOfferModal = ref(false)
+const selectedRequest = ref(null)
+
 const filters = ref({
   estado: '',
-  categoria: ''
+  categoria: '',
+  ordenar: 'fecha_desc'
 })
 
-const showOfferModal = ref(false)
-const selectedArticle = ref(null)
 const offerData = ref({
   tipo_oferta: 'dinero',
   precio_ofertado: 0,
@@ -316,58 +303,71 @@ const offerData = ref({
   comentarios: ''
 })
 
-const filteredArticles = computed(() => {
-  let filtered = articles.value
-
-  if (filters.value.estado) {
-    filtered = filtered.filter(article => article.adminStatus === filters.value.estado)
-  }
-
-  if (filters.value.categoria) {
-    filtered = filtered.filter(article => article.category === filters.value.categoria)
-  }
-
-  return filtered
-})
-
-const loadArticles = async () => {
+// Cargar solicitudes
+const loadRequests = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/admin/pending`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/my-purchase-requests`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     })
-
+    
     if (response.ok) {
-      const result = await response.json()
-      articles.value = result.data
+      const data = await response.json()
+      requests.value = data.data || []
+      console.log('📋 Solicitudes cargadas:', requests.value.length)
     } else {
-      toast.error('Error al cargar las solicitudes de compra')
+      console.error('Error cargando solicitudes:', response.statusText)
     }
   } catch (error) {
-    console.error('Error cargando solicitudes:', error)
-    toast.error('Error de conexión al servidor')
+    console.error('Error:', error)
   } finally {
     loading.value = false
   }
 }
 
-const createOffer = (article) => {
-  selectedArticle.value = article
+// Filtrar solicitudes
+const filteredRequests = computed(() => {
+  let filtered = requests.value.filter(request => {
+    if (filters.value.estado && request.adminStatus !== filters.value.estado) return false
+    if (filters.value.categoria && request.category !== filters.value.categoria) return false
+    return true
+  })
+  
+  // Ordenar
+  switch (filters.value.ordenar) {
+    case 'fecha_asc':
+      return filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    case 'fecha_desc':
+      return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    case 'precio_asc':
+      return filtered.sort((a, b) => (a.price || 0) - (b.price || 0))
+    case 'precio_desc':
+      return filtered.sort((a, b) => (b.price || 0) - (a.price || 0))
+    default:
+      return filtered
+  }
+})
+
+// Abrir modal de oferta
+const openOfferModal = (request) => {
+  selectedRequest.value = request
   offerData.value = {
     tipo_oferta: 'dinero',
-    precio_ofertado: Math.round(article.price * 0.8), // 20% menos
-    puntos_ofertados: Math.round(article.price * 100), // 1€ = 100 puntos
+    precio_ofertado: 0,
+    puntos_ofertados: 0,
     comentarios: ''
   }
   showOfferModal.value = true
 }
 
+// Cerrar modal de oferta
 const closeOfferModal = () => {
   showOfferModal.value = false
-  selectedArticle.value = null
+  selectedRequest.value = null
   offerData.value = {
     tipo_oferta: 'dinero',
     precio_ofertado: 0,
@@ -376,85 +376,128 @@ const closeOfferModal = () => {
   }
 }
 
+// Validar oferta
+const isOfferValid = computed(() => {
+  if (!offerData.value.tipo_oferta) return false
+  if (offerData.value.tipo_oferta === 'dinero' && offerData.value.precio_ofertado <= 0) return false
+  if (offerData.value.tipo_oferta === 'puntos' && offerData.value.puntos_ofertados <= 0) return false
+  if (offerData.value.tipo_oferta === 'ambos' && (offerData.value.precio_ofertado <= 0 || offerData.value.puntos_ofertados <= 0)) return false
+  return true
+})
+
+// Enviar oferta
 const submitOffer = async () => {
-  loading.value = true
+  if (!selectedRequest.value) return
+  
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ofertas-admin`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        articulo_id: selectedArticle.value._id,
+        articleId: selectedRequest.value._id,
         ...offerData.value
       })
     })
-
-    const result = await response.json()
-
-    if (result.success) {
-      toast.success('Oferta creada exitosamente')
+    
+    if (response.ok) {
+      const data = await response.json()
+      toast.success('Oferta enviada', data.message)
       closeOfferModal()
-      loadArticles()
+      loadRequests() // Recargar la lista
     } else {
-      toast.error(result.message || 'Error al crear la oferta')
+      const errorData = await response.json()
+      toast.error('Error', errorData.message)
     }
   } catch (error) {
-    console.error('Error creando oferta:', error)
-    toast.error('Error de conexión al servidor')
-  } finally {
-    loading.value = false
+    console.error('Error enviando oferta:', error)
+    toast.error('Error', 'No se pudo enviar la oferta.')
   }
 }
 
-const viewDetails = (article) => {
-  // Implementar vista de detalles
-  console.log('Ver detalles:', article)
+// Rechazar solicitud
+const rejectRequest = async (request) => {
+  if (!confirm(`¿Estás seguro de que quieres rechazar esta solicitud?`)) return
+  
+  try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/${request._id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        adminStatus: 'rejected'
+      })
+    })
+    
+    if (response.ok) {
+      toast.success('Solicitud rechazada', 'La solicitud ha sido rechazada.')
+      loadRequests() // Recargar la lista
+    } else {
+      toast.error('Error', 'No se pudo rechazar la solicitud.')
+    }
+  } catch (error) {
+    console.error('Error rechazando solicitud:', error)
+    toast.error('Error', 'No se pudo rechazar la solicitud.')
+  }
 }
 
-const getEstadoClass = (adminStatus) => {
-  const classes = {
-    'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    'approved_money': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    'approved_points': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    'approved_both': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-    'rejected': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-  }
-  return classes[adminStatus] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+// Ver solicitud
+const viewRequest = (request) => {
+  window.open(`/articulos/${request._id}`, '_blank')
 }
 
-const getEstadoText = (adminStatus) => {
-  const texts = {
-    'pending': 'Pendiente de Revisión',
-    'approved_money': 'Aprobado (Dinero)',
-    'approved_points': 'Aprobado (Puntos)',
-    'approved_both': 'Aprobado (Ambas opciones)',
-    'rejected': 'Rechazado'
+// Obtener clase de estado
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+    case 'approved_money':
+    case 'approved_points':
+    case 'approved_both':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+    case 'rejected':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
   }
-  return texts[adminStatus] || adminStatus
 }
 
-const getOfertaEstadoClass = (estado) => {
-  const classes = {
-    'pendiente': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    'aceptada': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    'rechazada': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+// Obtener texto de estado
+const getStatusText = (status) => {
+  switch (status) {
+    case 'pending':
+      return 'Pendiente'
+    case 'approved_money':
+      return 'Aprobado (Dinero)'
+    case 'approved_points':
+      return 'Aprobado (Puntos)'
+    case 'approved_both':
+      return 'Aprobado (Ambas)'
+    case 'rejected':
+      return 'Rechazado'
+    default:
+      return 'Desconocido'
   }
-  return classes[estado] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
 }
 
-const getOfertaEstadoText = (estado) => {
-  const texts = {
-    'pendiente': 'Pendiente',
-    'aceptada': 'Aceptada',
-    'rechazada': 'Rechazada'
-  }
-  return texts[estado] || estado
+// Formatear fecha
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString('es-ES')
+}
+
+// Manejar error de imagen
+const handleImageError = (event) => {
+  event.target.style.display = 'none'
 }
 
 onMounted(() => {
-  loadArticles()
+  loadRequests()
 })
 </script>
