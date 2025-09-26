@@ -717,33 +717,52 @@ app.post('/api/articles/accept-offer', authMiddleware, async (req, res) => {
       await seller.save();
     }
 
-    // Actualizar el artículo - Mantener referencia al vendedor original para "Mis Canjes"
+    // Obtener el ID del administrador
+    const adminUser = await User.findOne({ role: 'admin' });
+    if (!adminUser) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error: Usuario administrador no encontrado'
+      });
+    }
+
+    // Determinar el estado según la opción seleccionada
+    let estadoArticulo;
+    if (selectedOption === 'money') {
+      estadoArticulo = 'TRASPASADO_A_TRASTALIA_POR_DINERO';
+    } else {
+      estadoArticulo = 'TRASPASADO_A_TRASTALIA_POR_PUNTOS';
+    }
+
+    // Actualizar el artículo - Transferir a Trastalia
     const updatedArticle = await Article.findByIdAndUpdate(
       articleId,
       {
         sellerAccepted: true,
         sellerAcceptedDate: new Date(),
         status: 'comprado_por_trastalia',
-        estado_articulo: 'COMPRADO_POR_ADMIN',
-        // Mantener el vendedor original para que aparezca en "Mis Canjes"
-        // seller: req.userId, // Mantener el vendedor original
-        // id_vendedor: req.userId, // Mantener el vendedor original
+        estado_articulo: estadoArticulo,
+        // Transferir propiedad al administrador
+        id_vendedor: adminUser._id,
+        seller: adminUser._id,
         'adminDecision.selectedOption': selectedOption,
         'adminDecision.finalPrice': selectedOption === 'money' ? article.adminDecision.moneyPrice : 0,
         'adminDecision.finalPoints': selectedOption === 'points' ? article.adminDecision.pointsAmount : 0,
-        // Marcar como transferido a Trastalia pero mantener referencia al vendedor
+        // Marcar como transferido a Trastalia
         transferido_a_trastalia: true,
         fecha_transferencia: new Date(),
         // Agregar campos para identificar el comprador (Trastalia)
-        comprador: 'admin-user-id',
-        comprador_tipo: 'trastalia'
+        comprador: adminUser._id,
+        comprador_tipo: 'admin'
       },
       { new: true }
     ).populate('seller', 'name email points logisticsLevel reputation');
 
     res.json({
       success: true,
-      message: `Oferta aceptada exitosamente. ${selectedOption === 'money' ? `Se transferirán ${article.adminDecision.moneyPrice}€` : `Se han acreditado ${article.adminDecision.pointsAmount} puntos a tu balance`}`,
+      message: selectedOption === 'money' 
+        ? `Oferta aceptada exitosamente. Procedemos a efectuarle el ingreso de ${article.adminDecision.moneyPrice}€ en 24 horas, lo tendrá en su cuenta. El artículo ahora es propiedad de Trastalia y estará disponible en nuestra tienda.`
+        : `Oferta aceptada exitosamente. Se han acreditado ${article.adminDecision.pointsAmount} puntos a tu balance. El artículo ahora es propiedad de Trastalia y estará disponible en nuestra tienda.`,
       data: updatedArticle
     });
   } catch (error) {
@@ -812,33 +831,44 @@ app.post('/api/articles/reject-offer', authMiddleware, async (req, res) => {
 // Ruta para artículos vendidos por dinero
 app.get('/api/articles/sold-articles', authMiddleware, async (req, res) => {
   try {
+    // Buscar artículos vendidos por el usuario (tanto por dinero como por puntos)
     const articles = await Article.find({ 
-      'seller': req.userId,
-      'estado_articulo': 'COMPRADO_POR_ADMIN',
-      'adminDecision.selectedOption': 'money'
+      'id_vendedor': req.userId, // Usar id_vendedor para encontrar artículos originalmente del usuario
+      'estado_articulo': { 
+        $in: ['TRASPASADO_A_TRASTALIA_POR_DINERO', 'TRASPASADO_A_TRASTALIA_POR_PUNTOS'] 
+      },
+      'sellerAccepted': true
     })
     .populate('seller', 'name email points logisticsLevel reputation')
-    .sort({ 'adminDecision.date': -1 });
+    .sort({ 'sellerAcceptedDate': -1 });
 
     // Transformar datos para el frontend
-    const soldArticles = articles.map(article => ({
-      id: article._id,
-      article: {
-        title: article.nombre || article.title,
-        description: article.descripcion || article.description,
-        images: article.fotos || article.images || ['/images/placeholder.jpg']
-      },
-      buyer: {
-        name: 'Trastalia'
-      },
-      price: article.adminDecision?.finalPrice || article.adminDecision?.moneyPrice || 0,
-      status: 'entregado',
-      paymentMethod: 'dinero',
-      soldDate: article.adminDecision?.date || article.sellerAcceptedDate || new Date(),
-      deliveryDate: article.sellerAcceptedDate || new Date(),
-      rating: 5,
-      review: 'Vendido a Trastalia por dinero'
-    }));
+    const soldArticles = articles.map(article => {
+      const isMoneySale = article.estado_articulo === 'TRASPASADO_A_TRASTALIA_POR_DINERO';
+      
+      return {
+        id: article._id,
+        article: {
+          title: article.nombre || article.title,
+          description: article.descripcion || article.description,
+          images: article.fotos || article.images || ['/images/placeholder.jpg']
+        },
+        buyer: {
+          name: 'Trastalia'
+        },
+        price: isMoneySale 
+          ? (article.adminDecision?.finalPrice || article.adminDecision?.moneyPrice || 0)
+          : (article.adminDecision?.finalPoints || article.adminDecision?.pointsAmount || 0),
+        status: 'entregado',
+        paymentMethod: isMoneySale ? 'dinero' : 'puntos',
+        soldDate: article.sellerAcceptedDate || new Date(),
+        deliveryDate: article.sellerAcceptedDate || new Date(),
+        rating: 5,
+        review: isMoneySale 
+          ? `Vendido a Trastalia por ${article.adminDecision?.finalPrice || article.adminDecision?.moneyPrice || 0}€`
+          : `Vendido a Trastalia por ${article.adminDecision?.finalPoints || article.adminDecision?.pointsAmount || 0} puntos`
+      };
+    });
 
     res.json({
       success: true,
