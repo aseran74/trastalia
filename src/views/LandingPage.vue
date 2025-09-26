@@ -328,7 +328,7 @@
             
             <div class="text-center mb-8 relative z-10">
               <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <span class="text-3xl">🚀</span>
+                <img src="/images/favi.png" alt="Trastalia" class="w-10 h-10 object-contain" />
               </div>
               <h3 class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
                 Con Trastalia
