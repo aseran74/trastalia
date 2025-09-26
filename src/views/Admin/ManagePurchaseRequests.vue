@@ -277,6 +277,7 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import Backdrop from '@/components/layout/Backdrop.vue'
 import { useSidebar } from '@/composables/useSidebar'
+import API_BASE_URL from '@/config/api'
 
 const authStore = useAuthStore()
 const toast = useToast()
@@ -308,7 +309,7 @@ const loadRequests = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/admin/pending`, {
+    const response = await fetch(`${API_BASE_URL}/api/articles/admin/pending`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -391,7 +392,7 @@ const submitOffer = async () => {
   
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ofertas-admin`, {
+    const response = await fetch(`${API_BASE_URL}/api/ofertas-admin`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -424,7 +425,7 @@ const rejectRequest = async (request) => {
   
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/${request._id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/articles/${request._id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
