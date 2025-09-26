@@ -281,6 +281,16 @@ const router = createRouter({
         },
       },
       {
+        path: '/admin/articulos/pendientes-valoracion',
+        name: 'Pending Price Valuation',
+        component: () => import('../views/Admin/PendingPriceValuation.vue'),
+        meta: {
+          title: 'Pendientes de Valoración',
+          requiresAuth: true,
+          requiresAdmin: true
+        },
+      },
+      {
         path: '/admin/articulos/:id/editar',
         name: 'Edit Article',
         component: () => import('../views/Admin/EditArticle.vue'),

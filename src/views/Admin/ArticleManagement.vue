@@ -48,6 +48,7 @@
                 >
                   <option value="all">Todos</option>
                   <option value="pending">Pendientes</option>
+                  <option value="pending_valuation">Pendientes de Valoración</option>
                   <option value="approved_money">Aprobados (Dinero)</option>
                   <option value="approved_points">Aprobados (Puntos)</option>
                   <option value="rejected">Rechazados</option>
@@ -162,6 +163,15 @@
                     Ver Detalles
                   </button>
                   
+                  <!-- Botón especial para artículos pendientes de valoración -->
+                  <button
+                    v-if="article.estado_articulo === 'PENDIENTE_VALORACION_PRECIO_TIENDA'"
+                    @click="openPriceModal(article)"
+                    class="w-full bg-orange-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-orange-700 transition-colors"
+                  >
+                    Establecer Precio de Tienda
+                  </button>
+                  
                   <div class="flex space-x-2">
                     <button
                       @click="editArticle(article)"
@@ -193,6 +203,60 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal para establecer precio de tienda -->
+    <div v-if="showPriceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-boxdark rounded-lg p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-black dark:text-white mb-4">
+          Establecer Precio de Tienda
+        </h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Precio de Venta (€)
+            </label>
+            <input
+              v-model="priceForm.storePrice"
+              type="number"
+              step="0.01"
+              min="0"
+              class="w-full rounded border border-stroke bg-transparent px-3 py-2 text-sm dark:border-strokedark"
+              placeholder="0.00"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Puntos de Venta
+            </label>
+            <input
+              v-model="priceForm.storePoints"
+              type="number"
+              min="0"
+              class="w-full rounded border border-stroke bg-transparent px-3 py-2 text-sm dark:border-strokedark"
+              placeholder="0"
+            />
+          </div>
+        </div>
+        
+        <div class="flex space-x-3 mt-6">
+          <button
+            @click="closePriceModal"
+            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md text-sm font-semibold transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="setStorePrice"
+            :disabled="!priceForm.storePrice && !priceForm.storePoints"
+            class="flex-1 bg-primary hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 px-4 rounded-md text-sm font-semibold transition-colors"
+          >
+            Establecer Precio
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -219,6 +283,14 @@ const loading = ref(false)
 const filterStatus = ref('all')
 const filterCategory = ref('all')
 const sortBy = ref('newest')
+
+// Modal de precio
+const showPriceModal = ref(false)
+const selectedArticle = ref(null)
+const priceForm = ref({
+  storePrice: '',
+  storePoints: ''
+})
 
 // Cargar todos los artículos
 const loadArticles = async () => {
@@ -260,6 +332,7 @@ const filteredArticles = computed(() => {
     // Filtrar por estado
     if (filterStatus.value !== 'all') {
       if (filterStatus.value === 'pending' && article.adminStatus !== 'pending') return false
+      if (filterStatus.value === 'pending_valuation' && article.estado_articulo !== 'PENDIENTE_VALORACION_PRECIO_TIENDA') return false
       if (filterStatus.value === 'approved_money' && article.adminStatus !== 'approved_money') return false
       if (filterStatus.value === 'approved_points' && article.adminStatus !== 'approved_points') return false
       if (filterStatus.value === 'rejected' && article.adminStatus !== 'rejected') return false
@@ -424,6 +497,60 @@ const deleteArticle = async (article) => {
 // Crear nuevo artículo
 const createNewArticle = () => {
   router.push('/vender-articulo')
+}
+
+// Abrir modal de precio
+const openPriceModal = (article) => {
+  selectedArticle.value = article
+  priceForm.value = {
+    storePrice: '',
+    storePoints: ''
+  }
+  showPriceModal.value = true
+}
+
+// Cerrar modal de precio
+const closePriceModal = () => {
+  showPriceModal.value = false
+  selectedArticle.value = null
+  priceForm.value = {
+    storePrice: '',
+    storePoints: ''
+  }
+}
+
+// Establecer precio de tienda
+const setStorePrice = async () => {
+  if (!selectedArticle.value) return
+  
+  try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    const response = await fetch(`${API_BASE_URL}/api/articles/set-store-price`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        articleId: selectedArticle.value._id,
+        storePrice: parseFloat(priceForm.value.storePrice) || 0,
+        storePoints: parseInt(priceForm.value.storePoints) || 0
+      })
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      toast.success('Precio establecido', data.message)
+      closePriceModal()
+      loadArticles() // Recargar la lista
+    } else {
+      const errorData = await response.json()
+      toast.error('Error', errorData.message)
+    }
+  } catch (error) {
+    console.error('Error estableciendo precio:', error)
+    toast.error('Error', 'No se pudo establecer el precio.')
+  }
 }
 
 // Cargar artículos al montar el componente
