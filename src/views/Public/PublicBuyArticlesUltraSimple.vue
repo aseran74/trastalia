@@ -89,12 +89,23 @@
                 Ver Detalles
               </button>
               
-              <button
-                @click="addToCart(article)"
-                class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                🛒 Comprar
-              </button>
+              <!-- Opciones de compra -->
+              <div class="space-y-2">
+                <button
+                  @click="addToCart(article, 'money')"
+                  class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  💰 Comprar con Dinero
+                </button>
+                
+                <button
+                  v-if="getArticlePoints(article)"
+                  @click="addToCart(article, 'points')"
+                  class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-2 px-4 rounded-md text-sm font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  ⭐ Comprar con Puntos
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -113,9 +124,13 @@
     <div v-if="showLoginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div class="text-center">
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
-            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" 
+               :class="purchaseType === 'money' ? 'bg-green-100' : 'bg-yellow-100'">
+            <svg v-if="purchaseType === 'money'" class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            <svg v-else class="h-6 w-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
             </svg>
           </div>
           
@@ -123,8 +138,25 @@
             Inicia sesión para comprar
           </h3>
           
+          <div v-if="selectedArticle" class="mb-4 p-3 bg-gray-50 rounded-lg">
+            <p class="text-sm font-medium text-gray-900 mb-1">
+              {{ selectedArticle.title || selectedArticle.nombre }}
+            </p>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">
+                {{ purchaseType === 'money' ? 'Precio:' : 'Puntos:' }}
+              </span>
+              <span class="text-sm font-bold text-gray-900">
+                {{ purchaseType === 'money' 
+                  ? formatPrice(selectedArticle.price || selectedArticle.precio_propuesto_vendedor)
+                  : formatPoints(getArticlePoints(selectedArticle)) + ' puntos'
+                }}
+              </span>
+            </div>
+          </div>
+          
           <p class="text-sm text-gray-500 mb-6">
-            Necesitas una cuenta para agregar artículos al carrito y realizar compras.
+            Necesitas una cuenta para {{ purchaseType === 'money' ? 'comprar con dinero' : 'comprar con puntos' }}.
           </p>
           
           <div class="space-y-3">
@@ -178,6 +210,7 @@ const loading = ref(false)
 // Modal de login/registro
 const showLoginModal = ref(false)
 const selectedArticle = ref(null)
+const purchaseType = ref('money') // 'money' o 'points'
 
 // Cargar artículos públicos - versión ultra simple
 const loadPublicArticles = async () => {
@@ -310,10 +343,11 @@ const viewArticle = (article) => {
 }
 
 // Agregar al carrito (requiere login)
-const addToCart = (article) => {
+const addToCart = (article, type = 'money') => {
   // Mostrar modal de opciones de login/registro
   showLoginModal.value = true
   selectedArticle.value = article
+  purchaseType.value = type
 }
 
 // Redirigir a login
