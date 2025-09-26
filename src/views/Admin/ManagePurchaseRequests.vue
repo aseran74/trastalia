@@ -308,7 +308,7 @@ const loadRequests = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/my-purchase-requests`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/articles/admin/pending`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
