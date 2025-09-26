@@ -918,19 +918,30 @@ app.post('/api/articles/reject-offer', authMiddleware, async (req, res) => {
 app.get('/api/articles/sold-articles', authMiddleware, async (req, res) => {
   try {
     // Buscar artículos vendidos por el usuario (tanto por dinero como por puntos)
-    const articles = await Article.find({ 
-      'id_vendedor': req.userId, // Usar id_vendedor para encontrar artículos originalmente del usuario
+    const userId = req.query.userId || req.userId; // Permitir userId como parámetro de consulta para testing
+    
+    console.log('🔍 Buscando artículos vendidos para userId:', userId);
+    
+    const query = { 
+      'id_vendedor': new mongoose.Types.ObjectId(userId), // Convertir a ObjectId
       'estado_articulo': { 
-        $in: ['TRASPASADO_A_TRASTALIA_POR_DINERO', 'TRASPASADO_A_TRASTALIA_POR_PUNTOS'] 
+        $in: ['TRASPASADO_A_TRASTALIA_POR_DINERO', 'TRASPASADO_A_TRASTALIA_POR_PUNTOS', 'COMPRADO_POR_ADMIN'] 
       },
-      'sellerAccepted': true
-    })
+      $or: [
+        { 'sellerAccepted': true },
+        { 'estado_articulo': 'COMPRADO_POR_ADMIN' }
+      ]
+    };
+    
+    console.log('🔍 Query:', JSON.stringify(query, null, 2));
+    
+    const articles = await Article.find(query)
     .populate('seller', 'name email points logisticsLevel reputation')
     .sort({ 'sellerAcceptedDate': -1 });
 
     // Transformar datos para el frontend
     const soldArticles = articles.map(article => {
-      const isMoneySale = article.estado_articulo === 'TRASPASADO_A_TRASTALIA_POR_DINERO';
+      const isMoneySale = article.estado_articulo === 'TRASPASADO_A_TRASTALIA_POR_DINERO' || article.estado_articulo === 'COMPRADO_POR_ADMIN';
       
       return {
         id: article._id,
