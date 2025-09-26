@@ -90,10 +90,10 @@
               </button>
               
               <button
-                @click="loginToBuy"
-                class="w-full border border-green-600 text-green-600 py-2 px-4 rounded-md text-sm font-semibold hover:bg-green-600 hover:text-white transition-colors"
+                @click="addToCart(article)"
+                class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                Comprar (Requiere Login)
+                🛒 Comprar
               </button>
             </div>
           </div>
@@ -106,6 +106,50 @@
          </svg>
         <h3 class="mt-2 text-sm font-medium text-gray-900">No hay artículos disponibles</h3>
         <p class="mt-1 text-sm text-gray-500">No se encontraron artículos en este momento.</p>
+      </div>
+    </div>
+
+    <!-- Modal de Login/Registro -->
+    <div v-if="showLoginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="text-center">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          
+          <h3 class="text-lg font-medium text-gray-900 mb-2">
+            Inicia sesión para comprar
+          </h3>
+          
+          <p class="text-sm text-gray-500 mb-6">
+            Necesitas una cuenta para agregar artículos al carrito y realizar compras.
+          </p>
+          
+          <div class="space-y-3">
+            <button
+              @click="goToLogin"
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Iniciar Sesión
+            </button>
+            
+            <button
+              @click="goToRegister"
+              class="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-semibold hover:bg-gray-50 transition-colors"
+            >
+              Crear Cuenta
+            </button>
+            
+            <button
+              @click="showLoginModal = false"
+              class="w-full text-gray-500 py-2 px-4 text-sm hover:text-gray-700 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -130,6 +174,10 @@ const router = useRouter()
 // Estado ultra simple - solo lo esencial
 const articles = ref([])
 const loading = ref(false)
+
+// Modal de login/registro
+const showLoginModal = ref(false)
+const selectedArticle = ref(null)
 
 // Cargar artículos públicos - versión ultra simple
 const loadPublicArticles = async () => {
@@ -261,9 +309,23 @@ const viewArticle = (article) => {
   router.push(`/articulos/${article._id}`)
 }
 
-// Login para comprar
-const loginToBuy = () => {
+// Agregar al carrito (requiere login)
+const addToCart = (article) => {
+  // Mostrar modal de opciones de login/registro
+  showLoginModal.value = true
+  selectedArticle.value = article
+}
+
+// Redirigir a login
+const goToLogin = () => {
+  showLoginModal.value = false
   router.push('/signin')
+}
+
+// Redirigir a registro
+const goToRegister = () => {
+  showLoginModal.value = false
+  router.push('/signup')
 }
 
 onMounted(() => {
