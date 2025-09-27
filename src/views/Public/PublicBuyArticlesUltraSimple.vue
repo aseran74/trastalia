@@ -47,8 +47,8 @@
           </div>
 
           <!-- Mobile Menu -->
-          <div v-if="mobileMenuOpen" class="md:hidden mt-4 py-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative z-50 shadow-lg">
-            <div class="flex flex-col space-y-4">
+          <div v-if="mobileMenuOpen" class="md:hidden mt-4 mx-4 py-6 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative z-50 shadow-lg rounded-b-xl">
+            <div class="flex flex-col space-y-5">
               
               <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Inicio</router-link>
               <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Categorías</a>
