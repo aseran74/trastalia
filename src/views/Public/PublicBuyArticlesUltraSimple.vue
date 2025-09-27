@@ -50,10 +50,10 @@
           <div v-if="mobileMenuOpen" class="md:hidden mt-4 mx-4 py-6 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative z-50 shadow-lg rounded-b-xl">
             <div class="flex flex-col space-y-5">
               
-              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Inicio</router-link>
-              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Categorías</a>
-              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Destacados</a>
-              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors" @click="mobileMenuOpen = false">Ver Artículos</router-link>
+              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Inicio</router-link>
+              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Categorías</a>
+              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Destacados</a>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Ver Artículos</router-link>
               
               <!-- Botón de login para móvil si no está logueado -->
               <router-link v-if="!authStore.isAuthenticated" to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-center" @click="mobileMenuOpen = false">
