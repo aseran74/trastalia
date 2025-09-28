@@ -365,6 +365,11 @@ const menuGroups = [
         name: "Centros Logísticos",
         path: "/centros-logisticos",
       },
+      {
+        icon: PieChartIcon,
+        name: "Ventas Gestionadas",
+        path: "/ventas-gestionadas",
+      },
     ],
   },
 ];
