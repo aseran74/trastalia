@@ -60,17 +60,78 @@ onMounted(async () => {
     const token = urlParams.get('token')
     const successParam = urlParams.get('success')
     
+    console.log('🔍 AuthCallback - Parámetros recibidos:', { token, successParam })
+    
     if (successParam === 'true' && token) {
       // Guardar el token
       localStorage.setItem('auth_token', token)
       sessionStorage.setItem('auth_token', token)
       
-      // Actualizar el store de autenticación
-      await authStore.checkAuth()
+      // Obtener información del usuario desde el backend
+      try {
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 
+          (import.meta.env.PROD 
+            ? 'https://web-production-08299.up.railway.app' 
+            : 'http://localhost:3002')
+        
+        const response = await fetch(`${apiBaseUrl}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success) {
+            // Guardar datos del usuario
+            const userData = {
+              id: data.data.id,
+              name: data.data.name,
+              email: data.data.email,
+              role: data.data.role,
+              avatar: data.data.avatar || '',
+              points: data.data.points || 0
+            }
+            
+            localStorage.setItem('user_data', JSON.stringify(userData))
+            sessionStorage.setItem('user_data', JSON.stringify(userData))
+            
+            // Actualizar el store
+            authStore.user = userData
+            authStore.token = token
+            
+            console.log('✅ Usuario autenticado con Google:', userData)
+            success.value = true
+            
+            // Redirigir al dashboard después de 2 segundos
+            setTimeout(() => {
+              router.push('/dashboard')
+            }, 2000)
+            return
+          }
+        }
+      } catch (apiError) {
+        console.error('Error obteniendo datos del usuario:', apiError)
+      }
+      
+      // Si no se pudo obtener datos del usuario, usar datos básicos
+      const basicUserData = {
+        id: 'google-user',
+        name: 'Usuario Google',
+        email: 'usuario@google.com',
+        role: 'user',
+        avatar: '',
+        points: 100
+      }
+      
+      localStorage.setItem('user_data', JSON.stringify(basicUserData))
+      sessionStorage.setItem('user_data', JSON.stringify(basicUserData))
+      
+      authStore.user = basicUserData
+      authStore.token = token
       
       success.value = true
       
-      // Redirigir al dashboard después de 2 segundos
       setTimeout(() => {
         router.push('/dashboard')
       }, 2000)

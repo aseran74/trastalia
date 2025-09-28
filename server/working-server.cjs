@@ -1,10 +1,12 @@
+// Cargar variables de entorno
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
 const session = require('express-session');
-const configureGoogleAuth = require('./google-auth-config');
-
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const app = express();
 const PORT = 3002;
 
@@ -37,8 +39,69 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configurar Google OAuth
-configureGoogleAuth();
+// Configuración de Google OAuth directamente
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3002/auth/google/callback"
+},
+async (accessToken, refreshToken, profile, done) => {
+  try {
+    console.log('🔍 Google OAuth - Perfil recibido:', profile.id);
+    
+    // Buscar usuario existente por Google ID o email
+    let user = await User.findOne({ 
+      $or: [
+        { googleId: profile.id },
+        { email: profile.emails[0].value }
+      ]
+    });
+
+    if (user) {
+      // Usuario existe, actualizar Google ID si no lo tiene
+      if (!user.googleId) {
+        user.googleId = profile.id;
+        user.avatar = profile.photos[0]?.value || user.avatar;
+        await user.save();
+      }
+      console.log('✅ Usuario existente encontrado:', user.email);
+      return done(null, user);
+    } else {
+      // Crear nuevo usuario
+      user = new User({
+        googleId: profile.id,
+        name: profile.displayName,
+        email: profile.emails[0].value,
+        avatar: profile.photos[0]?.value || '',
+        role: 'user',
+        isActive: true,
+        points: 100, // Puntos de bienvenida
+        lastLogin: new Date()
+      });
+
+      await user.save();
+      console.log('✅ Nuevo usuario creado:', user.email);
+      return done(null, user);
+    }
+  } catch (error) {
+    console.error('❌ Error en Google OAuth:', error);
+    return done(error, null);
+  }
+}));
+
+// Serialización del usuario para la sesión
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
 
 // Conectar a MongoDB
 const MONGODB_URI = 'mongodb+srv://mikabodea:Mika1974%26@trastalia.ycg2lvb.mongodb.net/trastalia?retryWrites=true&w=majority&appName=Trastalia';
@@ -268,7 +331,7 @@ app.get('/auth/google', passport.authenticate('google', {
 }));
 
 app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: 'http://localhost:5173/test-signin?error=google_auth_failed' }),
   async (req, res) => {
     try {
       // Generar token para el usuario autenticado
@@ -291,7 +354,7 @@ app.get('/auth/google/callback',
       const frontendUrl = process.env.NODE_ENV === 'production' 
         ? 'https://trastalia.vercel.app' 
         : 'http://localhost:5173';
-      res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+      res.redirect(`${frontendUrl}/test-signin?error=google_auth_failed`);
     }
   }
 );

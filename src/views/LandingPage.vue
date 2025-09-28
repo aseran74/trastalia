@@ -24,7 +24,7 @@
               
               <!-- Menú de perfil si está logueado, botón de login si no -->
               <UserProfileMenu v-if="authStore.isAuthenticated" />
-              <router-link v-else to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+              <router-link v-else to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
                 Iniciar Sesión
               </router-link>
             </div>
@@ -55,7 +55,7 @@
               <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Ver Artículos</router-link>
               
               <!-- Botón de login para móvil si no está logueado -->
-              <router-link v-if="!authStore.isAuthenticated" to="/signin" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-center" @click="mobileMenuOpen = false">
+              <router-link v-if="!authStore.isAuthenticated" to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-center" @click="mobileMenuOpen = false">
                 Iniciar Sesión
               </router-link>
             </div>
@@ -81,7 +81,7 @@
               </div>
               
               <div class="flex flex-col sm:flex-row gap-4">
-                <router-link to="/signup" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <router-link to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                   Comenzar Gratis
                 </router-link>
                 <router-link to="/articulos" class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
