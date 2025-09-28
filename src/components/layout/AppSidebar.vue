@@ -34,9 +34,9 @@
         />
         <img
           v-else
-          src="/images/Trastalia3.png"
-          alt="Logo"
-          class="h-12 w-auto"
+          src="/favicon-32x32.png"
+          alt="Trastalia"
+          class="h-8 w-8 object-contain rounded-lg"
         />
       </router-link>
     </div>
