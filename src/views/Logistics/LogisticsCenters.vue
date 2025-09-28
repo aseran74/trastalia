@@ -54,8 +54,8 @@
               {{ getTypeLabel(center.type) }}
             </span>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">{{ center.location.city }} - {{ center.location.sector }}</p>
-          <p class="text-xs text-gray-500 dark:text-gray-500">{{ center.location.address }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ center.location?.city || 'Ciudad no especificada' }} - {{ center.location?.sector || 'Sector no especificado' }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-500">{{ center.location?.address || 'Dirección no especificada' }}</p>
         </div>
         
         <!-- Stats -->
@@ -79,12 +79,12 @@
           <h4 class="text-sm font-medium text-black dark:text-white mb-2">Capacidad Total:</h4>
           <div class="flex justify-between text-sm mb-2">
             <span class="text-gray-600 dark:text-gray-400">Disponible:</span>
-            <span class="font-medium text-green-600 dark:text-green-400">{{ center.capacity.available }}/{{ center.capacity.totalCapacity }}</span>
+            <span class="font-medium text-green-600 dark:text-green-400">{{ center.capacity?.available || 0 }}/{{ center.capacity?.totalCapacity || 0 }}</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
             <div 
               class="bg-primary h-2 rounded-full transition-all duration-300"
-              :style="{ width: `${(center.capacity.available / center.capacity.totalCapacity) * 100}%` }"
+              :style="{ width: `${((center.capacity?.available || 0) / (center.capacity?.totalCapacity || 1)) * 100}%` }"
             ></div>
           </div>
         </div>
@@ -94,14 +94,14 @@
           <h4 class="text-sm font-medium text-black dark:text-white mb-2">Capacidad por Tipo de Caja:</h4>
           <div class="space-y-1">
             <div 
-              v-for="(boxType, key) in center.capacity.byBoxType" 
+              v-for="(boxType, key) in center.capacity?.byBoxType || {}" 
               :key="key"
               class="flex justify-between text-xs"
             >
               <span class="text-gray-600 dark:text-gray-400">{{ getBoxTypeLabel(key) }}:</span>
               <span class="font-medium">
-                <span class="text-green-600 dark:text-green-400">{{ boxType.total - boxType.ocupados }}</span>
-                <span class="text-gray-500">/{{ boxType.total }}</span>
+                <span class="text-green-600 dark:text-green-400">{{ (boxType?.total || 0) - (boxType?.ocupados || 0) }}</span>
+                <span class="text-gray-500">/{{ boxType?.total || 0 }}</span>
               </span>
             </div>
           </div>
@@ -112,7 +112,7 @@
           <h4 class="text-sm font-medium text-black dark:text-white mb-2">Servicios:</h4>
           <div class="flex flex-wrap gap-1">
             <span
-              v-for="service in center.services"
+              v-for="service in center.services || []"
               :key="service"
               class="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary"
             >
@@ -185,10 +185,18 @@ const loadCenters = async () => {
     
     if (response.ok) {
       const result = await response.json()
-      logisticsCenters.value = result.data
-      console.log(`✅ ${result.data.length} centros logísticos cargados`)
+      console.log('📦 Datos recibidos del servidor:', result)
+      logisticsCenters.value = result.data || []
+      console.log(`✅ ${result.data?.length || 0} centros logísticos cargados`)
+      
+      // Debug: mostrar estructura del primer centro si existe
+      if (result.data && result.data.length > 0) {
+        console.log('🔍 Estructura del primer centro:', result.data[0])
+      }
     } else {
       console.error('❌ Error cargando centros logísticos:', response.status)
+      const errorText = await response.text()
+      console.error('❌ Error response:', errorText)
     }
   } catch (error) {
     console.error('❌ Error cargando centros logísticos:', error)
