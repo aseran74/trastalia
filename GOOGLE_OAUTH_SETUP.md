@@ -36,6 +36,13 @@ GOOGLE_CALLBACK_URL=http://localhost:3002/auth/google/callback
 SESSION_SECRET=tu_session_secret_muy_seguro_aqui
 ```
 
+**📋 Para obtener las credenciales:**
+1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crea un proyecto o selecciona uno existente
+3. Habilita la API de Google Identity
+4. Crea credenciales OAuth 2.0
+5. Copia el Client ID y Client Secret
+
 ### 4. Configurar variables de entorno en Vercel
 
 Para el despliegue en producción, agrega estas variables en Vercel:

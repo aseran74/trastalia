@@ -44,6 +44,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/login',
+      name: 'Login',
+      component: () => import('../views/Auth/LoginPage.vue'),
+      meta: {
+        title: 'Iniciar Sesión - Trastalia',
+        requiresAuth: false
+      },
+    },
+    {
       path: '/test-signin',
       name: 'TestSignin',
       component: () => import('../views/Auth/TestSignin.vue'),

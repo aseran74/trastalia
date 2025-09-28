@@ -2,22 +2,28 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const mongoose = require('mongoose');
 
-// Definir el esquema de Usuario aquí mismo para evitar dependencias circulares
-const UserSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-  googleId: String,
-  role: { type: String, default: 'user' },
-  avatar: String,
-  isActive: { type: Boolean, default: true },
-  lastLogin: Date,
-  points: { type: Number, default: 0 },
-  logisticsLevel: String,
-  reputation: { type: Number, default: 0 }
-}, { timestamps: true });
-
-const User = mongoose.model('User', UserSchema);
+// Obtener el modelo User existente o crear uno si no existe
+let User;
+try {
+  User = mongoose.model('User');
+} catch (error) {
+  // Si el modelo no existe, crearlo
+  const UserSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    password: String,
+    googleId: String,
+    role: { type: String, default: 'user' },
+    avatar: String,
+    isActive: { type: Boolean, default: true },
+    lastLogin: Date,
+    points: { type: Number, default: 0 },
+    logisticsLevel: String,
+    reputation: { type: Number, default: 0 }
+  }, { timestamps: true });
+  
+  User = mongoose.model('User', UserSchema);
+}
 
 // Configuración de Google OAuth
 const configureGoogleAuth = () => {
