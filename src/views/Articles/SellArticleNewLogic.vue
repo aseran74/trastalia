@@ -144,6 +144,117 @@
               <option value="aceptable">Aceptable</option>
             </select>
           </div>
+
+          <!-- Tipo de Paquete -->
+          <div class="mb-4.5">
+            <label class="mb-2.5 block text-black dark:text-white">
+              Tipo de Paquete *
+            </label>
+            <select
+              v-model="formData.tipo_paquete"
+              @change="onPackageTypeChange"
+              class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            >
+              <option value="">Selecciona el tipo de paquete</option>
+              <option v-for="(config, type) in PACKAGE_TYPES" :key="type" :value="type">
+                {{ config.name }} - {{ config.description }}
+              </option>
+            </select>
+            
+            <!-- Información del paquete seleccionado -->
+            <div v-if="selectedPackageInfo" class="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    {{ selectedPackageInfo.name }}
+                  </p>
+                  <p class="text-xs text-blue-700 dark:text-blue-300">
+                    {{ selectedPackageInfo.description }}
+                  </p>
+                  <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    Ejemplos: {{ selectedPackageInfo.examples.slice(0, 3).join(', ') }}
+                  </p>
+                </div>
+                <div class="text-right">
+                  <p class="text-lg font-bold text-blue-900 dark:text-blue-100">
+                    {{ selectedPackageInfo.shippingCost }}€
+                  </p>
+                  <p class="text-xs text-blue-600 dark:text-blue-400">
+                    Coste de envío
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimensiones del paquete (opcional) -->
+          <div v-if="formData.tipo_paquete" class="mb-4.5">
+            <label class="mb-2.5 block text-black dark:text-white">
+              Dimensiones del Paquete (Opcional)
+            </label>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                  Peso (kg)
+                </label>
+                <input
+                  v-model.number="formData.dimensiones.peso"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  placeholder="0.0"
+                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 text-sm font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                  Largo (cm)
+                </label>
+                <input
+                  v-model.number="formData.dimensiones.largo"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 text-sm font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                  Ancho (cm)
+                </label>
+                <input
+                  v-model.number="formData.dimensiones.ancho"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 text-sm font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                  Alto (cm)
+                </label>
+                <input
+                  v-model.number="formData.dimensiones.alto"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 text-sm font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                />
+              </div>
+            </div>
+            
+            <!-- Botón para sugerir tipo de paquete basado en dimensiones -->
+            <button
+              v-if="hasDimensions"
+              @click="suggestPackageType"
+              type="button"
+              class="mt-2 px-3 py-1.5 text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-800 dark:text-blue-200 rounded transition-colors"
+            >
+              🧮 Sugerir tipo de paquete
+            </button>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -375,6 +486,7 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import Backdrop from '@/components/layout/Backdrop.vue'
 import { useSidebar } from '@/composables/useSidebar'
+import { PACKAGE_TYPES, getRecommendedPackageType, getShippingCost } from '@/config/packageTypes'
 
 const authStore = useAuthStore()
 // const { showToast } = useToast()
@@ -407,7 +519,14 @@ const formData = ref({
   solicitar_compra_dinero: false,
   solicitar_compra_puntos: false,
   centro_logistico_id: '',
-  fotos: []
+  fotos: [],
+  tipo_paquete: '',
+  dimensiones: {
+    peso: null,
+    largo: null,
+    ancho: null,
+    alto: null
+  }
 })
 
 const centrosLogisticos = ref([])
@@ -419,6 +538,39 @@ const autocompleteService = ref(null)
 const placesService = ref(null)
 const selectedFiles = ref([])
 const uploadingPhotos = ref(false)
+
+// Variables para el sistema de paquetes
+const selectedPackageInfo = computed(() => {
+  return formData.value.tipo_paquete ? PACKAGE_TYPES[formData.value.tipo_paquete] : null
+})
+
+const hasDimensions = computed(() => {
+  const dims = formData.value.dimensiones
+  return dims.peso || dims.largo || dims.ancho || dims.alto
+})
+
+// Funciones para manejar paquetes
+const onPackageTypeChange = () => {
+  console.log('📦 Tipo de paquete seleccionado:', formData.value.tipo_paquete)
+  if (selectedPackageInfo.value) {
+    console.log('💰 Coste de envío:', selectedPackageInfo.value.shippingCost + '€')
+  }
+}
+
+const suggestPackageType = () => {
+  const dims = formData.value.dimensiones
+  if (dims.peso || dims.largo || dims.ancho || dims.alto) {
+    const recommended = getRecommendedPackageType(
+      dims.peso || 0,
+      dims.largo || 0,
+      dims.ancho || 0,
+      dims.alto || 0
+    )
+    
+    formData.value.tipo_paquete = recommended
+    showToast('success', `Tipo de paquete sugerido: ${PACKAGE_TYPES[recommended].name}`)
+  }
+}
 
 // Obtener ubicación del usuario
 const getUserLocation = () => {
@@ -650,7 +802,7 @@ const loadCentrosLogisticos = async () => {
         const nearestCenter = findNearestLogisticsCenter(location.latitude, location.longitude)
         if (nearestCenter) {
           formData.value.centro_logistico_id = nearestCenter._id
-          showToast('info', `Centro logístico más cercano seleccionado: ${nearestCenter.name}`)
+          console.log('🎯 Centro logístico más cercano seleccionado automáticamente:', nearestCenter.name)
         }
       } catch (error) {
         console.warn('No se pudo obtener la ubicación del usuario:', error)
@@ -675,7 +827,7 @@ const submitArticle = async () => {
   try {
     // Validar que se haya seleccionado un tipo de venta
     if (!formData.value.tipo_venta) {
-      showToast('warning', 'Por favor, selecciona cómo quieres vender tu artículo.')
+      alert('Por favor, selecciona cómo quieres vender tu artículo.')
       loading.value = false
       return
     }
@@ -683,7 +835,7 @@ const submitArticle = async () => {
     // Si se selecciona compra, validar que al menos una opción esté marcada
     if (formData.value.tipo_venta === 'compra') {
       if (!formData.value.solicitar_compra_dinero && !formData.value.solicitar_compra_puntos) {
-        showToast('warning', 'Por favor, selecciona al menos una opción de compra (dinero o puntos).')
+        alert('Por favor, selecciona al menos una opción de compra (dinero o puntos).')
         loading.value = false
         return
       }
@@ -691,7 +843,7 @@ const submitArticle = async () => {
 
     // Validar que se haya seleccionado un centro logístico
     if (!formData.value.centro_logistico_id) {
-      showToast('warning', 'Por favor, selecciona un centro logístico.')
+      alert('Por favor, selecciona un centro logístico.')
       loading.value = false
       return
     }
@@ -719,7 +871,10 @@ const submitArticle = async () => {
       precio_propuesto_vendedor: formData.value.precio_sugerido,
       condicion: formData.value.condicion,
       ubicacion: formData.value.ubicacion,
-      fotos: uploadedPhotos
+      fotos: uploadedPhotos,
+      // Nuevos campos de paquete
+      tipo_paquete: formData.value.tipo_paquete,
+      dimensiones_paquete: formData.value.dimensiones
     }
     
     console.log('📤 Enviando artículo:', payload)
@@ -815,7 +970,14 @@ const resetForm = () => {
     solicitar_compra_dinero: false,
     solicitar_compra_puntos: false,
     centro_logistico_id: '',
-    fotos: []
+    fotos: [],
+    tipo_paquete: '',
+    dimensiones: {
+      peso: null,
+      largo: null,
+      ancho: null,
+      alto: null
+    }
   }
   selectedFiles.value = []
 }
