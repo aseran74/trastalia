@@ -54,8 +54,15 @@ const handleGoogleSignIn = async () => {
       
       console.log('✅ Login exitoso con Firebase Google Auth')
       
-      // Redirigir al dashboard
-      router.push('/dashboard')
+      // Llamar a checkAuth para sincronizar el estado
+      await authStore.checkAuth()
+      
+      // Redirigir según el rol del usuario
+      if (userData.role === 'admin') {
+        router.push('/dashboard')
+      } else {
+        router.push('/comprar-articulos')
+      }
     } else {
       console.error('❌ Error en login:', result.error)
       alert('Error al iniciar sesión con Google: ' + result.error)

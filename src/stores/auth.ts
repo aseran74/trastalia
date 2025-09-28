@@ -140,6 +140,22 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('🔍 checkAuth - URL:', `${API_BASE_URL}/api/auth/me`);
         console.log('🔍 checkAuth - Token:', storedToken);
         
+        // Verificar si es un usuario de Firebase (tiene uid)
+        try {
+          const userData = JSON.parse(storedUser);
+          
+          // Si es un usuario de Firebase (tiene id como uid), usar datos locales
+          if (userData.id && userData.email && userData.id.length > 20) { // Firebase UIDs son largos
+            user.value = userData;
+            token.value = storedToken;
+            console.log('✅ checkAuth - Usuario Firebase autenticado:', user.value);
+            return true;
+          }
+        } catch (parseError) {
+          console.error('❌ checkAuth - Error parseando datos de usuario:', parseError);
+        }
+        
+        // Si no es Firebase, intentar verificar con API
         try {
           const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
             headers: {
@@ -154,7 +170,7 @@ export const useAuthStore = defineStore('auth', () => {
             if (data.success) {
               user.value = data.data;
               token.value = storedToken;
-              console.log('✅ checkAuth - Usuario autenticado:', user.value);
+              console.log('✅ checkAuth - Usuario API autenticado:', user.value);
               return true;
             }
           } else {

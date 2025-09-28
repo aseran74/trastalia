@@ -363,8 +363,8 @@ router.beforeEach(async (to, from, next) => {
   
   // Verificar si la ruta requiere autenticación
   if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
-    next('/signin')
-  } else if ((to.path === '/signin' || to.path === '/signup') && authStore.isAuthenticated) {
+    next('/login')
+  } else if ((to.path === '/signin' || to.path === '/login' || to.path === '/signup') && authStore.isAuthenticated) {
     // Redirigir según el rol del usuario
     if (authStore.user?.role === 'admin') {
       next('/dashboard')
