@@ -34,37 +34,47 @@ const handleGoogleSignIn = async () => {
     const result = await signInWithGoogle()
     
     if (result.success) {
-      // Crear objeto de usuario
-      const userData = {
-        id: result.user.uid,
-        name: result.user.name,
-        email: result.user.email,
-        avatar: result.user.photoURL,
-        role: 'user', // Por defecto
-        points: 0
-      }
+      console.log('✅ Firebase Auth exitoso, sincronizando con MongoDB...')
       
-      // Guardar en localStorage
-      localStorage.setItem('auth_token', result.user.token)
-      localStorage.setItem('user_data', JSON.stringify(userData))
+      // Llamar al backend para crear/obtener usuario en MongoDB
+      const syncResponse = await fetch('/api/auth/firebase-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uid: result.user.uid,
+          email: result.user.email,
+          name: result.user.name,
+          photoURL: result.user.photoURL
+        })
+      })
       
-      // Actualizar el store directamente
-      authStore.user = userData
-      authStore.token = result.user.token
+      const syncData = await syncResponse.json()
       
-      console.log('✅ Login exitoso con Firebase Google Auth')
-      
-      // Llamar a checkAuth para sincronizar el estado
-      await authStore.checkAuth()
-      
-      // Redirigir según el rol del usuario
-      if (userData.role === 'admin') {
-        router.push('/dashboard')
+      if (syncData.success) {
+        console.log('✅ Usuario sincronizado con MongoDB:', syncData.data.user)
+        
+        // Guardar datos del backend (MongoDB)
+        localStorage.setItem('auth_token', syncData.data.token)
+        localStorage.setItem('user_data', JSON.stringify(syncData.data.user))
+        
+        // Actualizar el store con datos del backend
+        authStore.user = syncData.data.user
+        authStore.token = syncData.data.token
+        
+        // Redirigir según el rol del usuario
+        if (syncData.data.user.role === 'admin') {
+          router.push('/dashboard')
+        } else {
+          router.push('/comprar-articulos')
+        }
       } else {
-        router.push('/comprar-articulos')
+        console.error('❌ Error sincronizando con MongoDB:', syncData.message)
+        alert('Error al sincronizar usuario: ' + syncData.message)
       }
     } else {
-      console.error('❌ Error en login:', result.error)
+      console.error('❌ Error en Firebase Auth:', result.error)
       alert('Error al iniciar sesión con Google: ' + result.error)
     }
   } catch (error) {
