@@ -9,6 +9,11 @@ import { auth, googleProvider } from './config'
 // Login con Google
 export const signInWithGoogle = async () => {
   try {
+    // Configurar el provider para desarrollo
+    googleProvider.setCustomParameters({
+      prompt: 'select_account'
+    })
+    
     const result = await signInWithPopup(auth, googleProvider)
     const credential = GoogleAuthProvider.credentialFromResult(result)
     const token = credential.accessToken

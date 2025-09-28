@@ -34,8 +34,8 @@ const handleGoogleSignIn = async () => {
     const result = await signInWithGoogle()
     
     if (result.success) {
-      // Guardar datos del usuario en el store
-      authStore.user = {
+      // Crear objeto de usuario
+      const userData = {
         id: result.user.uid,
         name: result.user.name,
         email: result.user.email,
@@ -43,12 +43,14 @@ const handleGoogleSignIn = async () => {
         role: 'user', // Por defecto
         points: 0
       }
-      authStore.token = result.user.token
-      authStore.isAuthenticated = true
       
       // Guardar en localStorage
       localStorage.setItem('auth_token', result.user.token)
-      localStorage.setItem('user_data', JSON.stringify(authStore.user))
+      localStorage.setItem('user_data', JSON.stringify(userData))
+      
+      // Actualizar el store directamente
+      authStore.user = userData
+      authStore.token = result.user.token
       
       console.log('✅ Login exitoso con Firebase Google Auth')
       
