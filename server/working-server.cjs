@@ -2522,11 +2522,21 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Iniciar servidor
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Servidor backend ejecutándose en puerto ${PORT}`);
-  console.log(`🔗 API: http://localhost:${PORT}/api`);
-  console.log(`💾 Almacenamiento: MongoDB Atlas`);
-  console.log(`🔑 Login: admin@trastalia.com / admin123456`);
-  console.log(`✅ Conectado a MongoDB Atlas`);
-});
+// Conectar a MongoDB antes de iniciar el servidor
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('✅ Conectado a MongoDB Atlas');
+    
+    // Iniciar servidor solo después de conectar a MongoDB
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Servidor backend ejecutándose en puerto ${PORT}`);
+      console.log(`🔗 API: http://localhost:${PORT}/api`);
+      console.log(`💾 Almacenamiento: MongoDB Atlas`);
+      console.log(`🔑 Login: admin@trastalia.com / admin123456`);
+      console.log(`✅ Servidor iniciado correctamente`);
+    });
+  })
+  .catch((error) => {
+    console.error('❌ Error conectando a MongoDB:', error);
+    process.exit(1);
+  });
