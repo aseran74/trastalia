@@ -37,6 +37,7 @@ const handleGoogleSignIn = async () => {
       console.log('✅ Firebase Auth exitoso, sincronizando con MongoDB...')
       
       // Llamar al backend para crear/obtener usuario en MongoDB
+      console.log('🔄 Calling backend sync endpoint...')
       const syncResponse = await fetch('/api/auth/firebase-user', {
         method: 'POST',
         headers: {
@@ -50,7 +51,17 @@ const handleGoogleSignIn = async () => {
         })
       })
       
+      console.log('📡 Sync response status:', syncResponse.status)
+      console.log('📡 Sync response headers:', syncResponse.headers)
+      
+      if (!syncResponse.ok) {
+        const errorText = await syncResponse.text()
+        console.error('❌ Sync response error:', errorText)
+        throw new Error(`HTTP ${syncResponse.status}: ${errorText}`)
+      }
+      
       const syncData = await syncResponse.json()
+      console.log('📦 Sync response data:', syncData)
       
       if (syncData.success) {
         console.log('✅ Usuario sincronizado con MongoDB:', syncData.data.user)

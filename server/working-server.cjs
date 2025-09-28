@@ -511,25 +511,31 @@ app.post('/api/auth/login', async (req, res) => {
 // Endpoint para crear/obtener usuario de Firebase en MongoDB
 app.post('/api/auth/firebase-user', async (req, res) => {
   try {
+    console.log('📥 Firebase user endpoint called with body:', req.body);
+    
     const { uid, email, name, photoURL } = req.body;
     
     if (!uid || !email) {
+      console.log('❌ Missing required fields:', { uid: !!uid, email: !!email });
       return res.status(400).json({
         success: false,
         message: 'UID y email son requeridos'
       });
     }
     
+    console.log('🔍 Searching for user with googleId:', uid);
+    
     // Buscar si el usuario ya existe por Firebase UID
     let user = await User.findOne({ googleId: uid });
     
     if (user) {
+      console.log('✅ Usuario encontrado:', user.email);
       // Usuario ya existe, devolverlo
       const token = user.role === 'admin' 
         ? 'mongodb-admin-token-' + Date.now()
         : 'mongodb-user-token-' + user._id.toString();
       
-      res.json({
+      const response = {
         success: true,
         message: 'Usuario encontrado',
         data: {
@@ -545,8 +551,12 @@ app.post('/api/auth/firebase-user', async (req, res) => {
             avatar: user.avatar
           }
         }
-      });
+      };
+      
+      console.log('📤 Sending existing user response');
+      res.json(response);
     } else {
+      console.log('🆕 Creating new user for:', email);
       // Crear nuevo usuario
       const newUser = new User({
         googleId: uid,
@@ -573,7 +583,7 @@ app.post('/api/auth/firebase-user', async (req, res) => {
         mongoId: newUser._id
       });
       
-      res.json({
+      const response = {
         success: true,
         message: 'Usuario de Firebase creado exitosamente',
         data: {
@@ -589,13 +599,17 @@ app.post('/api/auth/firebase-user', async (req, res) => {
             avatar: newUser.avatar
           }
         }
-      });
+      };
+      
+      console.log('📤 Sending new user response');
+      res.json(response);
     }
   } catch (error) {
-    console.error('Error en firebase-user:', error);
+    console.error('❌ Error en firebase-user endpoint:', error);
     res.status(500).json({
       success: false,
-      message: 'Error en el servidor'
+      message: 'Error en el servidor',
+      error: error.message
     });
   }
 });
