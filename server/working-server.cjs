@@ -39,20 +39,13 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Debug: Verificar variables de entorno
-console.log('🔍 Variables de entorno:');
-console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? '✅ Configurado' : '❌ No encontrado');
-console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? '✅ Configurado' : '❌ No encontrado');
-console.log('GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL || '❌ No encontrado');
-console.log('MONGODB_URI:', process.env.MONGODB_URI ? '✅ Configurado' : '❌ No encontrado');
-console.log('SESSION_SECRET:', process.env.SESSION_SECRET ? '✅ Configurado' : '❌ No encontrado');
-
-// Configuración de Google OAuth directamente
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3002/auth/google/callback"
-},
+// Configuración de Google OAuth (solo para desarrollo local)
+if (process.env.NODE_ENV !== 'production' && process.env.GOOGLE_CLIENT_ID) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3002/auth/google/callback"
+  },
 async (accessToken, refreshToken, profile, done) => {
   try {
     console.log('🔍 Google OAuth - Perfil recibido:', profile.id);
@@ -95,7 +88,10 @@ async (accessToken, refreshToken, profile, done) => {
     console.error('❌ Error en Google OAuth:', error);
     return done(error, null);
   }
-}));
+  });
+} else {
+  console.log('⚠️ Google OAuth deshabilitado en producción');
+}
 
 // Serialización del usuario para la sesión
 passport.serializeUser((user, done) => {
@@ -333,14 +329,15 @@ const assignClosestLogisticsShip = (location) => {
   };
 };
 
-// Rutas de Google OAuth
-app.get('/auth/google', passport.authenticate('google', {
-  scope: ['profile', 'email']
-}));
+// Rutas de Google OAuth (solo para desarrollo local)
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/auth/google', passport.authenticate('google', {
+    scope: ['profile', 'email']
+  }));
 
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: 'http://localhost:5173/test-signin?error=google_auth_failed' }),
-  async (req, res) => {
+  app.get('/auth/google/callback', 
+    passport.authenticate('google', { failureRedirect: 'http://localhost:5173/test-signin?error=google_auth_failed' }),
+    async (req, res) => {
     try {
       // Generar token para el usuario autenticado
       const token = req.user.role === 'admin' 
@@ -367,29 +364,30 @@ app.get('/auth/google/callback',
   }
 );
 
-// Ruta para obtener información del usuario autenticado con Google
-app.get('/api/auth/google/user', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json({
-      success: true,
-      data: {
-        id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-        role: req.user.role,
-        points: req.user.points,
-        logisticsLevel: req.user.logisticsLevel,
-        reputation: req.user.reputation,
-        avatar: req.user.avatar
-      }
-    });
-  } else {
-    res.status(401).json({
-      success: false,
-      message: 'No autenticado'
-    });
-  }
-});
+  // Ruta para obtener información del usuario autenticado con Google
+  app.get('/api/auth/google/user', (req, res) => {
+    if (req.isAuthenticated()) {
+      res.json({
+        success: true,
+        data: {
+          id: req.user._id,
+          name: req.user.name,
+          email: req.user.email,
+          role: req.user.role,
+          points: req.user.points,
+          logisticsLevel: req.user.logisticsLevel,
+          reputation: req.user.reputation,
+          avatar: req.user.avatar
+        }
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: 'No autenticado'
+      });
+    }
+  });
+} // Fin del bloque if para Google OAuth
 
 // Middleware de autenticación
 const authMiddleware = (req, res, next) => {
@@ -2522,21 +2520,20 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Conectar a MongoDB antes de iniciar el servidor
+// Conectar a MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('✅ Conectado a MongoDB Atlas');
-    
-    // Iniciar servidor solo después de conectar a MongoDB
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Servidor backend ejecutándose en puerto ${PORT}`);
-      console.log(`🔗 API: http://localhost:${PORT}/api`);
-      console.log(`💾 Almacenamiento: MongoDB Atlas`);
-      console.log(`🔑 Login: admin@trastalia.com / admin123456`);
-      console.log(`✅ Servidor iniciado correctamente`);
-    });
   })
   .catch((error) => {
     console.error('❌ Error conectando a MongoDB:', error);
-    process.exit(1);
   });
+
+// Iniciar servidor
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Servidor backend ejecutándose en puerto ${PORT}`);
+  console.log(`🔗 API: http://localhost:${PORT}/api`);
+  console.log(`💾 Almacenamiento: MongoDB Atlas`);
+  console.log(`🔑 Login: admin@trastalia.com / admin123456`);
+  console.log(`✅ Servidor iniciado correctamente`);
+});
