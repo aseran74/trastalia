@@ -35,6 +35,15 @@ const router = createRouter({
         },
       },
     {
+      path: '/auth/callback',
+      name: 'AuthCallback',
+      component: () => import('../views/Auth/AuthCallback.vue'),
+      meta: {
+        title: 'Autenticación - Trastalia',
+        requiresAuth: false
+      },
+    },
+    {
       path: '/test-signin',
       name: 'TestSignin',
       component: () => import('../views/Auth/TestSignin.vue'),
