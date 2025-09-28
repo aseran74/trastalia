@@ -508,6 +508,98 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Endpoint para crear/obtener usuario de Firebase en MongoDB
+app.post('/api/auth/firebase-user', async (req, res) => {
+  try {
+    const { uid, email, name, photoURL } = req.body;
+    
+    if (!uid || !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'UID y email son requeridos'
+      });
+    }
+    
+    // Buscar si el usuario ya existe por Firebase UID
+    let user = await User.findOne({ googleId: uid });
+    
+    if (user) {
+      // Usuario ya existe, devolverlo
+      const token = user.role === 'admin' 
+        ? 'mongodb-admin-token-' + Date.now()
+        : 'mongodb-user-token-' + user._id.toString();
+      
+      res.json({
+        success: true,
+        message: 'Usuario encontrado',
+        data: {
+          token: token,
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            points: user.points,
+            logisticsLevel: user.logisticsLevel,
+            reputation: user.reputation,
+            avatar: user.avatar
+          }
+        }
+      });
+    } else {
+      // Crear nuevo usuario
+      const newUser = new User({
+        googleId: uid,
+        name: name || email.split('@')[0],
+        email: email,
+        password: '', // Sin password para usuarios de Firebase
+        role: 'user', // Por defecto
+        points: 0,
+        logisticsLevel: 1,
+        reputation: 0,
+        avatar: photoURL || '',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      await newUser.save();
+      
+      const token = 'mongodb-user-token-' + newUser._id.toString();
+      
+      console.log('✅ Nuevo usuario de Firebase creado:', {
+        uid: uid,
+        email: email,
+        name: name,
+        mongoId: newUser._id
+      });
+      
+      res.json({
+        success: true,
+        message: 'Usuario de Firebase creado exitosamente',
+        data: {
+          token: token,
+          user: {
+            id: newUser._id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            points: newUser.points,
+            logisticsLevel: newUser.logisticsLevel,
+            reputation: newUser.reputation,
+            avatar: newUser.avatar
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error en firebase-user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error en el servidor'
+    });
+  }
+});
+
 app.get('/api/auth/me', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
