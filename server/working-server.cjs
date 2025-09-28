@@ -88,7 +88,6 @@ async (accessToken, refreshToken, profile, done) => {
     console.error('❌ Error en Google OAuth:', error);
     return done(error, null);
   }
-  });
 } else {
   console.log('⚠️ Google OAuth deshabilitado en producción');
 }
