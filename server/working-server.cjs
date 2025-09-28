@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const passport = require('passport');
+const session = require('express-session');
+const configureGoogleAuth = require('./google-auth-config');
 
 const app = express();
 const PORT = 3002;
@@ -19,6 +22,24 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Configuración de sesiones
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'trastalia-session-secret-2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Cambiar a true en producción con HTTPS
+    maxAge: 24 * 60 * 60 * 1000 // 24 horas
+  }
+}));
+
+// Configuración de Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configurar Google OAuth
+configureGoogleAuth();
+
 // Conectar a MongoDB
 const MONGODB_URI = 'mongodb+srv://mikabodea:Mika1974%26@trastalia.ycg2lvb.mongodb.net/trastalia?retryWrites=true&w=majority&appName=Trastalia';
 
@@ -35,6 +56,7 @@ const UserSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
+  googleId: String, // ID de Google OAuth
   role: { type: String, default: 'user' },
   avatar: String,
   isActive: { type: Boolean, default: true },
@@ -239,6 +261,64 @@ const assignClosestLogisticsShip = (location) => {
     capacity: defaultShip.capacity
   };
 };
+
+// Rutas de Google OAuth
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  async (req, res) => {
+    try {
+      // Generar token para el usuario autenticado
+      const token = req.user.role === 'admin' 
+        ? 'mongodb-admin-token-' + Date.now()
+        : 'mongodb-user-token-' + req.user._id.toString();
+      
+      // Actualizar último login
+      req.user.lastLogin = new Date();
+      await req.user.save();
+      
+      // Redirigir al frontend con el token
+      const frontendUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://trastalia.vercel.app' 
+        : 'http://localhost:5173';
+      
+      res.redirect(`${frontendUrl}/auth/callback?token=${token}&success=true`);
+    } catch (error) {
+      console.error('Error en callback de Google:', error);
+      const frontendUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://trastalia.vercel.app' 
+        : 'http://localhost:5173';
+      res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+    }
+  }
+);
+
+// Ruta para obtener información del usuario autenticado con Google
+app.get('/api/auth/google/user', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({
+      success: true,
+      data: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        points: req.user.points,
+        logisticsLevel: req.user.logisticsLevel,
+        reputation: req.user.reputation,
+        avatar: req.user.avatar
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: 'No autenticado'
+    });
+  }
+});
 
 // Middleware de autenticación
 const authMiddleware = (req, res, next) => {
