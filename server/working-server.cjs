@@ -39,6 +39,14 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Debug: Verificar variables de entorno
+console.log('🔍 Variables de entorno:');
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? '✅ Configurado' : '❌ No encontrado');
+console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? '✅ Configurado' : '❌ No encontrado');
+console.log('GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL || '❌ No encontrado');
+console.log('MONGODB_URI:', process.env.MONGODB_URI ? '✅ Configurado' : '❌ No encontrado');
+console.log('SESSION_SECRET:', process.env.SESSION_SECRET ? '✅ Configurado' : '❌ No encontrado');
+
 // Configuración de Google OAuth directamente
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
