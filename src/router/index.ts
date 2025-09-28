@@ -188,6 +188,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/ventas-gestionadas',
+      name: 'ManagedSalesStats',
+      component: () => import('../views/Admin/ManagedSalesStats.vue'),
+      meta: {
+        title: 'Ventas Gestionadas',
+        requiresAuth: true,
+        requiresAdmin: true
+      },
+    },
+    {
       path: '/servicios-logisticos',
       name: 'Servicios Logísticos',
       component: () => import('../views/Logistics/LogisticsServices.vue'),

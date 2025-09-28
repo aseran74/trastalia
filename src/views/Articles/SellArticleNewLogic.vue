@@ -392,9 +392,14 @@
                         <p class="text-sm text-gray-600 dark:text-gray-400">
                           Guardamos tu artículo y gestionamos la venta , respondemos  los mensajes de los compradores por un pequeño porcentaje, tú fijas el precio, solo preocupate por cobrar.
                         </p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          * Ver condiciones de comisión
-                        </p>
+                        <div class="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                          <p class="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                            💰 Comisión Trastalia: 5% sobre el precio de venta final
+                          </p>
+                          <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                            Ejemplo: Si vendes por €100, recibes €95 y Trastalia se queda €5
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>

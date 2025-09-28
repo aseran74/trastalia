@@ -376,6 +376,25 @@ const ArticleSchema = new mongoose.Schema({
   tarifa_tiempo: Number,
   dias_en_logistica: Number,
   
+  // Sistema de venta gestionada por Trastalia
+  venta_gestionada: {
+    activada: { type: Boolean, default: false },
+    comision_trastalia: { type: Number, default: 0.05 }, // 5% de comisión
+    fecha_activacion: Date,
+    precio_venta_final: Number,
+    fecha_venta: Date,
+    comprador_final: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    comision_cobrada: { type: Boolean, default: false },
+    ganancia_vendedor: Number // Precio final menos comisión
+  },
+  
+  // Propiedad del artículo (para venta gestionada)
+  propietario_actual: {
+    tipo: { type: String, enum: ['vendedor_original', 'trastalia'], default: 'vendedor_original' },
+    transferencia_fecha: Date,
+    motivo_transferencia: String
+  },
+  
   // Puntos para intercambio
   puntos_intercambio: Number,
   puntos_acreditados: { type: Boolean, default: false },
@@ -1011,6 +1030,27 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
     const savedArticle = await article.save();
     await savedArticle.populate('seller', 'name email points logisticsLevel reputation');
 
+    // Si es venta gestionada, configurar el sistema de comisiones
+    if (req.body.tipo_venta === 'gestion_venta') {
+      savedArticle.venta_gestionada.activada = true;
+      savedArticle.venta_gestionada.fecha_activacion = new Date();
+      savedArticle.venta_gestionada.comision_trastalia = 0.05; // 5% de comisión
+      
+      // Transferir propiedad a Trastalia para gestión
+      savedArticle.propietario_actual.tipo = 'trastalia';
+      savedArticle.propietario_actual.transferencia_fecha = new Date();
+      savedArticle.propietario_actual.motivo_transferencia = 'Venta gestionada por Trastalia';
+      
+      // Actualizar estado para indicar que está en gestión
+      savedArticle.estado_articulo = 'EN_LOGISTICA';
+      savedArticle.status = 'disponible';
+      savedArticle.adminStatus = 'approved_money';
+      
+      await savedArticle.save();
+      
+      console.log(`🛒 Artículo ${savedArticle.nombre} configurado para venta gestionada con 5% de comisión`)
+    }
+
     res.status(201).json({
       success: true,
       message: 'Artículo creado exitosamente',
@@ -1021,6 +1061,150 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al crear el artículo'
+    });
+  }
+});
+
+// Endpoint para comprar artículo en venta gestionada por Trastalia
+app.post('/api/articles/purchase-managed-sale', authMiddleware, async (req, res) => {
+  try {
+    const { articleId, precioFinal } = req.body;
+    
+    if (!articleId || !precioFinal) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID del artículo y precio final son requeridos'
+      });
+    }
+
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Verificar que el artículo está en venta gestionada
+    if (!article.venta_gestionada?.activada) {
+      return res.status(400).json({
+        success: false,
+        message: 'Este artículo no está en venta gestionada'
+      });
+    }
+
+    // Verificar que el artículo está disponible
+    if (article.estado_articulo !== 'EN_LOGISTICA' || article.status !== 'disponible') {
+      return res.status(400).json({
+        success: false,
+        message: 'Este artículo no está disponible para la venta'
+      });
+    }
+
+    // Calcular comisión (5%)
+    const comision = precioFinal * article.venta_gestionada.comision_trastalia;
+    const gananciaVendedor = precioFinal - comision;
+
+    // Actualizar el artículo
+    article.estado_articulo = 'VENDIDO';
+    article.status = 'sold';
+    article.comprador = req.userId;
+    article.comprador_tipo = 'usuario';
+    
+    // Actualizar datos de venta gestionada
+    article.venta_gestionada.precio_venta_final = precioFinal;
+    article.venta_gestionada.fecha_venta = new Date();
+    article.venta_gestionada.comprador_final = req.userId;
+    article.venta_gestionada.ganancia_vendedor = gananciaVendedor;
+    article.venta_gestionada.comision_cobrada = true;
+
+    // Transferir propiedad al comprador
+    article.propietario_actual.tipo = 'vendedor_original'; // El comprador es el nuevo propietario
+    article.propietario_actual.transferencia_fecha = new Date();
+    article.propietario_actual.motivo_transferencia = 'Venta gestionada completada';
+
+    await article.save();
+
+    console.log(`💰 Venta gestionada completada: ${article.nombre} vendido por €${precioFinal}, comisión Trastalia: €${comision.toFixed(2)}, ganancia vendedor: €${gananciaVendedor.toFixed(2)}`);
+
+    res.json({
+      success: true,
+      message: 'Artículo comprado exitosamente',
+      data: {
+        article: article,
+        precioFinal,
+        comisionTrastalia: comision,
+        gananciaVendedor
+      }
+    });
+
+  } catch (error) {
+    console.error('Error en venta gestionada:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al procesar la venta gestionada'
+    });
+  }
+});
+
+// Endpoint para obtener estadísticas de ventas gestionadas (solo admin)
+app.get('/api/admin/managed-sales-stats', authMiddleware, async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden acceder a estas estadísticas'
+      });
+    }
+
+    // Obtener todas las ventas gestionadas completadas
+    const managedSales = await Article.find({
+      'venta_gestionada.activada': true,
+      'venta_gestionada.comision_cobrada': true
+    }).populate('seller', 'name email').populate('comprador_final', 'name email');
+
+    // Calcular estadísticas
+    const totalVentas = managedSales.length;
+    const totalComisiones = managedSales.reduce((sum, sale) => {
+      return sum + (sale.venta_gestionada.precio_venta_final * sale.venta_gestionada.comision_trastalia);
+    }, 0);
+    const totalIngresos = managedSales.reduce((sum, sale) => {
+      return sum + sale.venta_gestionada.precio_venta_final;
+    }, 0);
+    const totalGananciasVendedores = managedSales.reduce((sum, sale) => {
+      return sum + sale.venta_gestionada.ganancia_vendedor;
+    }, 0);
+
+    // Ventas pendientes (en gestión pero no vendidas aún)
+    const ventasPendientes = await Article.find({
+      'venta_gestionada.activada': true,
+      'venta_gestionada.comision_cobrada': false,
+      'estado_articulo': 'EN_LOGISTICA'
+    }).populate('seller', 'name email');
+
+    res.json({
+      success: true,
+      data: {
+        ventasCompletadas: {
+          total: totalVentas,
+          totalIngresos,
+          totalComisiones,
+          totalGananciasVendedores,
+          promedioComision: totalVentas > 0 ? (totalComisiones / totalVentas) : 0
+        },
+        ventasPendientes: {
+          total: ventasPendientes.length,
+          articulos: ventasPendientes
+        },
+        ventasDetalladas: managedSales
+      }
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo estadísticas de ventas gestionadas:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener estadísticas'
     });
   }
 });
