@@ -218,13 +218,13 @@ const LogisticsCenterSchema = new mongoose.Schema({
     default: 'activo'
   },
   operatingHours: {
-    monday: { open: '08:00', close: '20:00' },
-    tuesday: { open: '08:00', close: '20:00' },
-    wednesday: { open: '08:00', close: '20:00' },
-    thursday: { open: '08:00', close: '20:00' },
-    friday: { open: '08:00', close: '20:00' },
-    saturday: { open: '09:00', close: '18:00' },
-    sunday: { open: '10:00', close: '16:00' }
+    monday: { open: { type: String, default: '08:00' }, close: { type: String, default: '20:00' } },
+    tuesday: { open: { type: String, default: '08:00' }, close: { type: String, default: '20:00' } },
+    wednesday: { open: { type: String, default: '08:00' }, close: { type: String, default: '20:00' } },
+    thursday: { open: { type: String, default: '08:00' }, close: { type: String, default: '20:00' } },
+    friday: { open: { type: String, default: '08:00' }, close: { type: String, default: '20:00' } },
+    saturday: { open: { type: String, default: '09:00' }, close: { type: String, default: '18:00' } },
+    sunday: { open: { type: String, default: '10:00' }, close: { type: String, default: '16:00' } }
   },
   contact: {
     phone: String,
@@ -395,39 +395,9 @@ const ArticleSchema = new mongoose.Schema({
   logisticsShipLocation: String // Alias para compatibilidad
 }, { timestamps: true });
 
-const LogisticsCenterSchema = new mongoose.Schema({
-  name: String,
-  address: String,
-  city: String,
-  region: String,
-  postalCode: String,
-  country: String,
-  coordinates: {
-    latitude: Number,
-    longitude: Number
-  },
-  capacity: Number,
-  availableCapacity: Number,
-  services: [String],
-  operatingHours: {
-    monday: String,
-    tuesday: String,
-    wednesday: String,
-    thursday: String,
-    friday: String,
-    saturday: String,
-    sunday: String
-  },
-  contact: {
-    phone: String,
-    email: String
-  },
-  status: { type: String, default: 'active' }
-}, { timestamps: true });
-
 const User = mongoose.model('User', UserSchema);
 const Article = mongoose.model('Article', ArticleSchema);
-const LogisticsCenter = mongoose.model('LogisticsCenter', LogisticsCenterSchema);
+// LogisticsCenter ya está definido arriba con el esquema correcto
 
 // Función para asignar nave logística más cercana
 const assignClosestLogisticsShip = (location) => {
@@ -2016,6 +1986,28 @@ app.put('/api/logistics-centers/:id/capacity', authMiddleware, async (req, res) 
     });
   }
 });
+
+// Endpoint para limpiar centros logísticos (solo para desarrollo)
+app.delete('/api/logistics-centers/clear', async (req, res) => {
+  try {
+    console.log('🗑️ Limpiando centros logísticos...')
+    const deletedCount = await LogisticsCenter.deleteMany({})
+    
+    console.log(`✅ ${deletedCount.deletedCount} centros logísticos eliminados`)
+    res.json({
+      success: true,
+      message: `${deletedCount.deletedCount} centros logísticos eliminados`,
+      data: { deletedCount: deletedCount.deletedCount }
+    })
+  } catch (error) {
+    console.error('❌ Error limpiando centros logísticos:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Error al limpiar centros logísticos',
+      error: error.message
+    })
+  }
+})
 
 // Endpoint para inicializar centros logísticos (solo para desarrollo)
 app.post('/api/logistics-centers/seed', async (req, res) => {
