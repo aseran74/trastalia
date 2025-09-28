@@ -187,16 +187,16 @@ const ArticleSchema = new mongoose.Schema({
   // Tipo de paquete para envío y logística
   tipo_paquete: {
     type: String,
-    enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    enum: ['CAJA_PEQUEÑA', 'CAJA_MEDIANA', 'CAJA_GRANDE', 'CAJA_EXTRA_GRANDE', 'CAJA_ESTRECHA', 'CAJA_CUBICA'],
     required: true
   },
   
   // Dimensiones del paquete (opcional, para cálculos más precisos)
   dimensiones_paquete: {
     peso: { type: Number }, // en kg
-    largo: { type: Number }, // en cm
-    ancho: { type: Number }, // en cm
-    alto: { type: Number }   // en cm
+    horizontal: { type: Number }, // en cm (largo)
+    vertical: { type: Number }, // en cm (ancho)
+    fondo: { type: Number }   // en cm (alto)
   },
   
   // Campos específicos para centro logístico
@@ -633,77 +633,83 @@ app.post('/api/auth/firebase-user', async (req, res) => {
 app.get('/api/package-types', (req, res) => {
   try {
     const packageTypes = {
-      XS: {
-        name: 'XS - Muy Pequeño',
-        description: 'Joyas, relojes, accesorios pequeños',
+      CAJA_PEQUEÑA: {
+        name: 'Caja Pequeña',
+        description: 'Para artículos pequeños como libros, accesorios',
         dimensions: {
-          weight: { min: 0, max: 0.5 }, // kg
-          length: { min: 0, max: 20 },   // cm
-          width: { min: 0, max: 15 },    // cm
-          height: { min: 0, max: 10 }    // cm
+          horizontal: 24,  // cm (largo)
+          vertical: 17,    // cm (ancho)  
+          fondo: 8.7       // cm (alto)
         },
+        maxWeight: 2, // kg
         shippingCost: 3.50, // €
-        examples: ['Anillos', 'Pulseras', 'Relojes', 'Auriculares pequeños', 'Memorias USB']
+        image: '/images/boxes/caja-pequena.svg',
+        examples: ['Libros', 'Accesorios', 'Productos electrónicos pequeños', 'Joyería']
       },
-      S: {
-        name: 'S - Pequeño',
-        description: 'Libros, ropa, accesorios medianos',
+      CAJA_MEDIANA: {
+        name: 'Caja Mediana',
+        description: 'Ideal para ropa, utensilios de cocina, productos electrónicos medianos',
         dimensions: {
-          weight: { min: 0.5, max: 2 }, // kg
-          length: { min: 15, max: 30 },  // cm
-          width: { min: 10, max: 25 },   // cm
-          height: { min: 5, max: 15 }    // cm
+          horizontal: 31.7, // cm (largo)
+          vertical: 21.5,   // cm (ancho)
+          fondo: 12.5       // cm (alto)
         },
+        maxWeight: 5, // kg
         shippingCost: 4.50, // €
-        examples: ['Libros', 'Camisetas', 'Zapatos', 'Mochilas pequeñas', 'Tablets']
+        image: '/images/boxes/caja-mediana.svg',
+        examples: ['Ropa', 'Utensilios de cocina', 'Tablets', 'Zapatos']
       },
-      M: {
-        name: 'M - Mediano',
-        description: 'Electrodomésticos pequeños, ropa en cajas',
+      CAJA_GRANDE: {
+        name: 'Caja Grande',
+        description: 'Para artículos más grandes como zapatos, decoraciones, pequeños electrodomésticos',
         dimensions: {
-          weight: { min: 2, max: 5 },    // kg
-          length: { min: 25, max: 50 },  // cm
-          width: { min: 20, max: 40 },   // cm
-          height: { min: 10, max: 30 }   // cm
+          horizontal: 39,   // cm (largo)
+          vertical: 28,     // cm (ancho)
+          fondo: 19         // cm (alto)
         },
+        maxWeight: 10, // kg
         shippingCost: 6.50, // €
-        examples: ['Laptops', 'Consolas portátiles', 'Cámaras', 'Botas', 'Maletas pequeñas']
+        image: '/images/boxes/caja-grande.svg',
+        examples: ['Zapatos', 'Decoraciones', 'Pequeños electrodomésticos', 'Laptops']
       },
-      L: {
-        name: 'L - Grande',
-        description: 'Electrodomésticos medianos, muebles pequeños',
+      CAJA_EXTRA_GRANDE: {
+        name: 'Caja Extra Grande',
+        description: 'Para artículos voluminosos como almohadas, mantas, equipos deportivos',
         dimensions: {
-          weight: { min: 5, max: 15 },   // kg
-          length: { min: 40, max: 80 },  // cm
-          width: { min: 30, max: 60 },   // cm
-          height: { min: 20, max: 50 }   // cm
+          horizontal: 50,   // cm (largo)
+          vertical: 40,     // cm (ancho)
+          fondo: 30         // cm (alto)
         },
+        maxWeight: 20, // kg
         shippingCost: 12.00, // €
-        examples: ['TV 32-43"', 'Microondas', 'Bicicletas plegables', 'Muebles pequeños', 'Monitores']
+        image: '/images/boxes/caja-extra-grande.svg',
+        examples: ['Almohadas', 'Mantas', 'Equipos deportivos', 'TV 32-43"']
       },
-      XL: {
-        name: 'XL - Muy Grande',
-        description: 'Electrodomésticos grandes, muebles medianos',
+      CAJA_ESTRECHA: {
+        name: 'Caja Estrecha',
+        description: 'Para productos largos y estrechos como pósters, paraguas, componentes alargados',
         dimensions: {
-          weight: { min: 15, max: 30 },  // kg
-          length: { min: 70, max: 120 }, // cm
-          width: { min: 50, max: 80 },   // cm
-          height: { min: 40, max: 70 }   // cm
+          horizontal: 60,   // cm (largo)
+          vertical: 15,     // cm (ancho)
+          fondo: 15         // cm (alto)
         },
-        shippingCost: 25.00, // €
-        examples: ['TV 50-65"', 'Lavadoras', 'Frigoríficos', 'Sofás pequeños', 'Bicicletas']
+        maxWeight: 8, // kg
+        shippingCost: 8.50, // €
+        image: '/images/boxes/caja-estrecha.svg',
+        examples: ['Pósters', 'Paraguas', 'Componentes electrónicos alargados', 'Raquetas']
       },
-      XXL: {
-        name: 'XXL - Extra Grande',
-        description: 'Muebles grandes, electrodomésticos de gran tamaño',
+      CAJA_CUBICA: {
+        name: 'Caja Cúbica',
+        description: 'Para artículos que requieren espacio uniforme como lámparas, electrodomésticos cúbicos',
         dimensions: {
-          weight: { min: 30, max: 100 }, // kg
-          length: { min: 100, max: 200 }, // cm
-          width: { min: 70, max: 150 },   // cm
-          height: { min: 60, max: 120 }   // cm
+          horizontal: 30,   // cm (largo)
+          vertical: 30,     // cm (ancho)
+          fondo: 30         // cm (alto)
         },
-        shippingCost: 45.00, // €
-        examples: ['TV 70"+', 'Armarios', 'Mesas grandes', 'Sofás grandes', 'Electrodomésticos industriales']
+        maxWeight: 15, // kg
+        shippingCost: 10.00, // €
+        image: '/images/boxes/caja-cubica.svg',
+        examples: ['Lámparas de mesa', 'Electrodomésticos cúbicos', 'Cajas de herramientas', 'Monitores']
       }
     };
 
