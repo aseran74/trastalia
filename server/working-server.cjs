@@ -133,6 +133,125 @@ const UserSchema = new mongoose.Schema({
   reputation: { type: Number, default: 0 }
 }, { timestamps: true });
 
+// Esquema de LogisticsCenter
+const LogisticsCenterSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  type: {
+    type: String,
+    enum: ['nave', 'estacion', 'puerto', 'almacen'],
+    required: true
+  },
+  level: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 20
+  },
+  reputation: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1000
+  },
+  location: {
+    city: {
+      type: String,
+      required: true
+    },
+    address: {
+      type: String,
+      required: true
+    },
+    coordinates: {
+      latitude: {
+        type: Number,
+        required: true
+      },
+      longitude: {
+        type: Number,
+        required: true
+      }
+    },
+    sector: {
+      type: String,
+      required: true
+    }
+  },
+  capacity: {
+    // Capacidad por tipo de caja
+    caja_pequena: {
+      total: { type: Number, default: 1000 },
+      ocupados: { type: Number, default: 0 }
+    },
+    caja_mediana: {
+      total: { type: Number, default: 800 },
+      ocupados: { type: Number, default: 0 }
+    },
+    caja_grande: {
+      total: { type: Number, default: 600 },
+      ocupados: { type: Number, default: 0 }
+    },
+    caja_extra_grande: {
+      total: { type: Number, default: 400 },
+      ocupados: { type: Number, default: 0 }
+    },
+    caja_estrecha: {
+      total: { type: Number, default: 500 },
+      ocupados: { type: Number, default: 0 }
+    },
+    caja_cubica: {
+      total: { type: Number, default: 300 },
+      ocupados: { type: Number, default: 0 }
+    }
+  },
+  services: [{
+    type: String,
+    enum: ['almacenamiento', 'transporte', 'reparacion', 'comercio', 'intercambio', 'seguridad', 'comunicaciones', 'navegacion', 'valijas', 'envios_urgentes']
+  }],
+  status: {
+    type: String,
+    enum: ['activo', 'mantenimiento', 'cerrado'],
+    default: 'activo'
+  },
+  operatingHours: {
+    monday: { open: '08:00', close: '20:00' },
+    tuesday: { open: '08:00', close: '20:00' },
+    wednesday: { open: '08:00', close: '20:00' },
+    thursday: { open: '08:00', close: '20:00' },
+    friday: { open: '08:00', close: '20:00' },
+    saturday: { open: '09:00', close: '18:00' },
+    sunday: { open: '10:00', close: '16:00' }
+  },
+  contact: {
+    phone: String,
+    email: String,
+    manager: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
+// Middleware para actualizar updatedAt
+LogisticsCenterSchema.pre('save', function(next) {
+  this.updatedAt = new Date()
+  next()
+})
+
+// Modelo de LogisticsCenter
+const LogisticsCenter = mongoose.model('LogisticsCenter', LogisticsCenterSchema)
+
 const ArticleSchema = new mongoose.Schema({
   // Campos básicos del artículo según el guion
   nombre: { type: String, required: true },
@@ -1767,19 +1886,358 @@ app.get('/api/articles/admin/stats', authMiddleware, async (req, res) => {
 // Rutas de centros logísticos
 app.get('/api/logistics-centers', async (req, res) => {
   try {
-    const centers = await LogisticsCenter.find({ status: 'active' });
+    console.log('🚀 Obteniendo centros logísticos...')
+    const centers = await LogisticsCenter.find({ status: 'activo' })
+      .sort({ reputation: -1, level: -1 })
+      .lean()
+    
+    // Transformar datos para incluir información de capacidad
+    const centersWithCapacity = centers.map(center => {
+      const totalCapacity = Object.values(center.capacity).reduce((sum, boxType) => {
+        return sum + boxType.total
+      }, 0)
+      
+      const totalOccupied = Object.values(center.capacity).reduce((sum, boxType) => {
+        return sum + boxType.ocupados
+      }, 0)
+      
+      return {
+        _id: center._id,
+        name: center.name,
+        type: center.type,
+        level: center.level,
+        reputation: center.reputation,
+        location: center.location,
+        capacity: {
+          totalCapacity,
+          totalOccupied,
+          available: totalCapacity - totalOccupied,
+          byBoxType: center.capacity
+        },
+        services: center.services,
+        status: center.status,
+        operatingHours: center.operatingHours,
+        contact: center.contact,
+        createdAt: center.createdAt,
+        updatedAt: center.updatedAt
+      }
+    })
+    
+    console.log(`✅ ${centersWithCapacity.length} centros logísticos encontrados`)
     res.json({
       success: true,
-      data: centers
+      data: centersWithCapacity
     });
   } catch (error) {
-    console.error('Error obteniendo centros logísticos:', error);
+    console.error('❌ Error obteniendo centros logísticos:', error);
     res.status(500).json({
       success: false,
       message: 'Error al obtener centros logísticos'
     });
   }
 });
+
+// Endpoint para obtener un centro logístico específico
+app.get('/api/logistics-centers/:id', async (req, res) => {
+  try {
+    const center = await LogisticsCenter.findById(req.params.id);
+    if (!center) {
+      return res.status(404).json({
+        success: false,
+        message: 'Centro logístico no encontrado'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: center
+    });
+  } catch (error) {
+    console.error('❌ Error obteniendo centro logístico:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener centro logístico'
+    });
+  }
+});
+
+// Endpoint para actualizar capacidad de un centro logístico (admin)
+app.put('/api/logistics-centers/:id/capacity', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permisos para realizar esta acción'
+      });
+    }
+    
+    const { boxType, occupied } = req.body;
+    const validBoxTypes = ['caja_pequena', 'caja_mediana', 'caja_grande', 'caja_extra_grande', 'caja_estrecha', 'caja_cubica'];
+    
+    if (!validBoxTypes.includes(boxType)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Tipo de caja no válido'
+      });
+    }
+    
+    const center = await LogisticsCenter.findById(req.params.id);
+    if (!center) {
+      return res.status(404).json({
+        success: false,
+        message: 'Centro logístico no encontrado'
+      });
+    }
+    
+    // Verificar que no se exceda la capacidad
+    if (occupied > center.capacity[boxType].total) {
+      return res.status(400).json({
+        success: false,
+        message: 'La cantidad ocupada no puede exceder la capacidad total'
+      });
+    }
+    
+    center.capacity[boxType].ocupados = occupied;
+    await center.save();
+    
+    console.log(`📦 Capacidad actualizada para ${center.name}: ${boxType} = ${occupied}/${center.capacity[boxType].total}`)
+    
+    res.json({
+      success: true,
+      message: 'Capacidad actualizada correctamente',
+      data: center.capacity[boxType]
+    });
+  } catch (error) {
+    console.error('❌ Error actualizando capacidad:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar capacidad'
+    });
+  }
+});
+
+// Endpoint para inicializar centros logísticos (solo para desarrollo)
+app.post('/api/logistics-centers/seed', async (req, res) => {
+  try {
+    console.log('🌱 Inicializando centros logísticos...')
+    
+    // Verificar si ya existen centros
+    const existingCenters = await LogisticsCenter.countDocuments()
+    if (existingCenters > 0) {
+      return res.json({
+        success: true,
+        message: `Ya existen ${existingCenters} centros logísticos en la base de datos`,
+        data: { existingCount: existingCenters }
+      })
+    }
+    
+    // Datos de centros logísticos reales en España
+    const logisticsCenters = [
+      {
+        name: 'Centro Logístico Madrid Sur',
+        type: 'almacen',
+        level: 15,
+        reputation: 950,
+        location: {
+          city: 'Madrid',
+          address: 'Polígono Industrial Villaverde, Calle de la Logística, 28021 Madrid',
+          coordinates: {
+            latitude: 40.3499,
+            longitude: -3.6949
+          },
+          sector: 'Madrid Sur'
+        },
+        capacity: {
+          caja_pequena: { total: 1200, ocupados: 180 },
+          caja_mediana: { total: 1000, ocupados: 320 },
+          caja_grande: { total: 800, ocupados: 450 },
+          caja_extra_grande: { total: 600, ocupados: 380 },
+          caja_estrecha: { total: 700, ocupados: 120 },
+          caja_cubica: { total: 500, ocupados: 200 }
+        },
+        services: ['almacenamiento', 'transporte', 'comercio', 'envios_urgentes', 'valijas'],
+        contact: {
+          phone: '+34 91 123 45 67',
+          email: 'madrid.sur@trastalia.com',
+          manager: 'Carlos Rodríguez'
+        }
+      },
+      {
+        name: 'Nave Logística Barcelona Port',
+        type: 'puerto',
+        level: 18,
+        reputation: 980,
+        location: {
+          city: 'Barcelona',
+          address: 'Zona Franca de Barcelona, Carrer de la Logística, 08040 Barcelona',
+          coordinates: {
+            latitude: 41.3851,
+            longitude: 2.1734
+          },
+          sector: 'Barcelona Port'
+        },
+        capacity: {
+          caja_pequena: { total: 1500, ocupados: 220 },
+          caja_mediana: { total: 1200, ocupados: 450 },
+          caja_grande: { total: 900, ocupados: 520 },
+          caja_extra_grande: { total: 700, ocupados: 480 },
+          caja_estrecha: { total: 800, ocupados: 150 },
+          caja_cubica: { total: 600, ocupados: 280 }
+        },
+        services: ['almacenamiento', 'transporte', 'comercio', 'intercambio', 'navegacion', 'envios_urgentes'],
+        contact: {
+          phone: '+34 93 456 78 90',
+          email: 'barcelona.port@trastalia.com',
+          manager: 'María González'
+        }
+      },
+      {
+        name: 'Centro Sevilla Andalucía',
+        type: 'estacion',
+        level: 12,
+        reputation: 850,
+        location: {
+          city: 'Sevilla',
+          address: 'Polígono Industrial La Negrilla, Calle Logística 15, 41007 Sevilla',
+          coordinates: {
+            latitude: 37.3891,
+            longitude: -5.9845
+          },
+          sector: 'Sevilla Centro'
+        },
+        capacity: {
+          caja_pequena: { total: 800, ocupados: 120 },
+          caja_mediana: { total: 700, ocupados: 280 },
+          caja_grande: { total: 500, ocupados: 320 },
+          caja_extra_grande: { total: 400, ocupados: 250 },
+          caja_estrecha: { total: 450, ocupados: 80 },
+          caja_cubica: { total: 350, ocupados: 150 }
+        },
+        services: ['almacenamiento', 'transporte', 'comercio', 'reparacion'],
+        contact: {
+          phone: '+34 95 789 01 23',
+          email: 'sevilla.andalucia@trastalia.com',
+          manager: 'Antonio Jiménez'
+        }
+      },
+      {
+        name: 'Almacén Valencia Mediterráneo',
+        type: 'almacen',
+        level: 14,
+        reputation: 900,
+        location: {
+          city: 'Valencia',
+          address: 'Polígono Industrial Fuente del Jarro, Avenida de la Logística, 46988 Valencia',
+          coordinates: {
+            latitude: 39.4699,
+            longitude: -0.3763
+          },
+          sector: 'Valencia Mediterráneo'
+        },
+        capacity: {
+          caja_pequena: { total: 1000, ocupados: 150 },
+          caja_mediana: { total: 900, ocupados: 350 },
+          caja_grande: { total: 650, ocupados: 420 },
+          caja_extra_grande: { total: 500, ocupados: 380 },
+          caja_estrecha: { total: 600, ocupados: 100 },
+          caja_cubica: { total: 400, ocupados: 180 }
+        },
+        services: ['almacenamiento', 'transporte', 'comercio', 'valijas', 'envios_urgentes'],
+        contact: {
+          phone: '+34 96 234 56 78',
+          email: 'valencia.mediterraneo@trastalia.com',
+          manager: 'Elena Martín'
+        }
+      },
+      {
+        name: 'Nave Logística Bilbao Norte',
+        type: 'nave',
+        level: 16,
+        reputation: 920,
+        location: {
+          city: 'Bilbao',
+          address: 'Polígono Industrial Arrigorriaga, Calle de la Logística Industrial, 48480 Bilbao',
+          coordinates: {
+            latitude: 43.2627,
+            longitude: -2.9253
+          },
+          sector: 'Bilbao Norte'
+        },
+        capacity: {
+          caja_pequena: { total: 1100, ocupados: 200 },
+          caja_mediana: { total: 950, ocupados: 380 },
+          caja_grande: { total: 750, ocupados: 480 },
+          caja_extra_grande: { total: 550, ocupados: 420 },
+          caja_estrecha: { total: 650, ocupados: 130 },
+          caja_cubica: { total: 450, ocupados: 220 }
+        },
+        services: ['almacenamiento', 'transporte', 'comercio', 'intercambio', 'seguridad', 'envios_urgentes'],
+        contact: {
+          phone: '+34 94 567 89 01',
+          email: 'bilbao.norte@trastalia.com',
+          manager: 'Roberto López'
+        }
+      },
+      {
+        name: 'Centro Málaga Costa del Sol',
+        type: 'estacion',
+        level: 10,
+        reputation: 780,
+        location: {
+          city: 'Málaga',
+          address: 'Polígono Industrial San Luis, Carretera de Cártama, 29006 Málaga',
+          coordinates: {
+            latitude: 36.7213,
+            longitude: -4.4214
+          },
+          sector: 'Málaga Costa del Sol'
+        },
+        capacity: {
+          caja_pequena: { total: 600, ocupados: 80 },
+          caja_mediana: { total: 500, ocupados: 200 },
+          caja_grande: { total: 350, ocupados: 220 },
+          caja_extra_grande: { total: 250, ocupados: 180 },
+          caja_estrecha: { total: 300, ocupados: 60 },
+          caja_cubica: { total: 200, ocupados: 100 }
+        },
+        services: ['almacenamiento', 'transporte', 'comercio'],
+        contact: {
+          phone: '+34 95 123 45 67',
+          email: 'malaga.costadelsol@trastalia.com',
+          manager: 'Carmen Ruiz'
+        }
+      }
+    ]
+    
+    // Insertar centros en la base de datos
+    const insertedCenters = await LogisticsCenter.insertMany(logisticsCenters)
+    
+    console.log(`✅ ${insertedCenters.length} centros logísticos creados exitosamente`)
+    
+    res.json({
+      success: true,
+      message: `${insertedCenters.length} centros logísticos creados exitosamente`,
+      data: {
+        createdCount: insertedCenters.length,
+        centers: insertedCenters.map(center => ({
+          id: center._id,
+          name: center.name,
+          city: center.location.city,
+          type: center.type
+        }))
+      }
+    })
+    
+  } catch (error) {
+    console.error('❌ Error inicializando centros logísticos:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Error al inicializar centros logísticos',
+      error: error.message
+    })
+  }
+})
 
 // Ruta para obtener balance de puntos del usuario
 app.get('/api/user/points-balance', authMiddleware, async (req, res) => {
