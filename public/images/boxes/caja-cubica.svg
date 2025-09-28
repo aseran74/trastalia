@@ -1,0 +1,11 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Caja cúbica -->
+  <rect x="15" y="25" width="30" height="30" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+  <!-- Tapa -->
+  <rect x="17" y="22" width="30" height="30" fill="#A0522D" stroke="#654321" stroke-width="1"/>
+  <!-- Etiqueta -->
+  <rect x="25" y="28" width="12" height="8" fill="#FFD700" stroke="#DAA520" stroke-width="0.5"/>
+  <text x="31" y="34" font-family="Arial" font-size="3" fill="#000" text-anchor="middle">CUB</text>
+  <!-- Dimensiones -->
+  <text x="40" y="15" font-family="Arial" font-size="8" fill="#333" text-anchor="middle">30×30×30 cm</text>
+</svg>

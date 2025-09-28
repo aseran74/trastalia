@@ -1,0 +1,11 @@
+<svg width="90" height="80" viewBox="0 0 90 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Caja grande -->
+  <rect x="5" y="30" width="39" height="28" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+  <!-- Tapa -->
+  <rect x="7" y="27" width="39" height="28" fill="#A0522D" stroke="#654321" stroke-width="1"/>
+  <!-- Etiqueta -->
+  <rect x="20" y="32" width="12" height="6" fill="#FFD700" stroke="#DAA520" stroke-width="0.5"/>
+  <text x="26" y="36" font-family="Arial" font-size="3" fill="#000" text-anchor="middle">M</text>
+  <!-- Dimensiones -->
+  <text x="45" y="15" font-family="Arial" font-size="8" fill="#333" text-anchor="middle">39×28×19 cm</text>
+</svg>

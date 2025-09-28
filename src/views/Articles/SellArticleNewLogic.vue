@@ -163,36 +163,64 @@
             </select>
             
             <!-- Información del paquete seleccionado -->
-            <div v-if="selectedPackageInfo" class="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm font-medium text-blue-900 dark:text-blue-100">
-                    {{ selectedPackageInfo.name }}
-                  </p>
-                  <p class="text-xs text-blue-700 dark:text-blue-300">
-                    {{ selectedPackageInfo.description }}
-                  </p>
-                  <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    Ejemplos: {{ selectedPackageInfo.examples.slice(0, 3).join(', ') }}
-                  </p>
+            <div v-if="selectedPackageInfo" class="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div class="flex items-start gap-4">
+                <!-- Imagen de la caja -->
+                <div class="flex-shrink-0">
+                  <img 
+                    :src="selectedPackageInfo.image" 
+                    :alt="selectedPackageInfo.name"
+                    class="w-16 h-12 object-contain"
+                    onerror="this.style.display='none'"
+                  />
                 </div>
-                <div class="text-right">
-                  <p class="text-lg font-bold text-blue-900 dark:text-blue-100">
-                    {{ selectedPackageInfo.shippingCost }}€
-                  </p>
-                  <p class="text-xs text-blue-600 dark:text-blue-400">
-                    Coste de envío
-                  </p>
+                
+                <!-- Información de la caja -->
+                <div class="flex-1">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                        {{ selectedPackageInfo.name }}
+                      </p>
+                      <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                        {{ selectedPackageInfo.description }}
+                      </p>
+                      
+                      <!-- Dimensiones -->
+                      <div class="mt-2 text-xs text-blue-600 dark:text-blue-400">
+                        <p><strong>Dimensiones:</strong> {{ selectedPackageInfo.dimensions.horizontal }}×{{ selectedPackageInfo.dimensions.vertical }}×{{ selectedPackageInfo.dimensions.fondo }} cm</p>
+                        <p><strong>Peso máximo:</strong> {{ selectedPackageInfo.maxWeight }} kg</p>
+                      </div>
+                      
+                      <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                        <strong>Ejemplos:</strong> {{ selectedPackageInfo.examples.slice(0, 3).join(', ') }}
+                      </p>
+                    </div>
+                    
+                    <!-- Coste -->
+                    <div class="text-right">
+                      <p class="text-xl font-bold text-blue-900 dark:text-blue-100">
+                        {{ selectedPackageInfo.shippingCost }}€
+                      </p>
+                      <p class="text-xs text-blue-600 dark:text-blue-400">
+                        Coste de envío
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Dimensiones del paquete (opcional) -->
+          <!-- Dimensiones del artículo (opcional) -->
           <div v-if="formData.tipo_paquete" class="mb-4.5">
             <label class="mb-2.5 block text-black dark:text-white">
-              Dimensiones del Paquete (Opcional)
+              Dimensiones del Artículo (Opcional)
             </label>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+              Introduce las dimensiones de tu artículo para verificar que cabe en la caja seleccionada
+            </p>
+            
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
@@ -209,10 +237,10 @@
               </div>
               <div>
                 <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
-                  Largo (cm)
+                  Horizontal (cm)
                 </label>
                 <input
-                  v-model.number="formData.dimensiones.largo"
+                  v-model.number="formData.dimensiones.horizontal"
                   type="number"
                   min="0"
                   placeholder="0"
@@ -221,10 +249,10 @@
               </div>
               <div>
                 <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
-                  Ancho (cm)
+                  Vertical (cm)
                 </label>
                 <input
-                  v-model.number="formData.dimensiones.ancho"
+                  v-model.number="formData.dimensiones.vertical"
                   type="number"
                   min="0"
                   placeholder="0"
@@ -233,10 +261,10 @@
               </div>
               <div>
                 <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
-                  Alto (cm)
+                  Fondo (cm)
                 </label>
                 <input
-                  v-model.number="formData.dimensiones.alto"
+                  v-model.number="formData.dimensiones.fondo"
                   type="number"
                   min="0"
                   placeholder="0"
@@ -245,14 +273,34 @@
               </div>
             </div>
             
-            <!-- Botón para sugerir tipo de paquete basado en dimensiones -->
+            <!-- Verificación de compatibilidad -->
+            <div v-if="hasDimensions && selectedPackageInfo" class="mt-3 p-3 rounded-lg" :class="isArticleCompatible ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800' : 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800'">
+              <div class="flex items-center gap-2">
+                <span v-if="isArticleCompatible" class="text-green-600 dark:text-green-400">✅</span>
+                <span v-else class="text-red-600 dark:text-red-400">❌</span>
+                <p class="text-sm font-medium" :class="isArticleCompatible ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'">
+                  {{ isArticleCompatible ? 'El artículo cabe perfectamente en esta caja' : 'El artículo es demasiado grande para esta caja' }}
+                </p>
+              </div>
+              <div v-if="!isArticleCompatible" class="mt-2">
+                <button
+                  @click="suggestPackageType"
+                  type="button"
+                  class="px-3 py-1.5 text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-800 dark:text-blue-200 rounded transition-colors"
+                >
+                  🧮 Sugerir caja adecuada
+                </button>
+              </div>
+            </div>
+            
+            <!-- Botón para sugerir tipo de caja basado en dimensiones -->
             <button
               v-if="hasDimensions"
               @click="suggestPackageType"
               type="button"
               class="mt-2 px-3 py-1.5 text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-800 dark:text-blue-200 rounded transition-colors"
             >
-              🧮 Sugerir tipo de paquete
+              🧮 Sugerir caja adecuada
             </button>
           </div>
         </div>
@@ -523,9 +571,9 @@ const formData = ref({
   tipo_paquete: '',
   dimensiones: {
     peso: null,
-    largo: null,
-    ancho: null,
-    alto: null
+    horizontal: null,
+    vertical: null,
+    fondo: null
   }
 })
 
@@ -546,7 +594,23 @@ const selectedPackageInfo = computed(() => {
 
 const hasDimensions = computed(() => {
   const dims = formData.value.dimensiones
-  return dims.peso || dims.largo || dims.ancho || dims.alto
+  return dims.peso || dims.horizontal || dims.vertical || dims.fondo
+})
+
+// Verificar si el artículo es compatible con la caja seleccionada
+const isArticleCompatible = computed(() => {
+  if (!selectedPackageInfo.value || !hasDimensions.value) return true
+  
+  const dims = formData.value.dimensiones
+  const boxDims = selectedPackageInfo.value.dimensions
+  const maxWeight = selectedPackageInfo.value.maxWeight
+  
+  return (
+    (dims.peso || 0) <= maxWeight &&
+    (dims.horizontal || 0) <= boxDims.horizontal &&
+    (dims.vertical || 0) <= boxDims.vertical &&
+    (dims.fondo || 0) <= boxDims.fondo
+  )
 })
 
 // Funciones para manejar paquetes
@@ -559,16 +623,16 @@ const onPackageTypeChange = () => {
 
 const suggestPackageType = () => {
   const dims = formData.value.dimensiones
-  if (dims.peso || dims.largo || dims.ancho || dims.alto) {
+  if (dims.peso || dims.horizontal || dims.vertical || dims.fondo) {
     const recommended = getRecommendedPackageType(
       dims.peso || 0,
-      dims.largo || 0,
-      dims.ancho || 0,
-      dims.alto || 0
+      dims.horizontal || 0,
+      dims.vertical || 0,
+      dims.fondo || 0
     )
     
     formData.value.tipo_paquete = recommended
-    showToast('success', `Tipo de paquete sugerido: ${PACKAGE_TYPES[recommended].name}`)
+    showToast('success', `Caja sugerida: ${PACKAGE_TYPES[recommended].name}`)
   }
 }
 
@@ -974,9 +1038,9 @@ const resetForm = () => {
     tipo_paquete: '',
     dimensiones: {
       peso: null,
-      largo: null,
-      ancho: null,
-      alto: null
+      horizontal: null,
+      vertical: null,
+      fondo: null
     }
   }
   selectedFiles.value = []
