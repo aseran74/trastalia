@@ -12,7 +12,7 @@
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           O
-          <router-link to="/signin" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+          <router-link to="/login" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
             iniciar sesión con tu cuenta existente
           </router-link>
         </p>

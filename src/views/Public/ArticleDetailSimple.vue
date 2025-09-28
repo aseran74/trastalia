@@ -11,7 +11,7 @@
             <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               ← Volver a Artículos
             </router-link>
-            <router-link to="/signin" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+            <router-link to="/login" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
               Iniciar Sesión
             </router-link>
           </div>
@@ -270,12 +270,12 @@ const getArticleImage = (article) => {
 
 // Login para comprar
 const loginToBuy = () => {
-  router.push('/signin')
+  router.push('/login')
 }
 
 // Login para comprar con puntos
 const loginToBuyWithPoints = () => {
-  router.push('/signin')
+  router.push('/login')
 }
 
 // Verificar si el usuario es admin

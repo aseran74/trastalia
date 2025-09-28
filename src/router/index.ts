@@ -53,15 +53,6 @@ const router = createRouter({
       },
     },
     {
-      path: '/test-signin',
-      name: 'TestSignin',
-      component: () => import('../views/Auth/TestSignin.vue'),
-      meta: {
-        title: 'Test Login',
-        requiresAuth: false
-      },
-    },
-    {
       path: '/dashboard',
       name: 'Dashboard',
       component: () => import('../views/Admin/RealDashboard.vue'),
@@ -329,24 +320,6 @@ const router = createRouter({
       },
     },
 
-    {
-      path: '/signin',
-      name: 'Signin',
-      component: () => import('../views/Auth/Signin.vue'),
-      meta: {
-        title: 'Iniciar Sesión',
-        requiresAuth: false
-      },
-    },
-    {
-      path: '/signup',
-      name: 'Signup',
-      component: () => import('../views/Auth/Signup.vue'),
-      meta: {
-        title: 'Crear Cuenta',
-        requiresAuth: false
-      },
-    },
   ],
 })
 
@@ -364,7 +337,7 @@ router.beforeEach(async (to, from, next) => {
   // Verificar si la ruta requiere autenticación
   if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
     next('/login')
-  } else if ((to.path === '/signin' || to.path === '/login' || to.path === '/signup') && authStore.isAuthenticated) {
+  } else if (to.path === '/login' && authStore.isAuthenticated) {
     // Redirigir según el rol del usuario
     if (authStore.user?.role === 'admin') {
       next('/dashboard')
