@@ -171,7 +171,7 @@ const closeMenu = () => {
 
 const handleLogout = () => {
   authStore.logout();
-  router.push('/signin');
+  router.push('/login');
   closeMenu();
 };
 

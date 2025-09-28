@@ -319,7 +319,7 @@ const goBack = () => {
 
 // Login para comprar
 const loginToBuy = () => {
-  router.push('/signin')
+  router.push('/login')
 }
 
 // Compartir artículo

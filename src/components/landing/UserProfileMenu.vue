@@ -170,7 +170,7 @@ const signOut = async () => {
   try {
     await authStore.logout()
     closeDropdown()
-    router.push('/signin')
+    router.push('/login')
   } catch (error) {
     console.error('Error al cerrar sesión:', error)
   }

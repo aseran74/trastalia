@@ -87,7 +87,7 @@
       <div class="mt-6 text-center">
         <div class="text-sm text-gray-600">
           ¿Ya tienes cuenta? 
-          <router-link to="/signin" class="text-blue-600 hover:text-blue-800 underline font-medium">
+          <router-link to="/login" class="text-blue-600 hover:text-blue-800 underline font-medium">
             Inicia sesión aquí
               </router-link>
         </div>
