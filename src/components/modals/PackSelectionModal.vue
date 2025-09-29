@@ -10,8 +10,12 @@
 
       <!-- Header -->
       <div class="p-6 border-b border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Seleccionar Pack Temático</h2>
-        <p class="text-gray-600">Elige un pack temático para vender todos los artículos juntos con descuento</p>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+          {{ getSubcategoryTitle() }}
+        </h2>
+        <p class="text-gray-600">
+          {{ getSubcategoryDescription() }}
+        </p>
       </div>
 
       <!-- Search and Filter -->
@@ -182,6 +186,10 @@ const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
+  },
+  subcategory: {
+    type: String,
+    default: ''
   }
 })
 
@@ -198,7 +206,12 @@ const selectedPackage = ref(null)
 const filteredPackages = computed(() => {
   let filtered = packages.value
 
-  // Filtrar por categoría
+  // Filtrar por subcategoría si está definida
+  if (props.subcategory) {
+    filtered = filtered.filter(pkg => pkg.category === props.subcategory)
+  }
+
+  // Filtrar por categoría del modal (si se usa)
   if (selectedCategory.value) {
     filtered = filtered.filter(pkg => pkg.category === selectedCategory.value)
   }
@@ -262,6 +275,28 @@ const getAvailabilityLabel = (availability) => {
     'out_of_stock': 'Agotado'
   }
   return labels[availability] || availability
+}
+
+// Helper para obtener título de subcategoría
+const getSubcategoryTitle = () => {
+  const titles = {
+    'recien_nacido': '👶 Pack Recién Nacido',
+    'iniciacion_deporte': '⚽ Pack Iniciación Deporte',
+    'iniciacion_musica': '🎵 Pack Iniciación Música',
+    'cambio_mobiliario': '🏠 Pack Cambio Mobiliario'
+  }
+  return titles[props.subcategory] || 'Seleccionar Pack Temático'
+}
+
+// Helper para obtener descripción de subcategoría
+const getSubcategoryDescription = () => {
+  const descriptions = {
+    'recien_nacido': 'Todo lo que necesitas para el bebé: carrito, cuna, sillita, bañera, ropa y accesorios',
+    'iniciacion_deporte': 'Equipo deportivo completo para iniciarte: botas, equipación, protecciones y accesorios',
+    'iniciacion_musica': 'Instrumento y accesorios para empezar en la música: amplificador, partituras y más',
+    'cambio_mobiliario': 'Mobiliario y decoración para renovar tu hogar con estilo'
+  }
+  return descriptions[props.subcategory] || 'Elige un pack temático para vender todos los artículos juntos con descuento'
 }
 
 // Lifecycle

@@ -53,17 +53,36 @@
           </div>
         </div>
 
-        <!-- Selección de Pack (solo si categoría es pack_tematico) -->
+        <!-- Selección de Subcategoría de Pack (solo si categoría es pack_tematico) -->
         <div v-if="formData.categoria === 'pack_tematico'" class="mb-4.5">
           <label class="mb-2.5 block text-black dark:text-white">
-            Seleccionar Pack Temático *
+            Tipo de Pack *
+          </label>
+          <select
+            v-model="formData.pack_subcategoria"
+            @change="onPackSubcategoryChange"
+            class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            required
+          >
+            <option value="">Selecciona el tipo de pack</option>
+            <option value="recien_nacido">👶 Pack Recién Nacido - Todo para el bebé</option>
+            <option value="iniciacion_deporte">⚽ Pack Iniciación Deporte - Equipo deportivo completo</option>
+            <option value="iniciacion_musica">🎵 Pack Iniciación Música - Instrumento y accesorios</option>
+            <option value="cambio_mobiliario">🏠 Pack Cambio Mobiliario - Renovar tu hogar</option>
+          </select>
+        </div>
+
+        <!-- Selección de Pack Específico (solo si se selecciona subcategoría) -->
+        <div v-if="formData.pack_subcategoria" class="mb-4.5">
+          <label class="mb-2.5 block text-black dark:text-white">
+            Seleccionar Pack Específico *
           </label>
           <button
             type="button"
             @click="openPackSelection"
             class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            {{ selectedPack ? `📦 ${selectedPack.name}` : '🎯 Seleccionar Pack Temático' }}
+            {{ selectedPack ? `📦 ${selectedPack.name}` : '🎯 Seleccionar Pack' }}
           </button>
           
           <!-- Información del pack seleccionado -->
@@ -583,6 +602,7 @@
 <!-- Modal de Selección de Packs -->
 <PackSelectionModal 
   :is-open="showPackSelection"
+  :subcategory="formData.pack_subcategoria"
   @close="showPackSelection = false"
   @pack-selected="onPackSelected"
 />
@@ -639,7 +659,8 @@ const formData = ref({
     vertical: null,
     fondo: null
   },
-  pack_seleccionado: null // Información del pack seleccionado
+  pack_seleccionado: null, // Información del pack seleccionado
+  pack_subcategoria: '' // Subcategoría del pack seleccionada
 })
 
 // Estado para el modal de selección de packs
@@ -965,10 +986,15 @@ const submitArticle = async () => {
       return
     }
 
-    // Si se selecciona pack_tematico como categoría, validar que se haya seleccionado un pack
+    // Si se selecciona pack_tematico como categoría, validar que se haya seleccionado subcategoría y pack
     if (formData.value.categoria === 'pack_tematico') {
+      if (!formData.value.pack_subcategoria) {
+        alert('Por favor, selecciona el tipo de pack.')
+        loading.value = false
+        return
+      }
       if (!formData.value.pack_seleccionado) {
-        alert('Por favor, selecciona un pack temático.')
+        alert('Por favor, selecciona un pack específico.')
         loading.value = false
         return
       }
@@ -1126,7 +1152,15 @@ const onCategoryChange = () => {
   if (formData.value.categoria !== 'pack_tematico') {
     selectedPack.value = null
     formData.value.pack_seleccionado = null
+    formData.value.pack_subcategoria = ''
   }
+}
+
+// Función para manejar cambio de subcategoría de pack
+const onPackSubcategoryChange = () => {
+  // Limpiar pack seleccionado cuando cambia la subcategoría
+  selectedPack.value = null
+  formData.value.pack_seleccionado = null
 }
 
 // Función para abrir el modal de selección de packs
@@ -1174,7 +1208,8 @@ const resetForm = () => {
       vertical: null,
       fondo: null
     },
-    pack_seleccionado: null
+    pack_seleccionado: null,
+    pack_subcategoria: ''
   }
   selectedFiles.value = []
   selectedPackageInfo.value = null
