@@ -363,7 +363,7 @@ const loadArticle = async () => {
 
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     const response = await fetch(`/api/articles/${articleId.value}`, {
       method: 'GET',
       headers: {
@@ -405,7 +405,7 @@ const loadArticle = async () => {
 const updateArticle = async () => {
   saving.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     const response = await fetch(`/api/articles/${articleId.value}`, {
       method: 'PUT',
       headers: {
