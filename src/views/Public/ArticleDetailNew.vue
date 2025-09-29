@@ -15,7 +15,6 @@
               :src="articleImage"
               :alt="article.title || article.nombre"
               class="w-full h-full object-cover"
-              @error="handleImageError"
             />
             <!-- Badges -->
             <div class="absolute top-4 left-4 flex flex-col space-y-2">
@@ -136,29 +135,18 @@ const authStore = useAuthStore()
 // Estado
 const article = ref(null)
 const loading = ref(false)
-const imageError = ref(false)
 
 // Computed
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.user?.role === 'admin')
 
-// Imagen del artículo
+// Imagen del artículo - versión simplificada sin manejo de errores
 const articleImage = computed(() => {
-  if (!article.value) return '/images/placeholder.jpg'
+  if (!article.value) return 'images/placeholder.jpg'
   
-  // Si hay error de imagen, usar placeholder
-  if (imageError.value) return '/images/placeholder.jpg'
-  
-  // Intentar usar la primera imagen disponible
-  if (article.value.images && article.value.images.length > 0) {
-    return article.value.images[0]
-  }
-  if (article.value.fotos && article.value.fotos.length > 0) {
-    return article.value.fotos[0]
-  }
-  
-  // Usar placeholder por defecto
-  return '/images/placeholder.jpg'
+  // Usar la primera imagen disponible, o placeholder si no hay
+  const firstImage = article.value.images?.[0] || article.value.fotos?.[0]
+  return firstImage || 'images/placeholder.jpg'
 })
 
 // Cargar artículo desde MongoDB
@@ -193,12 +181,6 @@ const loadArticle = async () => {
   }
 }
 
-// Manejar error de imagen
-const handleImageError = (event) => {
-  console.log('🔄 Error cargando imagen, usando placeholder')
-  imageError.value = true
-  event.target.src = '/images/placeholder.jpg'
-}
 
 // Obtener etiqueta de categoría
 const getCategoryLabel = (category) => {
