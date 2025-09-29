@@ -109,7 +109,7 @@ const router = createRouter({
     {
       path: '/vender-articulo-nuevo',
       name: 'Sell Article New Logic',
-      component: () => import('../views/Articles/SellArticle.vue'),
+      component: () => import('../views/Articles/SellArticleNewLogic.vue'),
       meta: {
         title: 'Vender Artículo - Nueva Lógica',
         requiresAuth: true
