@@ -28,6 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
   const token = ref<string | null>(null);
   const isLoading = ref(false);
+  const isCheckingAuth = ref(false);
 
   // Getters
   const isAuthenticated = computed(() => {
@@ -130,6 +131,14 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const checkAuth = async () => {
+    // Evitar llamadas múltiples simultáneas
+    if (isCheckingAuth.value) {
+      console.log('🔄 checkAuth ya en progreso, saltando...');
+      return isAuthenticated.value;
+    }
+    
+    isCheckingAuth.value = true;
+    
     try {
       const storedToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
       const storedUser = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
@@ -149,6 +158,7 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = userData;
             token.value = storedToken;
             console.log('✅ checkAuth - Usuario Firebase autenticado:', user.value);
+            isCheckingAuth.value = false;
             return true;
           }
         } catch (parseError) {
@@ -171,6 +181,7 @@ export const useAuthStore = defineStore('auth', () => {
               user.value = data.data;
               token.value = storedToken;
               console.log('✅ checkAuth - Usuario API autenticado:', user.value);
+              isCheckingAuth.value = false;
               return true;
             }
           } else {
@@ -203,6 +214,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
       logout();
       return false;
+    } finally {
+      isCheckingAuth.value = false;
     }
   };
 
