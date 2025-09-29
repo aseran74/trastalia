@@ -1184,15 +1184,15 @@ const resetForm = () => {
 onMounted(async () => {
   await loadCentrosLogisticos()
   
-  // Cargar Google Maps
-  try {
-    await loadGoogleMaps()
-    // Inicializar Google Places después de cargar
-    setTimeout(() => {
-      initGooglePlaces()
-    }, 500)
-  } catch (error) {
-    console.warn('No se pudo cargar Google Maps:', error)
-  }
+  // TEMPORALMENTE DESHABILITADO: Cargar Google Maps
+  // try {
+  //   await loadGoogleMaps()
+  //   // Inicializar Google Places después de cargar
+  //   setTimeout(() => {
+  //     initGooglePlaces()
+  //   }, 500)
+  // } catch (error) {
+  //   console.warn('No se pudo cargar Google Maps:', error)
+  // }
 })
 </script>
