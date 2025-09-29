@@ -179,7 +179,7 @@ const formatPrice = (price) => {
 
 // Manejar error de imagen
 const handleImageError = (event) => {
-  event.target.src = 'https://via.placeholder.com/400x300/cccccc/666666?text=Imagen+no+disponible'
+  event.target.src = '/images/placeholder.jpg'
 }
 
 // Obtener imagen del artículo
@@ -198,10 +198,8 @@ const getArticleImage = (article) => {
     return article.fotos[0]
   }
   
-  const title = article.title || article.nombre || 'Artículo'
-  const placeholderUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(title)}`
-  console.log('🔄 Using placeholder:', placeholderUrl)
-  return placeholderUrl
+  console.log('🔄 Using local placeholder')
+  return '/images/placeholder.jpg'
 }
 
 // Obtener etiqueta de condición
