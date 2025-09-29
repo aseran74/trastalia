@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
     <!-- Header -->
     <header 
       :class="[
@@ -40,20 +40,20 @@
     </header>
 
     <!-- Main Content -->
-    <div class="pt-20 pb-8">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="pt-28 pb-12">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <!-- Loading State -->
         <div v-if="loading" class="flex justify-center items-center min-h-[400px]">
           <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
         </div>
 
         <!-- Article Detail -->
-        <div v-else-if="article" class="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div v-else-if="article" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
             <!-- Article Image Gallery -->
-            <div class="space-y-4">
+            <div class="p-8 space-y-6">
               <!-- Main Image -->
-              <div class="aspect-video bg-gray-200 relative rounded-lg overflow-hidden">
+              <div class="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative rounded-xl overflow-hidden shadow-lg">
                 <img
                   :src="currentImage"
                   :alt="article.title || article.nombre"
@@ -64,49 +64,49 @@
                 <button
                   v-if="hasMultipleImages"
                   @click="previousImage"
-                  class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-gray-800 p-3 rounded-full hover:bg-white shadow-lg transition-all duration-300 hover:scale-110"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                   </svg>
                 </button>
                 <button
                   v-if="hasMultipleImages"
                   @click="nextImage"
-                  class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-gray-800 p-3 rounded-full hover:bg-white shadow-lg transition-all duration-300 hover:scale-110"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                   </svg>
                 </button>
                 
                 <!-- Image Counter -->
-                <div v-if="hasMultipleImages" class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white text-sm px-3 py-1 rounded-full">
+                <div v-if="hasMultipleImages" class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm text-gray-800 text-sm px-4 py-2 rounded-full font-medium shadow-lg">
                   {{ currentImageIndex + 1 }} / {{ allImages.length }}
                 </div>
                 
                 <!-- Badges -->
                 <div class="absolute top-4 left-4 flex flex-col space-y-2">
-                  <span class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                  <span class="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-4 py-2 rounded-full font-semibold shadow-lg">
                     {{ getCategoryLabel(article.category || article.categoria) }}
                   </span>
-                  <span v-if="article.tipo_venta === 'gestionada'" class="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                  <span v-if="article.tipo_venta === 'gestionada'" class="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-4 py-2 rounded-full font-semibold shadow-lg">
                     Gestionado por Trastalia
                   </span>
                 </div>
               </div>
               
               <!-- Thumbnail Gallery -->
-              <div v-if="hasMultipleImages" class="flex space-x-2 overflow-x-auto pb-2">
+              <div v-if="hasMultipleImages" class="flex space-x-3 overflow-x-auto pb-2">
                 <button
                   v-for="(image, index) in allImages"
                   :key="index"
                   @click="selectImage(index)"
                   :class="[
-                    'flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all',
+                    'flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden border-3 transition-all duration-300 shadow-md hover:shadow-lg',
                     currentImageIndex === index 
-                      ? 'border-blue-500 ring-2 ring-blue-200' 
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 ring-4 ring-blue-200 scale-105' 
+                      : 'border-gray-200 hover:border-gray-400 hover:scale-105'
                   ]"
                 >
                   <img
@@ -119,47 +119,62 @@
             </div>
 
             <!-- Article Info -->
-            <div class="p-6">
-              <h1 class="text-3xl font-bold text-gray-900 mb-4">
-                {{ article.title || article.nombre }}
-              </h1>
+            <div class="p-8 bg-gradient-to-br from-gray-50 to-white">
+              <div class="space-y-6">
+                <h1 class="text-4xl font-bold text-gray-900 leading-tight">
+                  {{ article.title || article.nombre }}
+                </h1>
 
-              <div class="space-y-4">
                 <!-- Price -->
-                <div class="flex items-center space-x-4">
-                  <span class="text-3xl font-bold text-blue-600">
+                <div class="flex items-baseline space-x-4">
+                  <span class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     €{{ article.price || article.precio }}
                   </span>
-                  <span v-if="article.tipo_venta === 'gestionada'" class="text-sm text-gray-500">
-                    (+5% comisión Trastalia)
+                  <span v-if="article.tipo_venta === 'gestionada'" class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    +5% comisión Trastalia
                   </span>
                 </div>
 
                 <!-- Description -->
-                <div>
-                  <h3 class="text-lg font-semibold text-gray-900 mb-2">Descripción</h3>
-                  <p class="text-gray-700">{{ article.description || article.descripcion }}</p>
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Descripción
+                  </h3>
+                  <p class="text-gray-700 leading-relaxed">{{ article.description || article.descripcion }}</p>
                 </div>
 
                 <!-- Condition -->
-                <div>
-                  <h3 class="text-lg font-semibold text-gray-900 mb-2">Estado</h3>
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Estado del Artículo
+                  </h3>
+                  <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300">
                     {{ article.condition || article.estado || 'Bueno' }}
                   </span>
                 </div>
 
                 <!-- Seller Info -->
-                <div class="border-t pt-4">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-2">Vendedor</h3>
-                  <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                      <span class="text-gray-600 font-semibold">
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Vendedor
+                  </h3>
+                  <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                      <span class="text-white font-bold text-lg">
                         {{ (article.seller?.name || article.vendedor?.nombre || 'Usuario')[0].toUpperCase() }}
                       </span>
                     </div>
                     <div>
-                      <p class="font-medium text-gray-900">
+                      <p class="font-semibold text-gray-900 text-lg">
                         {{ article.seller?.name || article.vendedor?.nombre || 'Usuario' }}
                       </p>
                       <p class="text-sm text-gray-500">
@@ -170,60 +185,68 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="space-y-4 pt-4">
+                <div class="space-y-4 pt-6">
                   <!-- Botones de compra -->
                   <div v-if="!isAuthenticated" class="flex space-x-4">
                     <button
                       @click="loginToBuy"
-                      class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                      class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
-                      Iniciar Sesión para Comprar
+                      <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                        <span>Iniciar Sesión para Comprar</span>
+                      </div>
                     </button>
                   </div>
                   
-                  <div v-else class="space-y-3">
+                  <div v-else class="space-y-4">
                     <!-- Compra con dinero -->
                     <button
                       @click="buyWithMoney"
-                      class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                      class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-3"
                     >
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                       </svg>
-                      <span>Comprar por €{{ article.price || article.precio_propuesto_vendedor }}</span>
+                      <span class="text-lg">Comprar por €{{ article.price || article.precio_propuesto_vendedor }}</span>
                     </button>
                     
                     <!-- Compra con puntos -->
                     <button
                       v-if="userPoints >= articlePoints"
                       @click="buyWithPoints"
-                      class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2"
+                      class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-3"
                     >
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                       </svg>
-                      <span>Comprar por {{ articlePoints }} puntos</span>
+                      <span class="text-lg">Comprar por {{ articlePoints }} puntos</span>
                     </button>
                     
                     <!-- Mensaje al vendedor -->
                     <button
                       @click="openMessageModal"
-                      class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
+                      class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-3"
                     >
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                       </svg>
-                      <span>Mensaje al Vendedor</span>
+                      <span class="text-lg">Mensaje al Vendedor</span>
                     </button>
                   </div>
                   
                   <!-- Botón de edición para admin -->
-                  <div v-if="isAdmin" class="pt-2 border-t">
+                  <div v-if="isAdmin" class="pt-4 border-t border-gray-200">
                     <button
                       @click="editArticle"
-                      class="w-full bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+                      class="w-full bg-gradient-to-r from-gray-600 to-gray-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-gray-700 hover:to-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-3"
                     >
-                      Editar Artículo
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                      <span class="text-lg">Editar Artículo</span>
                     </button>
                   </div>
                 </div>
