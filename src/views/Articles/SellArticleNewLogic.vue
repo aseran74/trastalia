@@ -927,24 +927,24 @@ const loadCentrosLogisticos = async () => {
       centrosLogisticos.value = result.data
       console.log('✅ Centros logísticos cargados:', centrosLogisticos.value.length, 'centros')
       
-      // Obtener ubicación del usuario y seleccionar centro más cercano
-      try {
-        const location = await getUserLocation()
-        userLocation.value = location
-        
-        const nearestCenter = findNearestLogisticsCenter(location.latitude, location.longitude)
-        if (nearestCenter) {
-          formData.value.centro_logistico_id = nearestCenter._id
-          console.log('🎯 Centro logístico más cercano seleccionado automáticamente:', nearestCenter.name)
-        }
-      } catch (error) {
-        console.warn('No se pudo obtener la ubicación del usuario:', error)
-        // Seleccionar el primer centro por defecto
-        if (centrosLogisticos.value.length > 0) {
-          formData.value.centro_logistico_id = centrosLogisticos.value[0]._id
-          console.log('🎯 Centro por defecto seleccionado:', centrosLogisticos.value[0].name)
-        }
-      }
+      // Intentar obtener ubicación del usuario y seleccionar centro más cercano
+      getUserLocation()
+        .then(location => {
+          userLocation.value = location
+          const nearestCenter = findNearestLogisticsCenter(location.latitude, location.longitude)
+          if (nearestCenter) {
+            formData.value.centro_logistico_id = nearestCenter._id
+            console.log('🎯 Centro logístico más cercano seleccionado automáticamente:', nearestCenter.name)
+          }
+        })
+        .catch(error => {
+          console.warn('No se pudo obtener la ubicación del usuario:', error)
+          // Seleccionar el primer centro por defecto
+          if (centrosLogisticos.value.length > 0) {
+            formData.value.centro_logistico_id = centrosLogisticos.value[0]._id
+            console.log('📍 Seleccionando primer centro por defecto:', centrosLogisticos.value[0].name)
+          }
+        })
     } else {
       console.error('❌ Error en la respuesta del servidor:', response.status, response.statusText)
     }
