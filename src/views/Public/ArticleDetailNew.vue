@@ -144,8 +144,8 @@ const isAdmin = computed(() => authStore.user?.role === 'admin')
 const articleImage = computed(() => {
   if (!article.value) return 'images/placeholder.jpg'
   
-  // Usar la primera imagen disponible, o placeholder si no hay
-  const firstImage = article.value.images?.[0] || article.value.fotos?.[0]
+  // Priorizar fotos (campo principal) sobre images (compatibilidad)
+  const firstImage = article.value.fotos?.[0] || article.value.images?.[0]
   return firstImage || 'images/placeholder.jpg'
 })
 
