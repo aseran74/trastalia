@@ -1170,7 +1170,7 @@ const resetForm = () => {
       horizontal: null,
       vertical: null,
       fondo: null
-    }
+    },
     pack_seleccionado: null
   }
   selectedFiles.value = []
