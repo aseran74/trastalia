@@ -34,6 +34,15 @@ const router = createRouter({
           requiresAuth: false
         },
       },
+      {
+        path: '/paquetes',
+        name: 'Themed Packages',
+        component: () => import('../views/Packages/ThemedPackages.vue'),
+        meta: {
+          title: 'Paquetes Temáticos - Trastalia',
+          requiresAuth: false
+        },
+      },
     {
       path: '/auth/callback',
       name: 'AuthCallback',

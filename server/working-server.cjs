@@ -414,8 +414,35 @@ const ArticleSchema = new mongoose.Schema({
   logisticsShipLocation: String // Alias para compatibilidad
 }, { timestamps: true });
 
+// Esquema para Paquetes Temáticos
+const PackageSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  emoji: { type: String, required: true },
+  description: { type: String, required: true },
+  color: { type: String, required: true },
+  category: { type: String, required: true }, // categoría principal
+  items: [{
+    name: { type: String, required: true },
+    emoji: { type: String, required: true },
+    essential: { type: Boolean, default: false },
+    price: { type: Number, default: 0 }
+  }],
+  benefits: [String],
+  totalPrice: { type: Number, required: true },
+  discountedPrice: { type: Number, required: true },
+  discountPercentage: { type: Number, required: true },
+  availability: { type: String, enum: ['available', 'limited', 'out_of_stock'], default: 'available' },
+  stock: { type: Number, default: 10 },
+  isActive: { type: Boolean, default: true },
+  tags: [String],
+  images: [String], // URLs de imágenes del paquete
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+}, { timestamps: true });
+
 const User = mongoose.model('User', UserSchema);
 const Article = mongoose.model('Article', ArticleSchema);
+const Package = mongoose.model('Package', PackageSchema);
 // LogisticsCenter ya está definido arriba con el esquema correcto
 
 // Función para asignar nave logística más cercana
@@ -3453,6 +3480,784 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'
+    });
+  }
+});
+
+// ===== ENDPOINTS PARA PAQUETES TEMÁTICOS =====
+
+// GET /api/packages - Obtener todos los paquetes
+app.get('/api/packages', async (req, res) => {
+  try {
+    const packages = await Package.find({ isActive: true })
+      .populate('createdBy', 'name email')
+      .sort({ createdAt: -1 });
+    
+    res.json({
+      success: true,
+      data: packages
+    });
+  } catch (error) {
+    console.error('Error obteniendo paquetes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener los paquetes'
+    });
+  }
+});
+
+// GET /api/packages/:id - Obtener un paquete específico
+app.get('/api/packages/:id', async (req, res) => {
+  try {
+    const package = await Package.findOne({ id: req.params.id, isActive: true })
+      .populate('createdBy', 'name email');
+    
+    if (!package) {
+      return res.status(404).json({
+        success: false,
+        message: 'Paquete no encontrado'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: package
+    });
+  } catch (error) {
+    console.error('Error obteniendo paquete:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener el paquete'
+    });
+  }
+});
+
+// POST /api/packages/seed - Crear paquetes de prueba
+app.post('/api/packages/seed', async (req, res) => {
+  try {
+    // Verificar si ya existen paquetes
+    const existingPackages = await Package.countDocuments();
+    if (existingPackages > 0) {
+      return res.json({
+        success: true,
+        message: `Ya existen ${existingPackages} paquetes en la base de datos`
+      });
+    }
+
+    // Datos de los paquetes de prueba (30 paquetes)
+    const packagesData = [
+      // Pack Recién Nacido (5 variaciones)
+      {
+        id: 'recien-nacido-premium',
+        name: 'Pack Recién Nacido Premium',
+        emoji: '👶',
+        description: 'Todo lo esencial para tu bebé recién nacido - Edición Premium',
+        color: 'from-pink-500 to-purple-500',
+        category: 'bebe',
+        items: [
+          { name: 'Carrito premium', emoji: '🛒', essential: true, price: 450 },
+          { name: 'Cuna convertible', emoji: '🛏️', essential: true, price: 350 },
+          { name: 'Sillita de coche grupo 0+', emoji: '🚗', essential: true, price: 200 },
+          { name: 'Bañera ergonómica', emoji: '🛁', essential: true, price: 80 },
+          { name: 'Cambiador con bañera', emoji: '🧸', essential: false, price: 120 },
+          { name: 'Hamaca portátil', emoji: '🪑', essential: false, price: 90 }
+        ],
+        benefits: ['Ahorro del 40% vs comprar por separado', 'Productos verificados y seguros', 'Entrega coordinada'],
+        totalPrice: 1290,
+        discountedPrice: 774,
+        discountPercentage: 40,
+        stock: 15,
+        tags: ['bebe', 'recien-nacido', 'premium', 'esencial']
+      },
+      {
+        id: 'recien-nacido-basico',
+        name: 'Pack Recién Nacido Básico',
+        emoji: '👶',
+        description: 'Lo esencial para tu bebé recién nacido - Edición Básica',
+        color: 'from-pink-400 to-purple-400',
+        category: 'bebe',
+        items: [
+          { name: 'Carrito básico', emoji: '🛒', essential: true, price: 200 },
+          { name: 'Cuna estándar', emoji: '🛏️', essential: true, price: 180 },
+          { name: 'Sillita de coche grupo 0', emoji: '🚗', essential: true, price: 120 },
+          { name: 'Bañera básica', emoji: '🛁', essential: true, price: 40 }
+        ],
+        benefits: ['Ahorro del 35% vs comprar individual', 'Productos de calidad', 'Precio accesible'],
+        totalPrice: 540,
+        discountedPrice: 351,
+        discountPercentage: 35,
+        stock: 20,
+        tags: ['bebe', 'recien-nacido', 'basico', 'economico']
+      },
+      {
+        id: 'recien-nacido-completo',
+        name: 'Pack Recién Nacido Completo',
+        emoji: '👶',
+        description: 'Pack completo con todos los accesorios para tu bebé',
+        color: 'from-pink-600 to-purple-600',
+        category: 'bebe',
+        items: [
+          { name: 'Carrito todo terreno', emoji: '🛒', essential: true, price: 600 },
+          { name: 'Cuna colecho', emoji: '🛏️', essential: true, price: 450 },
+          { name: 'Sillita de coche grupo 0+/1', emoji: '🚗', essential: true, price: 280 },
+          { name: 'Bañera con accesorios', emoji: '🛁', essential: true, price: 120 },
+          { name: 'Cambiador premium', emoji: '🧸', essential: false, price: 180 },
+          { name: 'Hamaca eléctrica', emoji: '🪑', essential: false, price: 150 },
+          { name: 'Portabebé ergonómico', emoji: '👶', essential: false, price: 100 },
+          { name: 'Kit ropa básica', emoji: '👕', essential: false, price: 80 }
+        ],
+        benefits: ['Ahorro del 45% vs comprar por separado', 'Productos premium', 'Kit completo'],
+        totalPrice: 1960,
+        discountedPrice: 1078,
+        discountPercentage: 45,
+        stock: 8,
+        tags: ['bebe', 'recien-nacido', 'completo', 'premium']
+      },
+      {
+        id: 'recien-nacido-ropa',
+        name: 'Pack Ropa Recién Nacido',
+        emoji: '👶',
+        description: 'Kit completo de ropa para los primeros meses',
+        color: 'from-pink-300 to-purple-300',
+        category: 'bebe',
+        items: [
+          { name: 'Bodies pack x10', emoji: '👕', essential: true, price: 60 },
+          { name: 'Pijamas pack x6', emoji: '🩱', essential: true, price: 80 },
+          { name: 'Jerseys pack x4', emoji: '🧥', essential: true, price: 70 },
+          { name: 'Pantalones pack x6', emoji: '👖', essential: true, price: 50 },
+          { name: 'Calcetines pack x12', emoji: '🧦', essential: true, price: 25 },
+          { name: 'Gorros pack x4', emoji: '🎩', essential: false, price: 30 }
+        ],
+        benefits: ['Ahorro del 30% vs comprar individual', 'Tallas coordinadas', 'Calidad premium'],
+        totalPrice: 315,
+        discountedPrice: 220,
+        discountPercentage: 30,
+        stock: 25,
+        tags: ['bebe', 'ropa', 'recien-nacido']
+      },
+      {
+        id: 'recien-nacido-cuidado',
+        name: 'Pack Cuidado Recién Nacido',
+        emoji: '👶',
+        description: 'Productos de cuidado e higiene para tu bebé',
+        color: 'from-pink-200 to-purple-200',
+        category: 'bebe',
+        items: [
+          { name: 'Champú y gel bebé', emoji: '🧴', essential: true, price: 25 },
+          { name: 'Crema hidratante', emoji: '🧴', essential: true, price: 20 },
+          { name: 'Pañales talla 1 (pack)', emoji: '🧻', essential: true, price: 45 },
+          { name: 'Toallitas húmedas (pack)', emoji: '🧻', essential: true, price: 30 },
+          { name: 'Termómetro digital', emoji: '🌡️', essential: true, price: 35 },
+          { name: 'Cortauñas bebé', emoji: '✂️', essential: false, price: 15 }
+        ],
+        benefits: ['Ahorro del 25% vs comprar individual', 'Productos testados', 'Kit higiene completo'],
+        totalPrice: 170,
+        discountedPrice: 127,
+        discountPercentage: 25,
+        stock: 30,
+        tags: ['bebe', 'cuidado', 'higiene']
+      },
+      
+      // Pack Esquí (5 variaciones)
+      {
+        id: 'esqui-profesional',
+        name: 'Pack Esquí Profesional',
+        emoji: '⛷️',
+        description: 'Equipo profesional para esquí alpino',
+        color: 'from-blue-500 to-cyan-500',
+        category: 'deportes',
+        items: [
+          { name: 'Esquís carving', emoji: '🎿', essential: true, price: 800 },
+          { name: 'Botas de esquí profesionales', emoji: '🥾', essential: true, price: 450 },
+          { name: 'Anorak impermeable', emoji: '🧥', essential: true, price: 300 },
+          { name: 'Guantes térmicos', emoji: '🧤', essential: true, price: 80 },
+          { name: 'Pantalones impermeables', emoji: '👖', essential: true, price: 200 },
+          { name: 'Casco homologado', emoji: '🪖', essential: true, price: 150 },
+          { name: 'Gafas de sol polarizadas', emoji: '🥽', essential: false, price: 120 },
+          { name: 'Bastones de carbono', emoji: '🎯', essential: false, price: 100 }
+        ],
+        benefits: ['Ahorro del 40% vs comprar individual', 'Equipo profesional', 'Mantenimiento incluido'],
+        totalPrice: 2200,
+        discountedPrice: 1320,
+        discountPercentage: 40,
+        stock: 5,
+        tags: ['esqui', 'profesional', 'invierno']
+      },
+      {
+        id: 'esqui-principiante',
+        name: 'Pack Esquí Principiante',
+        emoji: '⛷️',
+        description: 'Equipo perfecto para empezar a esquiar',
+        color: 'from-blue-400 to-cyan-400',
+        category: 'deportes',
+        items: [
+          { name: 'Esquís principiante', emoji: '🎿', essential: true, price: 350 },
+          { name: 'Botas de esquí básicas', emoji: '🥾', essential: true, price: 200 },
+          { name: 'Anorak básico', emoji: '🧥', essential: true, price: 150 },
+          { name: 'Guantes básicos', emoji: '🧤', essential: true, price: 40 },
+          { name: 'Pantalones básicos', emoji: '👖', essential: true, price: 100 },
+          { name: 'Casco básico', emoji: '🪖', essential: true, price: 80 }
+        ],
+        benefits: ['Ahorro del 35% vs alquiler', 'Equipo perfecto para principiantes', 'Precio accesible'],
+        totalPrice: 920,
+        discountedPrice: 598,
+        discountPercentage: 35,
+        stock: 12,
+        tags: ['esqui', 'principiante', 'basico']
+      },
+      {
+        id: 'esqui-familia',
+        name: 'Pack Esquí Familiar',
+        emoji: '⛷️',
+        description: 'Equipo completo para toda la familia',
+        color: 'from-blue-600 to-cyan-600',
+        category: 'deportes',
+        items: [
+          { name: 'Esquís adultos x2', emoji: '🎿', essential: true, price: 600 },
+          { name: 'Esquís niños x2', emoji: '🎿', essential: true, price: 400 },
+          { name: 'Botas familiares x4', emoji: '🥾', essential: true, price: 800 },
+          { name: 'Anoraks familiares x4', emoji: '🧥', essential: true, price: 600 },
+          { name: 'Guantes familiares x4', emoji: '🧤', essential: true, price: 160 },
+          { name: 'Cascos familiares x4', emoji: '🪖', essential: true, price: 320 }
+        ],
+        benefits: ['Ahorro del 45% vs individual', 'Equipo para toda la familia', 'Descuento familiar'],
+        totalPrice: 2880,
+        discountedPrice: 1584,
+        discountPercentage: 45,
+        stock: 3,
+        tags: ['esqui', 'familia', 'completo']
+      },
+      {
+        id: 'esqui-snowboard',
+        name: 'Pack Snowboard',
+        emoji: '🏂',
+        description: 'Equipo completo para snowboard',
+        color: 'from-blue-500 to-purple-500',
+        category: 'deportes',
+        items: [
+          { name: 'Tabla de snowboard', emoji: '🏂', essential: true, price: 500 },
+          { name: 'Botas de snowboard', emoji: '🥾', essential: true, price: 300 },
+          { name: 'Fijaciones', emoji: '🔗', essential: true, price: 250 },
+          { name: 'Anorak snowboard', emoji: '🧥', essential: true, price: 280 },
+          { name: 'Pantalones snowboard', emoji: '👖', essential: true, price: 180 },
+          { name: 'Guantes snowboard', emoji: '🧤', essential: true, price: 70 },
+          { name: 'Casco snowboard', emoji: '🪖', essential: true, price: 120 },
+          { name: 'Gafas snowboard', emoji: '🥽', essential: false, price: 90 }
+        ],
+        benefits: ['Ahorro del 38% vs comprar individual', 'Equipo snowboard completo', 'Estilo street'],
+        totalPrice: 1790,
+        discountedPrice: 1110,
+        discountPercentage: 38,
+        stock: 8,
+        tags: ['snowboard', 'invierno', 'extremo']
+      },
+      {
+        id: 'esqui-accesorios',
+        name: 'Pack Accesorios Esquí',
+        emoji: '⛷️',
+        description: 'Accesorios esenciales para esquiar',
+        color: 'from-blue-300 to-cyan-300',
+        category: 'deportes',
+        items: [
+          { name: 'Gafas de sol', emoji: '🥽', essential: true, price: 120 },
+          { name: 'Bastones ajustables', emoji: '🎯', essential: true, price: 80 },
+          { name: 'Ropa térmica', emoji: '👕', essential: true, price: 150 },
+          { name: 'Calcetines técnicos', emoji: '🧦', essential: true, price: 40 },
+          { name: 'Cremas protectoras', emoji: '🧴', essential: false, price: 30 },
+          { name: 'Mochila esquí', emoji: '🎒', essential: false, price: 60 }
+        ],
+        benefits: ['Ahorro del 30% vs individual', 'Accesorios esenciales', 'Calidad técnica'],
+        totalPrice: 480,
+        discountedPrice: 336,
+        discountPercentage: 30,
+        stock: 15,
+        tags: ['esqui', 'accesorios', 'complementos']
+      },
+      
+      // Pack Boxeo (5 variaciones)
+      {
+        id: 'boxeo-profesional',
+        name: 'Pack Boxeo Profesional',
+        emoji: '🥊',
+        description: 'Equipo profesional para boxeo de competición',
+        color: 'from-red-500 to-orange-500',
+        category: 'deportes',
+        items: [
+          { name: 'Guantes de boxeo 16oz', emoji: '🥊', essential: true, price: 180 },
+          { name: 'Protector bucal personalizado', emoji: '🦷', essential: true, price: 80 },
+          { name: 'Casco de competición', emoji: '🪖', essential: true, price: 120 },
+          { name: 'Vendas profesionales', emoji: '🩹', essential: true, price: 25 },
+          { name: 'Saco de boxeo profesional', emoji: '🎯', essential: false, price: 400 },
+          { name: 'Pads de entrenamiento', emoji: '👋', essential: false, price: 150 },
+          { name: 'Ropa deportiva técnica', emoji: '👕', essential: false, price: 100 },
+          { name: 'Cuerda de saltar profesional', emoji: '🪢', essential: false, price: 50 }
+        ],
+        benefits: ['Ahorro del 35% vs comprar individual', 'Equipo de competición', 'Calidad profesional'],
+        totalPrice: 1105,
+        discountedPrice: 718,
+        discountPercentage: 35,
+        stock: 6,
+        tags: ['boxeo', 'profesional', 'competicion']
+      },
+      {
+        id: 'boxeo-principiante',
+        name: 'Pack Boxeo Principiante',
+        emoji: '🥊',
+        description: 'Equipo básico para empezar en boxeo',
+        color: 'from-red-400 to-orange-400',
+        category: 'deportes',
+        items: [
+          { name: 'Guantes de boxeo 14oz', emoji: '🥊', essential: true, price: 80 },
+          { name: 'Protector bucal básico', emoji: '🦷', essential: true, price: 25 },
+          { name: 'Casco básico', emoji: '🪖', essential: true, price: 60 },
+          { name: 'Vendas básicas', emoji: '🩹', essential: true, price: 15 },
+          { name: 'Ropa deportiva básica', emoji: '👕', essential: false, price: 50 }
+        ],
+        benefits: ['Ahorro del 30% vs individual', 'Equipo básico', 'Precio accesible'],
+        totalPrice: 230,
+        discountedPrice: 161,
+        discountPercentage: 30,
+        stock: 18,
+        tags: ['boxeo', 'principiante', 'basico']
+      },
+      {
+        id: 'boxeo-gimnasio',
+        name: 'Pack Boxeo Gimnasio',
+        emoji: '🥊',
+        description: 'Equipo completo para gimnasio de boxeo',
+        color: 'from-red-600 to-orange-600',
+        category: 'deportes',
+        items: [
+          { name: 'Saco de boxeo pesado', emoji: '🎯', essential: true, price: 350 },
+          { name: 'Guantes de entrenamiento', emoji: '🥊', essential: true, price: 120 },
+          { name: 'Pads de entrenamiento', emoji: '👋', essential: true, price: 100 },
+          { name: 'Casco de sparring', emoji: '🪖', essential: true, price: 90 },
+          { name: 'Protector bucal', emoji: '🦷', essential: true, price: 40 },
+          { name: 'Vendas profesionales', emoji: '🩹', essential: true, price: 30 },
+          { name: 'Cuerda de saltar', emoji: '🪢', essential: false, price: 35 },
+          { name: 'Ropa deportiva', emoji: '👕', essential: false, price: 80 }
+        ],
+        benefits: ['Ahorro del 40% vs individual', 'Equipo gimnasio completo', 'Profesional'],
+        totalPrice: 845,
+        discountedPrice: 507,
+        discountPercentage: 40,
+        stock: 4,
+        tags: ['boxeo', 'gimnasio', 'entrenamiento']
+      },
+      {
+        id: 'boxeo-fitness',
+        name: 'Pack Boxeo Fitness',
+        emoji: '🥊',
+        description: 'Equipo para boxeo fitness y cardio',
+        color: 'from-red-300 to-orange-300',
+        category: 'deportes',
+        items: [
+          { name: 'Guantes de fitness', emoji: '🥊', essential: true, price: 60 },
+          { name: 'Saco de boxeo fitness', emoji: '🎯', essential: true, price: 200 },
+          { name: 'Cuerda de saltar', emoji: '🪢', essential: true, price: 25 },
+          { name: 'Ropa deportiva', emoji: '👕', essential: true, price: 70 },
+          { name: 'Toalla deportiva', emoji: '🏃', essential: false, price: 20 },
+          { name: 'Botella agua', emoji: '💧', essential: false, price: 15 }
+        ],
+        benefits: ['Ahorro del 25% vs individual', 'Fitness y cardio', 'Salud y bienestar'],
+        totalPrice: 390,
+        discountedPrice: 292,
+        discountPercentage: 25,
+        stock: 12,
+        tags: ['boxeo', 'fitness', 'cardio']
+      },
+      {
+        id: 'boxeo-ninos',
+        name: 'Pack Boxeo Niños',
+        emoji: '🥊',
+        description: 'Equipo seguro para boxeo infantil',
+        color: 'from-red-200 to-orange-200',
+        category: 'deportes',
+        items: [
+          { name: 'Guantes de boxeo niños', emoji: '🥊', essential: true, price: 40 },
+          { name: 'Protector bucal niños', emoji: '🦷', essential: true, price: 20 },
+          { name: 'Casco protector niños', emoji: '🪖', essential: true, price: 45 },
+          { name: 'Saco de boxeo niños', emoji: '🎯', essential: true, price: 120 },
+          { name: 'Ropa deportiva niños', emoji: '👕', essential: true, price: 50 },
+          { name: 'Cuerda de saltar niños', emoji: '🪢', essential: false, price: 15 }
+        ],
+        benefits: ['Ahorro del 30% vs individual', 'Equipo seguro para niños', 'Diversión y deporte'],
+        totalPrice: 290,
+        discountedPrice: 203,
+        discountPercentage: 30,
+        stock: 20,
+        tags: ['boxeo', 'ninos', 'seguro']
+      },
+      
+      // Pack Música (5 variaciones)
+      {
+        id: 'musica-bajo',
+        name: 'Pack Bajo Profesional',
+        emoji: '🎸',
+        description: 'Equipo completo para tocar el bajo',
+        color: 'from-purple-500 to-indigo-500',
+        category: 'musica',
+        items: [
+          { name: 'Bajo eléctrico 4 cuerdas', emoji: '🎸', essential: true, price: 800 },
+          { name: 'Amplificador de bajo 100W', emoji: '🔊', essential: true, price: 450 },
+          { name: 'Cable de instrumento', emoji: '🔌', essential: true, price: 40 },
+          { name: 'Libro método de bajo', emoji: '📚', essential: true, price: 35 },
+          { name: 'Afinador digital', emoji: '🎼', essential: false, price: 50 },
+          { name: 'Correa ajustable', emoji: '🎒', essential: false, price: 30 },
+          { name: 'Púas variedad', emoji: '🎯', essential: false, price: 15 },
+          { name: 'Metrónomo digital', emoji: '⏰', essential: false, price: 60 }
+        ],
+        benefits: ['Ahorro del 30% vs comprar individual', 'Equipo profesional', 'Todo lo necesario'],
+        totalPrice: 1480,
+        discountedPrice: 1036,
+        discountPercentage: 30,
+        stock: 7,
+        tags: ['musica', 'bajo', 'profesional']
+      },
+      {
+        id: 'musica-guitarra',
+        name: 'Pack Guitarra Acústica',
+        emoji: '🎸',
+        description: 'Kit completo para guitarra acústica',
+        color: 'from-purple-400 to-indigo-400',
+        category: 'musica',
+        items: [
+          { name: 'Guitarra acústica', emoji: '🎸', essential: true, price: 350 },
+          { name: 'Cuerdas de guitarra', emoji: '🎵', essential: true, price: 25 },
+          { name: 'Libro acordes básicos', emoji: '📚', essential: true, price: 20 },
+          { name: 'Afinador digital', emoji: '🎼', essential: true, price: 35 },
+          { name: 'Púas variedad', emoji: '🎯', essential: false, price: 10 },
+          { name: 'Correa de guitarra', emoji: '🎒', essential: false, price: 25 },
+          { name: 'Capo', emoji: '🎹', essential: false, price: 15 }
+        ],
+        benefits: ['Ahorro del 25% vs individual', 'Perfecto para principiantes', 'Calidad garantizada'],
+        totalPrice: 480,
+        discountedPrice: 360,
+        discountPercentage: 25,
+        stock: 15,
+        tags: ['musica', 'guitarra', 'acustica']
+      },
+      {
+        id: 'musica-bateria',
+        name: 'Pack Batería Electrónica',
+        emoji: '🥁',
+        description: 'Batería electrónica completa',
+        color: 'from-purple-600 to-indigo-600',
+        category: 'musica',
+        items: [
+          { name: 'Batería electrónica', emoji: '🥁', essential: true, price: 800 },
+          { name: 'Baquetas profesionales', emoji: '🥢', essential: true, price: 30 },
+          { name: 'Libro técnicas batería', emoji: '📚', essential: true, price: 40 },
+          { name: 'Metrónomo digital', emoji: '⏰', essential: true, price: 50 },
+          { name: 'Auriculares', emoji: '🎧', essential: false, price: 80 },
+          { name: 'Banco ajustable', emoji: '🪑', essential: false, price: 60 }
+        ],
+        benefits: ['Ahorro del 35% vs individual', 'Batería electrónica', 'Silenciosa'],
+        totalPrice: 1060,
+        discountedPrice: 689,
+        discountPercentage: 35,
+        stock: 3,
+        tags: ['musica', 'bateria', 'electronica']
+      },
+      {
+        id: 'musica-piano',
+        name: 'Pack Piano Digital',
+        emoji: '🎹',
+        description: 'Piano digital completo para aprender',
+        color: 'from-purple-300 to-indigo-300',
+        category: 'musica',
+        items: [
+          { name: 'Piano digital 88 teclas', emoji: '🎹', essential: true, price: 600 },
+          { name: 'Libro método piano', emoji: '📚', essential: true, price: 30 },
+          { name: 'Banco ajustable piano', emoji: '🪑', essential: true, price: 80 },
+          { name: 'Auriculares', emoji: '🎧', essential: true, price: 60 },
+          { name: 'Pedal sustain', emoji: '🎛️', essential: false, price: 40 },
+          { name: 'Metrónomo digital', emoji: '⏰', essential: false, price: 45 }
+        ],
+        benefits: ['Ahorro del 28% vs individual', 'Piano digital profesional', 'Aprender piano'],
+        totalPrice: 855,
+        discountedPrice: 615,
+        discountPercentage: 28,
+        stock: 5,
+        tags: ['musica', 'piano', 'digital']
+      },
+      {
+        id: 'musica-microfono',
+        name: 'Pack Grabación Vocal',
+        emoji: '🎤',
+        description: 'Equipo para grabación vocal casera',
+        color: 'from-purple-200 to-indigo-200',
+        category: 'musica',
+        items: [
+          { name: 'Micrófono condensador', emoji: '🎤', essential: true, price: 200 },
+          { name: 'Interfaz de audio USB', emoji: '🔌', essential: true, price: 150 },
+          { name: 'Cable XLR', emoji: '🔌', essential: true, price: 25 },
+          { name: 'Soporte micrófono', emoji: '🎙️', essential: true, price: 40 },
+          { name: 'Filtro anti-pop', emoji: '🎛️', essential: false, price: 30 },
+          { name: 'Auriculares monitoreo', emoji: '🎧', essential: false, price: 80 }
+        ],
+        benefits: ['Ahorro del 32% vs individual', 'Grabación vocal profesional', 'Estudio casero'],
+        totalPrice: 525,
+        discountedPrice: 357,
+        discountPercentage: 32,
+        stock: 10,
+        tags: ['musica', 'grabacion', 'vocal']
+      },
+      
+      // Pack Cocina (5 variaciones)
+      {
+        id: 'cocina-chef',
+        name: 'Pack Chef Profesional',
+        emoji: '👨‍🍳',
+        description: 'Equipamiento completo de chef profesional',
+        color: 'from-orange-500 to-red-500',
+        category: 'hogar',
+        items: [
+          { name: 'Cuchillos profesionales x6', emoji: '🔪', essential: true, price: 300 },
+          { name: 'Tabla de cortar bambú', emoji: '🥩', essential: true, price: 80 },
+          { name: 'Sartén antiadherente', emoji: '🍳', essential: true, price: 120 },
+          { name: 'Olla acero inoxidable', emoji: '🍲', essential: true, price: 150 },
+          { name: 'Báscula digital', emoji: '⚖️', essential: false, price: 60 },
+          { name: 'Batidora profesional', emoji: '🥤', essential: false, price: 200 },
+          { name: 'Rallador microplane', emoji: '🧀', essential: false, price: 45 },
+          { name: 'Colador acero', emoji: '🍝', essential: false, price: 35 }
+        ],
+        benefits: ['Ahorro del 35% vs individual', 'Equipo profesional', 'Calidad chef'],
+        totalPrice: 990,
+        discountedPrice: 643,
+        discountPercentage: 35,
+        stock: 8,
+        tags: ['cocina', 'chef', 'profesional']
+      },
+      {
+        id: 'cocina-hogar',
+        name: 'Pack Cocina Hogar',
+        emoji: '👨‍🍳',
+        description: 'Equipamiento básico para cocinar en casa',
+        color: 'from-orange-400 to-red-400',
+        category: 'hogar',
+        items: [
+          { name: 'Cuchillos básicos x3', emoji: '🔪', essential: true, price: 80 },
+          { name: 'Tabla de cortar plástico', emoji: '🥩', essential: true, price: 30 },
+          { name: 'Sartén básica', emoji: '🍳', essential: true, price: 60 },
+          { name: 'Olla básica', emoji: '🍲', essential: true, price: 70 },
+          { name: 'Cucharas de madera', emoji: '🥄', essential: false, price: 20 },
+          { name: 'Colador básico', emoji: '🍝', essential: false, price: 15 }
+        ],
+        benefits: ['Ahorro del 30% vs individual', 'Equipo básico hogar', 'Precio accesible'],
+        totalPrice: 275,
+        discountedPrice: 192,
+        discountPercentage: 30,
+        stock: 20,
+        tags: ['cocina', 'hogar', 'basico']
+      },
+      {
+        id: 'cocina-reposteria',
+        name: 'Pack Repostería',
+        emoji: '🎂',
+        description: 'Utensilios completos para repostería',
+        color: 'from-orange-600 to-red-600',
+        category: 'hogar',
+        items: [
+          { name: 'Batidora de repostería', emoji: '🥤', essential: true, price: 150 },
+          { name: 'Báscula digital', emoji: '⚖️', essential: true, price: 50 },
+          { name: 'Moldes para tartas x3', emoji: '🎂', essential: true, price: 90 },
+          { name: 'Rodillo de amasar', emoji: '🥖', essential: true, price: 25 },
+          { name: 'Espátulas variedad', emoji: '🥄', essential: false, price: 30 },
+          { name: 'Termómetro repostería', emoji: '🌡️', essential: false, price: 35 },
+          { name: 'Tamiz harina', emoji: '🍯', essential: false, price: 20 },
+          { name: 'Recetario repostería', emoji: '📚', essential: false, price: 25 }
+        ],
+        benefits: ['Ahorro del 33% vs individual', 'Repostería completa', 'Recetas incluidas'],
+        totalPrice: 425,
+        discountedPrice: 285,
+        discountPercentage: 33,
+        stock: 12,
+        tags: ['cocina', 'reposteria', 'dulces']
+      },
+      {
+        id: 'cocina-barbacoa',
+        name: 'Pack Barbacoa',
+        emoji: '🔥',
+        description: 'Equipo completo para barbacoas',
+        color: 'from-orange-300 to-red-300',
+        category: 'hogar',
+        items: [
+          { name: 'Parrilla barbacoa', emoji: '🔥', essential: true, price: 200 },
+          { name: 'Tenedores para carne', emoji: '🍴', essential: true, price: 40 },
+          { name: 'Espátula parrilla', emoji: '🥄', essential: true, price: 25 },
+          { name: 'Termómetro carne', emoji: '🌡️', essential: true, price: 30 },
+          { name: 'Carbón natural', emoji: '🔥', essential: false, price: 20 },
+          { name: 'Encendedor barbacoa', emoji: '🔥', essential: false, price: 15 }
+        ],
+        benefits: ['Ahorro del 28% vs individual', 'Barbacoa completa', 'Verano perfecto'],
+        totalPrice: 330,
+        discountedPrice: 237,
+        discountPercentage: 28,
+        stock: 15,
+        tags: ['cocina', 'barbacoa', 'verano']
+      },
+      {
+        id: 'cocina-desayuno',
+        name: 'Pack Desayuno',
+        emoji: '🥞',
+        description: 'Utensilios para el desayuno perfecto',
+        color: 'from-orange-200 to-red-200',
+        category: 'hogar',
+        items: [
+          { name: 'Tostadora 4 ranuras', emoji: '🍞', essential: true, price: 80 },
+          { name: 'Cafetera automática', emoji: '☕', essential: true, price: 120 },
+          { name: 'Batidora personal', emoji: '🥤', essential: true, price: 60 },
+          { name: 'Sartén crepes', emoji: '🥞', essential: true, price: 45 },
+          { name: 'Jarras medidoras', emoji: '🥛', essential: false, price: 25 },
+          { name: 'Colador té', emoji: '🍵', essential: false, price: 15 }
+        ],
+        benefits: ['Ahorro del 26% vs individual', 'Desayuno perfecto', 'Mañanas felices'],
+        totalPrice: 345,
+        discountedPrice: 255,
+        discountPercentage: 26,
+        stock: 18,
+        tags: ['cocina', 'desayuno', 'mañana']
+      }
+    ];
+
+    // Insertar paquetes en la base de datos
+    const createdPackages = await Package.insertMany(packagesData);
+    
+    console.log(`✅ ${createdPackages.length} paquetes creados exitosamente`);
+    
+    res.json({
+      success: true,
+      message: `${createdPackages.length} paquetes de prueba creados exitosamente`,
+      data: {
+        count: createdPackages.length,
+        packages: createdPackages.map(pkg => ({
+          id: pkg.id,
+          name: pkg.name,
+          category: pkg.category,
+          totalPrice: pkg.totalPrice,
+          discountedPrice: pkg.discountedPrice,
+          discountPercentage: pkg.discountPercentage
+        }))
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creando paquetes de prueba:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear los paquetes de prueba',
+      error: error.message
+    });
+  }
+});
+
+// POST /api/packages - Crear nuevo paquete (solo admin)
+app.post('/api/packages', authMiddleware, async (req, res) => {
+  try {
+    // Verificar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden crear paquetes'
+      });
+    }
+
+    const packageData = req.body;
+    packageData.createdBy = req.userId;
+
+    const newPackage = new Package(packageData);
+    await newPackage.save();
+
+    res.json({
+      success: true,
+      message: 'Paquete creado exitosamente',
+      data: newPackage
+    });
+
+  } catch (error) {
+    console.error('Error creando paquete:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear el paquete'
+    });
+  }
+});
+
+// PUT /api/packages/:id - Actualizar paquete (solo admin)
+app.put('/api/packages/:id', authMiddleware, async (req, res) => {
+  try {
+    // Verificar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden actualizar paquetes'
+      });
+    }
+
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const package = await Package.findOneAndUpdate(
+      { id: id },
+      updateData,
+      { new: true }
+    );
+
+    if (!package) {
+      return res.status(404).json({
+        success: false,
+        message: 'Paquete no encontrado'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Paquete actualizado exitosamente',
+      data: package
+    });
+
+  } catch (error) {
+    console.error('Error actualizando paquete:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar el paquete'
+    });
+  }
+});
+
+// DELETE /api/packages/:id - Eliminar paquete (solo admin)
+app.delete('/api/packages/:id', authMiddleware, async (req, res) => {
+  try {
+    // Verificar que el usuario sea admin
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Solo los administradores pueden eliminar paquetes'
+      });
+    }
+
+    const { id } = req.params;
+
+    const package = await Package.findOneAndDelete({ id: id });
+
+    if (!package) {
+      return res.status(404).json({
+        success: false,
+        message: 'Paquete no encontrado'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Paquete eliminado exitosamente'
+    });
+
+  } catch (error) {
+    console.error('Error eliminando paquete:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al eliminar el paquete'
     });
   }
 });
