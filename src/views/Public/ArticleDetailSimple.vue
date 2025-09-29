@@ -158,7 +158,7 @@ const isAdmin = ref(false)
 
 // Computed property para la imagen del artículo (evita bucles)
 const articleImage = computed(() => {
-  if (!article.value) return '/images/placeholder.jpg'
+  if (!article.value) return './images/placeholder.jpg'
   
   console.log('🖼️ ArticleDetail - Getting image for article:', article.value.title || article.value.nombre, {
     images: article.value.images,
@@ -175,7 +175,7 @@ const articleImage = computed(() => {
   }
   
   console.log('🔄 ArticleDetail - Using local placeholder')
-  return '/images/placeholder.jpg'
+  return './images/placeholder.jpg'
 })
 
 // Cargar artículo
@@ -269,11 +269,14 @@ const getCategoryLabel = (category) => {
 
 // Manejar error de imagen
 const handleImageError = (event) => {
-  const placeholderSrc = '/images/placeholder.jpg'
+  const placeholderSrc = './images/placeholder.jpg'
   
   // ✅ CORRECCIÓN: Evita el bucle comprobando si ya estamos usando el placeholder
   if (event.target.src !== placeholderSrc) {
+    console.log('🔄 Image error, switching to placeholder:', placeholderSrc)
     event.target.src = placeholderSrc
+  } else {
+    console.log('⚠️ Placeholder also failed, stopping to avoid infinite loop')
   }
 }
 
