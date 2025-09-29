@@ -2,15 +2,15 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
   (import.meta.env.PROD 
     ? 'https://web-production-08299.up.railway.app' 
-    : ''); // En desarrollo local, usar rutas relativas para el proxy de Vite
+    : 'http://localhost:3002'); // En desarrollo local, usar la URL del backend
 
 // Función para obtener la URL base de la API
 const getApiBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  // En desarrollo, usar rutas relativas para aprovechar el proxy de Vite
-  return '';
+  // En desarrollo, usar la URL del backend local
+  return 'http://localhost:3002';
 };
 
 console.log('🔧 API Configuration:', {

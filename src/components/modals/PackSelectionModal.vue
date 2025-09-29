@@ -175,7 +175,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import API_BASE_URL from '@/config/api.js'
 
 const props = defineProps({
