@@ -107,9 +107,10 @@
               <div class="mt-4 pt-4 border-t">
                 <button
                   @click="addTestImages"
-                  class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-600 transition-colors"
+                  :disabled="addingImages"
+                  class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  🖼️ Añadir Imágenes de Prueba
+                  {{ addingImages ? '⏳ Añadiendo...' : '🖼️ Añadir Imágenes de Prueba' }}
                 </button>
                 <p class="text-xs text-gray-500 mt-1">Temporal: Añade imágenes de ejemplo para probar</p>
               </div>
@@ -147,6 +148,7 @@ const authStore = useAuthStore()
 // Estado
 const article = ref(null)
 const loading = ref(false)
+const addingImages = ref(false)
 
 // Computed
 const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -244,11 +246,21 @@ const editArticle = () => {
 
 // Función temporal para añadir imágenes de prueba
 const addTestImages = async () => {
-  if (!article.value?._id) return
+  console.log('🖼️ Botón clickeado - Iniciando proceso...')
+  console.log('📄 Article data:', article.value)
+  console.log('🆔 Article ID:', article.value?._id)
+  
+  if (!article.value?._id) {
+    console.error('❌ No hay ID de artículo disponible')
+    return
+  }
+  
+  addingImages.value = true
   
   try {
     const apiUrl = `${API_BASE_URL}/api/articles/${article.value._id}/add-images`
-    console.log('🖼️ Añadiendo imágenes de prueba:', apiUrl)
+    console.log('🌐 API URL:', apiUrl)
+    console.log('🔧 API_BASE_URL:', API_BASE_URL)
     
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -257,18 +269,30 @@ const addTestImages = async () => {
       }
     })
     
+    console.log('📡 Response status:', response.status)
+    console.log('📡 Response ok:', response.ok)
+    
     if (response.ok) {
       const data = await response.json()
+      console.log('📄 Response data:', data)
+      
       if (data.success) {
-        console.log('✅ Imágenes añadidas:', data.data)
+        console.log('✅ Imágenes añadidas exitosamente:', data.data)
         // Recargar el artículo para mostrar las nuevas imágenes
+        console.log('🔄 Recargando artículo...')
         await loadArticle()
+        console.log('✅ Artículo recargado')
+      } else {
+        console.error('❌ Error en respuesta:', data.message)
       }
     } else {
-      console.error('❌ Error añadiendo imágenes:', response.status)
+      const errorText = await response.text()
+      console.error('❌ Error HTTP:', response.status, errorText)
     }
   } catch (error) {
-    console.error('❌ Error añadiendo imágenes:', error)
+    console.error('❌ Error en fetch:', error)
+  } finally {
+    addingImages.value = false
   }
 }
 
