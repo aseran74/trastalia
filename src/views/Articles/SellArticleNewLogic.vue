@@ -37,6 +37,38 @@
           />
         </div>
 
+        <!-- Selección de Pack (solo si categoría es pack_tematico) -->
+        <div v-if="formData.categoria === 'pack_tematico'" class="mb-4.5">
+          <label class="mb-2.5 block text-black dark:text-white">
+            Seleccionar Pack Temático *
+          </label>
+          <button
+            type="button"
+            @click="openPackSelection"
+            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            {{ selectedPack ? `📦 ${selectedPack.name}` : '🎯 Seleccionar Pack Temático' }}
+          </button>
+          
+          <!-- Información del pack seleccionado -->
+          <div v-if="selectedPack" class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+            <div class="flex items-center justify-between mb-2">
+              <h6 class="font-semibold text-purple-900 dark:text-purple-100">{{ selectedPack.name }}</h6>
+              <div class="text-right">
+                <div class="text-lg font-bold text-purple-900 dark:text-purple-100">€{{ selectedPack.discountedPrice }}</div>
+                <div class="text-sm line-through text-purple-600 dark:text-purple-400">€{{ selectedPack.totalPrice }}</div>
+              </div>
+            </div>
+            <p class="text-sm text-purple-700 dark:text-purple-300 mb-2">{{ selectedPack.description }}</p>
+            <div class="flex items-center justify-between text-xs text-purple-600 dark:text-purple-400">
+              <span>{{ selectedPack.items.length }} artículos</span>
+              <span class="bg-purple-200 dark:bg-purple-800 px-2 py-1 rounded-full">
+                {{ selectedPack.discountPercentage }}% OFF
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div class="mb-4.5">
           <label class="mb-2.5 block text-black dark:text-white">
             Descripción *
@@ -113,10 +145,12 @@
             </label>
             <select
               v-model="formData.categoria"
+              @change="onCategoryChange"
               class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               required
             >
               <option value="">Selecciona una categoría</option>
+              <option value="pack_tematico">📦 Pack Temático</option>
               <option value="tecnologia">Tecnología</option>
               <option value="hogar">Hogar</option>
               <option value="deportes">Deportes</option>
@@ -404,65 +438,7 @@
                     </div>
                   </div>
 
-                  <!-- Opción 2: Pack Artículos -->
-                  <div 
-                    class="cursor-pointer rounded-lg border-2 p-4 transition-all"
-                    :class="formData.tipo_venta === 'pack_articulos' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-stroke hover:border-primary/50'"
-                    @click="formData.tipo_venta = 'pack_articulos'"
-                  >
-                    <div class="flex items-center space-x-3 mb-3">
-                      <input
-                        type="radio"
-                        v-model="formData.tipo_venta"
-                        value="pack_articulos"
-                        class="h-4 w-4 text-primary"
-                      />
-                      <div class="flex-1">
-                        <h5 class="font-semibold text-black dark:text-white">📦 Pack Artículos Temático</h5>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                          Vende múltiples artículos relacionados como un pack temático con descuento especial.
-                        </p>
-                        <div class="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                          <p class="text-xs text-purple-700 dark:text-purple-300 font-medium">
-                            💡 Ideal para: Bebé, Deportes, Música, Cocina, etc.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Botón para seleccionar pack -->
-                    <div v-if="formData.tipo_venta === 'pack_articulos'" class="mt-4">
-                      <button
-                        type="button"
-                        @click="openPackSelection"
-                        class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                      >
-                        {{ selectedPack ? `📦 ${selectedPack.name}` : '🎯 Seleccionar Pack Temático' }}
-                      </button>
-                      
-                      <!-- Información del pack seleccionado -->
-                      <div v-if="selectedPack" class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                        <div class="flex items-center justify-between mb-2">
-                          <h6 class="font-semibold text-purple-900 dark:text-purple-100">{{ selectedPack.name }}</h6>
-                          <div class="text-right">
-                            <div class="text-lg font-bold text-purple-900 dark:text-purple-100">€{{ selectedPack.discountedPrice }}</div>
-                            <div class="text-sm line-through text-purple-600 dark:text-purple-400">€{{ selectedPack.totalPrice }}</div>
-                          </div>
-                        </div>
-                        <p class="text-sm text-purple-700 dark:text-purple-300 mb-2">{{ selectedPack.description }}</p>
-                        <div class="flex items-center justify-between text-xs text-purple-600 dark:text-purple-400">
-                          <span>{{ selectedPack.items.length }} artículos</span>
-                          <span class="bg-purple-200 dark:bg-purple-800 px-2 py-1 rounded-full">
-                            {{ selectedPack.discountPercentage }}% OFF
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Opción 3: Compra por Trastalia -->
+                  <!-- Opción 2: Compra por Trastalia -->
                   <div class="rounded-lg border-2 border-stroke p-4">
                     <div class="flex items-center space-x-3 mb-3">
                       <input
@@ -972,8 +948,8 @@ const submitArticle = async () => {
       return
     }
 
-    // Si se selecciona pack_articulos, validar que se haya seleccionado un pack
-    if (formData.value.tipo_venta === 'pack_articulos') {
+    // Si se selecciona pack_tematico como categoría, validar que se haya seleccionado un pack
+    if (formData.value.categoria === 'pack_tematico') {
       if (!formData.value.pack_seleccionado) {
         alert('Por favor, selecciona un pack temático.')
         loading.value = false
@@ -1034,22 +1010,8 @@ const submitArticle = async () => {
     // Establecer estado inicial como pendiente para revisión del admin
     payload.adminStatus = 'pending'
     
-    if (formData.value.tipo_venta === 'gestion_venta') {
-      // Venta gestionada por Trastalia
-      payload.modo_venta = 'venta_desde_centro_logistico'
-      payload.saleMode = 'logistics_center'
-      payload.directFromHome = false
-      payload.logisticsCenterSale = true
-      payload.trastaliaPurchase = { enabled: false }
-      payload.pointsExchange = { enabled: false }
-    } else if (formData.value.tipo_venta === 'pack_articulos') {
-      // Pack de artículos temático
-      payload.modo_venta = 'pack_tematico'
-      payload.saleMode = 'pack_sale'
-      payload.directFromHome = false
-      payload.logisticsCenterSale = true
-      payload.trastaliaPurchase = { enabled: false }
-      payload.pointsExchange = { enabled: false }
+    // Agregar información del pack si es un pack temático
+    if (formData.value.categoria === 'pack_tematico' && formData.value.pack_seleccionado) {
       payload.packInfo = {
         packId: formData.value.pack_seleccionado.id,
         packName: formData.value.pack_seleccionado.name,
@@ -1059,10 +1021,20 @@ const submitArticle = async () => {
         packDiscountedPrice: formData.value.pack_seleccionado.discountedPrice,
         packDiscountPercentage: formData.value.pack_seleccionado.discountPercentage
       }
+    }
+
+    if (formData.value.tipo_venta === 'gestion_venta') {
+      // Venta gestionada por Trastalia
+      payload.modo_venta = formData.value.categoria === 'pack_tematico' ? 'pack_tematico_gestionado' : 'venta_desde_centro_logistico'
+      payload.saleMode = formData.value.categoria === 'pack_tematico' ? 'pack_managed_sale' : 'logistics_center'
+      payload.directFromHome = false
+      payload.logisticsCenterSale = true
+      payload.trastaliaPurchase = { enabled: false }
+      payload.pointsExchange = { enabled: false }
     } else if (formData.value.tipo_venta === 'compra') {
       // Compra por Trastalia
-      payload.modo_venta = 'venta_desde_centro_logistico'
-      payload.saleMode = 'logistics_center'
+      payload.modo_venta = formData.value.categoria === 'pack_tematico' ? 'pack_tematico_compra' : 'venta_desde_centro_logistico'
+      payload.saleMode = formData.value.categoria === 'pack_tematico' ? 'pack_purchase' : 'logistics_center'
       payload.directFromHome = false
       payload.logisticsCenterSale = false
       payload.trastaliaPurchase = { 
@@ -1101,16 +1073,21 @@ const submitArticle = async () => {
       let message = 'Artículo enviado exitosamente'
       switch (formData.value.tipo_venta) {
         case 'gestion_venta':
-          message = 'Artículo enviado al centro logístico para gestión de venta'
-          break
-        case 'pack_articulos':
-          message = `Pack "${formData.value.pack_seleccionado.name}" enviado al centro logístico para gestión de venta`
+          if (formData.value.categoria === 'pack_tematico') {
+            message = `Pack "${formData.value.pack_seleccionado.name}" enviado al centro logístico para gestión de venta`
+          } else {
+            message = 'Artículo enviado al centro logístico para gestión de venta'
+          }
           break
         case 'compra':
           const opciones = []
           if (formData.value.solicitar_compra_dinero) opciones.push('dinero')
           if (formData.value.solicitar_compra_puntos) opciones.push('puntos')
-          message = `Solicitud de compra por ${opciones.join(' y ')} enviada al administrador`
+          if (formData.value.categoria === 'pack_tematico') {
+            message = `Pack "${formData.value.pack_seleccionado.name}" - Solicitud de compra por ${opciones.join(' y ')} enviada al administrador`
+          } else {
+            message = `Solicitud de compra por ${opciones.join(' y ')} enviada al administrador`
+          }
           break
       }
       showToast('success', message)
@@ -1123,6 +1100,15 @@ const submitArticle = async () => {
     showToast('error', 'Error de conexión al servidor: ' + error.message)
   } finally {
     loading.value = false
+  }
+}
+
+// Función para manejar cambio de categoría
+const onCategoryChange = () => {
+  // Si se cambia de pack_tematico a otra categoría, limpiar el pack seleccionado
+  if (formData.value.categoria !== 'pack_tematico') {
+    selectedPack.value = null
+    formData.value.pack_seleccionado = null
   }
 }
 
