@@ -290,22 +290,24 @@ const loginToBuyWithPoints = () => {
 // Verificar si el usuario es admin
 const checkAdminStatus = () => {
   const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+  const userData = localStorage.getItem('user_data') || sessionStorage.getItem('user_data')
+  
   console.log('🔍 Verificando admin status...')
   console.log('Token encontrado:', !!token)
+  console.log('User data encontrado:', !!userData)
   
-  if (token) {
+  if (token && userData) {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      console.log('Payload del token:', payload)
-      console.log('Rol del usuario:', payload.role)
-      isAdmin.value = payload.role === 'admin'
+      const user = JSON.parse(userData)
+      console.log('Datos del usuario:', user)
+      isAdmin.value = user.role === 'admin'
       console.log('¿Es admin?', isAdmin.value)
     } catch (error) {
-      console.error('Error verificando token:', error)
+      console.error('Error parseando datos de usuario:', error)
       isAdmin.value = false
     }
   } else {
-    console.log('No hay token en localStorage')
+    console.log('No hay token o datos de usuario')
     isAdmin.value = false
   }
 }
