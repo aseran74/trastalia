@@ -355,8 +355,8 @@ router.beforeEach(async (to, from, next) => {
     console.log('✅ Usuario ya autenticado, saltando verificación')
   }
   
-  // Actualizar título
-  document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
+  // TEMPORALMENTE DESHABILITADO: Actualizar título
+  // document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
   
   // Verificar si la ruta requiere autenticación
   if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
