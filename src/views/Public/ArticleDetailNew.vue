@@ -102,6 +102,17 @@
                   Editar
                 </button>
               </div>
+              
+              <!-- Botón temporal para añadir imágenes de prueba -->
+              <div class="mt-4 pt-4 border-t">
+                <button
+                  @click="addTestImages"
+                  class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-600 transition-colors"
+                >
+                  🖼️ Añadir Imágenes de Prueba
+                </button>
+                <p class="text-xs text-gray-500 mt-1">Temporal: Añade imágenes de ejemplo para probar</p>
+              </div>
             </div>
           </div>
         </div>
@@ -229,6 +240,36 @@ const buyArticle = () => {
 
 const editArticle = () => {
   router.push(`/admin/articulos/${article.value?.id}/editar`)
+}
+
+// Función temporal para añadir imágenes de prueba
+const addTestImages = async () => {
+  if (!article.value?._id) return
+  
+  try {
+    const apiUrl = `${API_BASE_URL}/api/articles/${article.value._id}/add-images`
+    console.log('🖼️ Añadiendo imágenes de prueba:', apiUrl)
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      if (data.success) {
+        console.log('✅ Imágenes añadidas:', data.data)
+        // Recargar el artículo para mostrar las nuevas imágenes
+        await loadArticle()
+      }
+    } else {
+      console.error('❌ Error añadiendo imágenes:', response.status)
+    }
+  } catch (error) {
+    console.error('❌ Error añadiendo imágenes:', error)
+  }
 }
 
 // Lifecycle

@@ -1222,13 +1222,21 @@ app.get('/api/admin/managed-sales-stats', authMiddleware, async (req, res) => {
 // Endpoint para subir fotos (temporalmente sin autenticación para testing)
 app.post('/api/upload-photo', async (req, res) => {
   try {
-    // Por ahora, simulamos la subida de fotos
+    // Por ahora, simulamos la subida de fotos con imágenes reales de ejemplo
     // En un entorno real, aquí subirías a un servicio como AWS S3, Cloudinary, etc.
-    const photoUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=Foto+${Date.now()}`;
+    const sampleImages = [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop'
+    ];
+    
+    const randomImage = sampleImages[Math.floor(Math.random() * sampleImages.length)];
     
     res.json({
       success: true,
-      url: photoUrl,
+      url: randomImage,
       message: 'Foto subida exitosamente'
     });
   } catch (error) {
@@ -1236,6 +1244,56 @@ app.post('/api/upload-photo', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al subir la foto'
+    });
+  }
+});
+
+// Endpoint temporal para añadir imágenes a artículos existentes
+app.post('/api/articles/:id/add-images', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Verificar que el ID sea un ObjectId válido de MongoDB
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de artículo no válido'
+      });
+    }
+    
+    // Imágenes de ejemplo
+    const sampleImages = [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop'
+    ];
+    
+    const article = await Article.findByIdAndUpdate(
+      id,
+      { 
+        images: sampleImages,
+        fotos: sampleImages
+      },
+      { new: true }
+    );
+
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Imágenes añadidas exitosamente',
+      data: article
+    });
+  } catch (error) {
+    console.error('Error añadiendo imágenes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al añadir imágenes'
     });
   }
 });
