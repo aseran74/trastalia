@@ -328,6 +328,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import API_BASE_URL from '@/config/api.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -364,7 +365,7 @@ const loadArticle = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`/api/articles/${articleId.value}`, {
+    const response = await fetch(`${API_BASE_URL}/api/articles/${articleId.value}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -406,14 +407,23 @@ const updateArticle = async () => {
   saving.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`/api/articles/${articleId.value}`, {
+    
+    // Preparar datos para envío, incluyendo imágenes nuevas
+    const updateData = {
+      ...formData.value,
+      newImages: newImages.value.map(img => img.preview) // Incluir previews de imágenes nuevas
+    }
+    
+    console.log('📤 Enviando datos de actualización:', updateData)
+    
+    const response = await fetch(`${API_BASE_URL}/api/articles/${articleId.value}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(formData.value)
+      body: JSON.stringify(updateData)
     })
     
     if (response.ok) {
