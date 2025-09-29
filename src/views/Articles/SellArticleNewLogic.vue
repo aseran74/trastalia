@@ -404,18 +404,76 @@
                     </div>
                   </div>
 
-                  <!-- Opción 2: Compra por Trastalia -->
+                  <!-- Opción 2: Pack Artículos -->
+                  <div 
+                    class="cursor-pointer rounded-lg border-2 p-4 transition-all"
+                    :class="formData.tipo_venta === 'pack_articulos' 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-stroke hover:border-primary/50'"
+                    @click="formData.tipo_venta = 'pack_articulos'"
+                  >
+                    <div class="flex items-center space-x-3 mb-3">
+                      <input
+                        type="radio"
+                        v-model="formData.tipo_venta"
+                        value="pack_articulos"
+                        class="h-4 w-4 text-primary"
+                      />
+                      <div class="flex-1">
+                        <h5 class="font-semibold text-black dark:text-white">📦 Pack Artículos Temático</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                          Vende múltiples artículos relacionados como un pack temático con descuento especial.
+                        </p>
+                        <div class="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                          <p class="text-xs text-purple-700 dark:text-purple-300 font-medium">
+                            💡 Ideal para: Bebé, Deportes, Música, Cocina, etc.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Botón para seleccionar pack -->
+                    <div v-if="formData.tipo_venta === 'pack_articulos'" class="mt-4">
+                      <button
+                        type="button"
+                        @click="openPackSelection"
+                        class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      >
+                        {{ selectedPack ? `📦 ${selectedPack.name}` : '🎯 Seleccionar Pack Temático' }}
+                      </button>
+                      
+                      <!-- Información del pack seleccionado -->
+                      <div v-if="selectedPack" class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                        <div class="flex items-center justify-between mb-2">
+                          <h6 class="font-semibold text-purple-900 dark:text-purple-100">{{ selectedPack.name }}</h6>
+                          <div class="text-right">
+                            <div class="text-lg font-bold text-purple-900 dark:text-purple-100">€{{ selectedPack.discountedPrice }}</div>
+                            <div class="text-sm line-through text-purple-600 dark:text-purple-400">€{{ selectedPack.totalPrice }}</div>
+                          </div>
+                        </div>
+                        <p class="text-sm text-purple-700 dark:text-purple-300 mb-2">{{ selectedPack.description }}</p>
+                        <div class="flex items-center justify-between text-xs text-purple-600 dark:text-purple-400">
+                          <span>{{ selectedPack.items.length }} artículos</span>
+                          <span class="bg-purple-200 dark:bg-purple-800 px-2 py-1 rounded-full">
+                            {{ selectedPack.discountPercentage }}% OFF
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Opción 3: Compra por Trastalia -->
                   <div class="rounded-lg border-2 border-stroke p-4">
                     <div class="flex items-center space-x-3 mb-3">
                       <input
                         type="radio"
                         v-model="formData.tipo_venta"
                         value="compra"
-                  class="h-4 w-4 text-primary"
-                />
+                        class="h-4 w-4 text-primary"
+                      />
                       <div class="flex-1">
                         <h5 class="font-semibold text-black dark:text-white">🏢 Te lo compramos</h5>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
                           Puedes ofrecer tu articulo a Trastalia , si nos interesa te lo compramos.
                         </p>
                       </div>
@@ -529,11 +587,19 @@
       </div>
     </div>
   </div>
+
+<!-- Modal de Selección de Packs -->
+<PackSelectionModal 
+  :is-open="showPackSelection"
+  @close="showPackSelection = false"
+  @pack-selected="onPackSelected"
+/>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import PackSelectionModal from '@/components/modals/PackSelectionModal.vue'
 // import { useToast } from '@/composables/useToast'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
@@ -568,7 +634,7 @@ const formData = ref({
   precio_sugerido: 0,
   condicion: '',
   ubicacion: '',
-  tipo_venta: '', // 'gestion_venta' o 'compra'
+  tipo_venta: '', // 'gestion_venta', 'pack_articulos' o 'compra'
   solicitar_compra_dinero: false,
   solicitar_compra_puntos: false,
   centro_logistico_id: '',
@@ -579,8 +645,13 @@ const formData = ref({
     horizontal: null,
     vertical: null,
     fondo: null
-  }
+  },
+  pack_seleccionado: null // Información del pack seleccionado
 })
+
+// Estado para el modal de selección de packs
+const showPackSelection = ref(false)
+const selectedPack = ref(null)
 
 const centrosLogisticos = ref([])
 const loading = ref(false)
@@ -901,6 +972,15 @@ const submitArticle = async () => {
       return
     }
 
+    // Si se selecciona pack_articulos, validar que se haya seleccionado un pack
+    if (formData.value.tipo_venta === 'pack_articulos') {
+      if (!formData.value.pack_seleccionado) {
+        alert('Por favor, selecciona un pack temático.')
+        loading.value = false
+        return
+      }
+    }
+    
     // Si se selecciona compra, validar que al menos una opción esté marcada
     if (formData.value.tipo_venta === 'compra') {
       if (!formData.value.solicitar_compra_dinero && !formData.value.solicitar_compra_puntos) {
@@ -962,6 +1042,23 @@ const submitArticle = async () => {
       payload.logisticsCenterSale = true
       payload.trastaliaPurchase = { enabled: false }
       payload.pointsExchange = { enabled: false }
+    } else if (formData.value.tipo_venta === 'pack_articulos') {
+      // Pack de artículos temático
+      payload.modo_venta = 'pack_tematico'
+      payload.saleMode = 'pack_sale'
+      payload.directFromHome = false
+      payload.logisticsCenterSale = true
+      payload.trastaliaPurchase = { enabled: false }
+      payload.pointsExchange = { enabled: false }
+      payload.packInfo = {
+        packId: formData.value.pack_seleccionado.id,
+        packName: formData.value.pack_seleccionado.name,
+        packCategory: formData.value.pack_seleccionado.category,
+        packItems: formData.value.pack_seleccionado.items,
+        packTotalPrice: formData.value.pack_seleccionado.totalPrice,
+        packDiscountedPrice: formData.value.pack_seleccionado.discountedPrice,
+        packDiscountPercentage: formData.value.pack_seleccionado.discountPercentage
+      }
     } else if (formData.value.tipo_venta === 'compra') {
       // Compra por Trastalia
       payload.modo_venta = 'venta_desde_centro_logistico'
@@ -1006,6 +1103,9 @@ const submitArticle = async () => {
         case 'gestion_venta':
           message = 'Artículo enviado al centro logístico para gestión de venta'
           break
+        case 'pack_articulos':
+          message = `Pack "${formData.value.pack_seleccionado.name}" enviado al centro logístico para gestión de venta`
+          break
         case 'compra':
           const opciones = []
           if (formData.value.solicitar_compra_dinero) opciones.push('dinero')
@@ -1024,6 +1124,30 @@ const submitArticle = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// Función para abrir el modal de selección de packs
+const openPackSelection = () => {
+  showPackSelection.value = true
+}
+
+// Función para manejar la selección de un pack
+const onPackSelected = (pack) => {
+  selectedPack.value = pack
+  formData.value.pack_seleccionado = pack
+  
+  // Actualizar el nombre y descripción del artículo con información del pack
+  if (!formData.value.nombre) {
+    formData.value.nombre = pack.name
+  }
+  if (!formData.value.descripcion) {
+    formData.value.descripcion = pack.description
+  }
+  if (!formData.value.categoria) {
+    formData.value.categoria = pack.category
+  }
+  
+  showPackSelection.value = false
 }
 
 // Limpiar formulario
@@ -1047,8 +1171,11 @@ const resetForm = () => {
       vertical: null,
       fondo: null
     }
+    pack_seleccionado: null
   }
   selectedFiles.value = []
+  selectedPackageInfo.value = null
+  selectedPack.value = null
 }
 
 onMounted(async () => {
