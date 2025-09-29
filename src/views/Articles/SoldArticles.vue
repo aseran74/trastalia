@@ -11,16 +11,16 @@
     
     <!-- Main Content -->
     <div class="lg:pl-64">
-      <div class="p-4 md:p-6 2xl:p-10">
+      <div class="p-8 pl-12">
         <!-- Header -->
-        <div class="mb-8">
+        <div class="mb-12">
           <h1 class="text-3xl font-bold text-gray-900">Artículos Vendidos</h1>
-          <p class="text-gray-600 mt-2">Artículos que has vendido a otros usuarios o al administrador</p>
+          <p class="text-gray-600 mt-3">Artículos que has vendido a otros usuarios o al administrador</p>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white rounded-lg shadow p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-green-100 rounded-lg">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,7 +34,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-blue-100 rounded-lg">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-purple-100 rounded-lg">
                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-orange-100 rounded-lg">
                 <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
