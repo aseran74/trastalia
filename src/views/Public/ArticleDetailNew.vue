@@ -44,7 +44,7 @@
     <!-- Main Content -->
     <div class="pt-20 pb-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Loading State -->
+        <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center min-h-[400px]">
         <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
       </div>
@@ -247,8 +247,8 @@
           <p class="mt-1 text-sm text-gray-500">No se pudo cargar la información del artículo.</p>
         </div>
       </div>
+      </div>
     </div>
-  </div>
 
   <!-- Message Modal -->
   <MessageToSellerModal
