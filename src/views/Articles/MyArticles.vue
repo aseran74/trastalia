@@ -11,16 +11,16 @@
     
     <!-- Main Content -->
     <div class="lg:pl-64">
-      <div class="p-6">
+      <div class="p-8 pl-12">
         <!-- Header -->
-        <div class="mb-8">
+        <div class="mb-12">
           <h1 class="text-3xl font-bold text-gray-900">Mis Artículos</h1>
-          <p class="text-gray-600 mt-2">Artículos que aún te pertenecen y están disponibles para venta o intercambio</p>
+          <p class="text-gray-600 mt-3">Artículos que aún te pertenecen y están disponibles para venta o intercambio</p>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white rounded-lg shadow p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-blue-100 rounded-lg">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,7 +34,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-green-100 rounded-lg">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-yellow-100 rounded-lg">
                 <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-8">
             <div class="flex items-center">
               <div class="p-2 bg-purple-100 rounded-lg">
                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,24 +229,34 @@ const activeFilter = ref('all')
 // Filter options
 const filters = [
   { key: 'all', label: 'Todos' },
-  { key: 'en_venta', label: 'En Venta' },
-  { key: 'solicitud_compra_pendiente', label: 'Pendiente Admin' },
-  { key: 'oferta_enviada', label: 'Con Oferta' }
+  { key: 'disponible', label: 'Disponible' },
+  { key: 'en_revision', label: 'En Revisión' },
+  { key: 'pendiente_aprobacion', label: 'Pendiente Aprobación' }
 ]
 
 // Computed properties
 const totalArticles = computed(() => articles.value.length)
 
-const enVentaCount = computed(() => 
-  articles.value.filter(article => article.estado === 'en_venta').length
+const disponiblesCount = computed(() => 
+  articles.value.filter(article => 
+    article.estado_articulo === 'disponible' || 
+    !article.estado_articulo || 
+    article.estado_articulo === null
+  ).length
+)
+
+const enRevisionCount = computed(() => 
+  articles.value.filter(article => 
+    article.estado_articulo === 'en_revision' ||
+    article.adminStatus === 'pending'
+  ).length
 )
 
 const pendientesCount = computed(() => 
-  articles.value.filter(article => article.estado === 'solicitud_compra_pendiente').length
-)
-
-const ofertasCount = computed(() => 
-  articles.value.filter(article => article.estado === 'oferta_enviada').length
+  articles.value.filter(article => 
+    article.estado_articulo === 'pendiente_aprobacion' ||
+    article.adminStatus === 'pending_approval'
+  ).length
 )
 
 const filteredArticles = computed(() => {
@@ -262,9 +272,11 @@ const loadMyArticles = async () => {
   error.value = ''
   
   try {
-    const response = await fetch('/api/articles/mis-articulos', {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    const response = await fetch('/api/articles/my-articles', {
       headers: {
-        'Authorization': `Bearer ${authStore.token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     })
 
@@ -273,7 +285,26 @@ const loadMyArticles = async () => {
     }
 
     const data = await response.json()
-    articles.value = data.data || []
+    
+    if (data.success) {
+      // Filtrar solo artículos que aún no se han vendido
+      articles.value = (data.data || []).filter(article => {
+        // Excluir artículos vendidos o traspasados
+        const estadoVendido = [
+          'TRASPASADO_A_TRASTALIA_POR_DINERO',
+          'TRASPASADO_A_TRASTALIA_POR_PUNTOS', 
+          'COMPRADO_POR_ADMIN',
+          'VENDIDO_PUNTOS',
+          'VENDIDO_DINERO'
+        ]
+        
+        return !estadoVendido.includes(article.estado_articulo) && !article.comprador
+      })
+      
+      console.log('📦 Artículos del usuario cargados:', articles.value.length)
+    } else {
+      throw new Error(data.message || 'Error al cargar los artículos')
+    }
   } catch (err: any) {
     console.error('Error cargando mis artículos:', err)
     error.value = err.message || 'Error al cargar los artículos'
