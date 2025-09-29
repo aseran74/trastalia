@@ -26,32 +26,32 @@ document.title = 'Trastalia - Nueva manera de vender artículos de segunda mano'
 const originalTitle = 'Trastalia - Nueva manera de vender artículos de segunda mano'
 document.title = originalTitle
 
-// Observar cambios en el título y corregirlos
-const titleObserver = new MutationObserver(() => {
-  if (document.title !== originalTitle) {
-    console.log('🔧 Título cambiado a:', document.title, '- Corrigiendo a:', originalTitle)
-    document.title = originalTitle
-  }
-})
+// TEMPORALMENTE DESHABILITADO: Observar cambios en el título y corregirlos
+// const titleObserver = new MutationObserver(() => {
+//   if (document.title !== originalTitle) {
+//     console.log('🔧 Título cambiado a:', document.title, '- Corrigiendo a:', originalTitle)
+//     document.title = originalTitle
+//   }
+// })
 
 // Observar cambios en el head
-titleObserver.observe(document.head, {
-  childList: true,
-  subtree: true
-})
+// titleObserver.observe(document.head, {
+//   childList: true,
+//   subtree: true
+// })
 
-// También escuchar cambios en el título directamente
-let titleCheckInterval = setInterval(() => {
-  if (document.title !== originalTitle) {
-    console.log('🔧 Título detectado como:', document.title, '- Corrigiendo a:', originalTitle)
-    document.title = originalTitle
-  }
-}, 100)
+// TEMPORALMENTE DESHABILITADO: También escuchar cambios en el título directamente
+// let titleCheckInterval = setInterval(() => {
+//   if (document.title !== originalTitle) {
+//     console.log('🔧 Título detectado como:', document.title, '- Corrigiendo a:', originalTitle)
+//     document.title = originalTitle
+//   }
+// }, 100)
 
-// Limpiar el intervalo después de 10 segundos
-setTimeout(() => {
-  clearInterval(titleCheckInterval)
-}, 10000)
+// TEMPORALMENTE DESHABILITADO: Limpiar el intervalo después de 10 segundos
+// setTimeout(() => {
+//   clearInterval(titleCheckInterval)
+// }, 10000)
 
 app.mount('#app')
 // Updated for Vercel deployment - 09/29/2025 10:00:56
