@@ -127,6 +127,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import API_BASE_URL from '@/config/api.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -166,7 +167,10 @@ const loadArticle = async () => {
 
   loading.value = true
   try {
-    const response = await fetch(`/api/articles/${articleId}`, {
+    const apiUrl = `${API_BASE_URL}/api/articles/${articleId}`
+    console.log('🌐 Llamando a API:', apiUrl)
+    
+    const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
