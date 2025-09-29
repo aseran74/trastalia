@@ -7,7 +7,7 @@
     </div>
     <h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Trastalia</h3>
     <p class="mb-4 text-gray-500 text-theme-sm dark:text-gray-400">
-      Nueva manera de vender artículos de segunda mano
+      Ha llegado una nueva manera de vender artículos de segunda mano
     </p>
     <router-link
       to="/vender-articulo"
