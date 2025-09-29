@@ -22,17 +22,15 @@
               <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Inicio</router-link>
               <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
               
-              <!-- Menú de perfil si está logueado, botón de login si no -->
-              <UserProfileMenu v-if="authStore.isAuthenticated" />
-              <router-link v-else to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+              <!-- Botón de login -->
+              <router-link to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
                 Iniciar Sesión
               </router-link>
             </div>
 
             <!-- Mobile Menu Button -->
             <div class="md:hidden flex items-center space-x-4">
-              <UserProfileMenu v-if="authStore.isAuthenticated" />
-              <router-link v-else to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm">
+              <router-link to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm">
                 Login
               </router-link>
             </div>
@@ -266,7 +264,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import API_BASE_URL from '@/config/api.js'
 import MessageToSellerModal from '@/components/modals/MessageToSellerModal.vue'
-import UserProfileMenu from '@/components/landing/UserProfileMenu.vue'
 
 const router = useRouter()
 const route = useRoute()
