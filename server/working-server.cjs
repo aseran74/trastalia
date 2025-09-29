@@ -516,7 +516,15 @@ if (process.env.NODE_ENV !== 'production') {
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   
+  console.log('🔐 Auth Middleware - Headers:', {
+    authorization: authHeader,
+    userAgent: req.headers['user-agent'],
+    url: req.url,
+    method: req.method
+  });
+  
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('❌ Auth Middleware - No auth header or invalid format');
     return res.status(401).json({
       success: false,
       message: 'Token de acceso requerido'
@@ -524,6 +532,7 @@ const authMiddleware = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+  console.log('🔐 Auth Middleware - Token:', token);
   
   // Si es un token de admin, buscar el usuario admin
   if (token.startsWith('mongodb-admin-token-')) {
