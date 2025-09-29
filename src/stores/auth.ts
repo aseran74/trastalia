@@ -9,6 +9,9 @@ interface User {
   email: string;
   role: 'admin' | 'user' | 'moderator';
   avatar?: string;
+  points?: number;
+  logisticsLevel?: string;
+  reputation?: number;
 }
 
 interface LoginCredentials {
