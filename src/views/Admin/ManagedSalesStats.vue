@@ -207,7 +207,7 @@ const loadStats = async () => {
   try {
     const response = await fetch('/api/admin/managed-sales-stats', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')}`
       }
     })
     

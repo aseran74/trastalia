@@ -280,7 +280,7 @@ const loginToBuyWithPoints = () => {
 
 // Verificar si el usuario es admin
 const checkAdminStatus = () => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
   console.log('🔍 Verificando admin status...')
   console.log('Token encontrado:', !!token)
   
