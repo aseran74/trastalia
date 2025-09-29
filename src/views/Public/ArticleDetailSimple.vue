@@ -33,7 +33,7 @@
           <!-- Article Image -->
           <div class="aspect-video bg-gray-200 relative">
             <img
-              :src="getArticleImage(article)"
+              :src="articleImage"
               :alt="article.title || article.nombre"
               class="w-full h-full object-cover"
               @error="handleImageError"
@@ -145,7 +145,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
@@ -155,6 +155,28 @@ const route = useRoute()
 const article = ref(null)
 const loading = ref(false)
 const isAdmin = ref(false)
+
+// Computed property para la imagen del artículo (evita bucles)
+const articleImage = computed(() => {
+  if (!article.value) return '/images/placeholder.jpg'
+  
+  console.log('🖼️ ArticleDetail - Getting image for article:', article.value.title || article.value.nombre, {
+    images: article.value.images,
+    fotos: article.value.fotos
+  })
+  
+  if (article.value.images && article.value.images.length > 0) {
+    console.log('✅ ArticleDetail - Using images[0]:', article.value.images[0])
+    return article.value.images[0]
+  }
+  if (article.value.fotos && article.value.fotos.length > 0) {
+    console.log('✅ ArticleDetail - Using fotos[0]:', article.value.fotos[0])
+    return article.value.fotos[0]
+  }
+  
+  console.log('🔄 ArticleDetail - Using local placeholder')
+  return '/images/placeholder.jpg'
+})
 
 // Cargar artículo
 const loadArticle = async () => {
@@ -255,25 +277,6 @@ const handleImageError = (event) => {
   }
 }
 
-// Obtener imagen del artículo
-const getArticleImage = (article) => {
-  console.log('🖼️ ArticleDetail - Getting image for article:', article.title || article.nombre, {
-    images: article.images,
-    fotos: article.fotos
-  })
-  
-  if (article.images && article.images.length > 0) {
-    console.log('✅ ArticleDetail - Using images[0]:', article.images[0])
-    return article.images[0]
-  }
-  if (article.fotos && article.fotos.length > 0) {
-    console.log('✅ ArticleDetail - Using fotos[0]:', article.fotos[0])
-    return article.fotos[0]
-  }
-  
-  console.log('🔄 ArticleDetail - Using local placeholder')
-  return '/images/placeholder.jpg'
-}
 
 // Login para comprar
 const loginToBuy = () => {
