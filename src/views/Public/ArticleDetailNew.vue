@@ -1,6 +1,49 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header 
+      :class="[
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        isScrolled ? 'bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm' : 'bg-transparent'
+      ]"
+    >
+      <!-- Navigation -->
+      <nav class="relative z-10 px-4 py-3">
+        <div class="mx-auto max-w-5xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <router-link to="/">
+                <img src="/images/Trastalia3.png" alt="Trastalia" class="h-16 w-auto sm:h-18 md:h-20">
+              </router-link>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-6">
+              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Inicio</router-link>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
+              
+              <!-- Menú de perfil si está logueado, botón de login si no -->
+              <UserProfileMenu v-if="authStore.isAuthenticated" />
+              <router-link v-else to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                Iniciar Sesión
+              </router-link>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center space-x-4">
+              <UserProfileMenu v-if="authStore.isAuthenticated" />
+              <router-link v-else to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm">
+                Login
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="pt-20 pb-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center min-h-[400px]">
         <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
@@ -129,41 +172,64 @@
               </div>
 
               <!-- Action Buttons -->
-              <div class="flex space-x-4 pt-4">
-                <button
-                  v-if="!isAuthenticated"
-                  @click="loginToBuy"
-                  class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  Iniciar Sesión para Comprar
-                </button>
-                <button
-                  v-else
-                  @click="buyArticle"
-                  class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-                >
-                  Comprar Artículo
-                </button>
-                <button
-                  v-if="isAdmin"
-                  @click="editArticle"
-                  class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
-                >
-                  Editar
-                </button>
+              <div class="space-y-4 pt-4">
+                <!-- Botones de compra -->
+                <div v-if="!isAuthenticated" class="flex space-x-4">
+                  <button
+                    @click="loginToBuy"
+                    class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    Iniciar Sesión para Comprar
+                  </button>
+                </div>
+                
+                <div v-else class="space-y-3">
+                  <!-- Compra con dinero -->
+                  <button
+                    @click="buyWithMoney"
+                    class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                    <span>Comprar por €{{ article.price || article.precio_propuesto_vendedor }}</span>
+                  </button>
+                  
+                  <!-- Compra con puntos -->
+                  <button
+                    v-if="userPoints >= articlePoints"
+                    @click="buyWithPoints"
+                    class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    </svg>
+                    <span>Comprar por {{ articlePoints }} puntos</span>
+                  </button>
+                  
+                  <!-- Mensaje al vendedor -->
+                  <button
+                    @click="openMessageModal"
+                    class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <span>Mensaje al Vendedor</span>
+                  </button>
+                </div>
+                
+                <!-- Botón de edición para admin -->
+                <div v-if="isAdmin" class="pt-2 border-t">
+                  <button
+                    @click="editArticle"
+                    class="w-full bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+                  >
+                    Editar Artículo
+                  </button>
+                </div>
               </div>
               
-              <!-- Botón temporal para añadir imágenes de prueba -->
-              <div class="mt-4 pt-4 border-t">
-                <button
-                  @click="addTestImages"
-                  :disabled="addingImages"
-                  class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  {{ addingImages ? '⏳ Añadiendo...' : '🖼️ Añadir Imágenes de Prueba' }}
-                </button>
-                <p class="text-xs text-gray-500 mt-1">Temporal: Añade imágenes de ejemplo para probar</p>
-              </div>
             </div>
           </div>
         </div>
@@ -183,13 +249,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Message Modal -->
+  <MessageToSellerModal
+    :is-open="showMessageModal"
+    :seller="article?.seller"
+    :article="article"
+    @close="closeMessageModal"
+    @message-sent="onMessageSent"
+  />
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import API_BASE_URL from '@/config/api.js'
+import MessageToSellerModal from '@/components/modals/MessageToSellerModal.vue'
+import UserProfileMenu from '@/components/landing/UserProfileMenu.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -198,12 +275,20 @@ const authStore = useAuthStore()
 // Estado
 const article = ref(null)
 const loading = ref(false)
-const addingImages = ref(false)
 const currentImageIndex = ref(0)
+const showMessageModal = ref(false)
+const isScrolled = ref(false)
 
 // Computed
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.user?.role === 'admin')
+const userPoints = computed(() => authStore.user?.points || 0)
+
+// Puntos necesarios para comprar el artículo (1 punto = 1€)
+const articlePoints = computed(() => {
+  const price = article.value?.price || article.value?.precio_propuesto_vendedor || 0
+  return Math.ceil(price)
+})
 
 // Todas las imágenes del artículo
 const allImages = computed(() => {
@@ -298,13 +383,89 @@ const loginToBuy = () => {
   router.push('/login')
 }
 
-const buyArticle = () => {
-  // Implementar lógica de compra
-  console.log('Comprando artículo:', article.value?.id)
+// Funciones de compra
+const buyWithMoney = async () => {
+  if (!article.value?._id) return
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/articles/${article.value._id}/buy-money`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')}`
+      }
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      if (data.success) {
+        alert('¡Artículo comprado exitosamente!')
+        // Recargar el artículo para actualizar el estado
+        await loadArticle()
+      } else {
+        alert('Error al comprar: ' + data.message)
+      }
+    } else {
+      alert('Error al procesar la compra')
+    }
+  } catch (error) {
+    console.error('Error comprando con dinero:', error)
+    alert('Error al procesar la compra')
+  }
+}
+
+const buyWithPoints = async () => {
+  if (!article.value?._id) return
+  
+  if (userPoints.value < articlePoints.value) {
+    alert(`No tienes suficientes puntos. Necesitas ${articlePoints.value} puntos y tienes ${userPoints.value}`)
+    return
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/articles/${article.value._id}/buy-points`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')}`
+      }
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      if (data.success) {
+        alert('¡Artículo comprado con puntos exitosamente!')
+        // Recargar el artículo y actualizar puntos del usuario
+        await loadArticle()
+        await authStore.checkAuth()
+      } else {
+        alert('Error al comprar: ' + data.message)
+      }
+    } else {
+      alert('Error al procesar la compra con puntos')
+    }
+  } catch (error) {
+    console.error('Error comprando con puntos:', error)
+    alert('Error al procesar la compra')
+  }
 }
 
 const editArticle = () => {
   router.push(`/admin/articulos/${article.value?.id}/editar`)
+}
+
+// Función para abrir modal de mensajes
+const openMessageModal = () => {
+  showMessageModal.value = true
+}
+
+const closeMessageModal = () => {
+  showMessageModal.value = false
+}
+
+const onMessageSent = () => {
+  // Opcional: mostrar confirmación o actualizar algo
+  console.log('Mensaje enviado exitosamente')
 }
 
 // Funciones para navegar entre imágenes
@@ -328,60 +489,19 @@ const previousImage = () => {
   }
 }
 
-// Función temporal para añadir imágenes de prueba
-const addTestImages = async () => {
-  console.log('🖼️ Botón clickeado - Iniciando proceso...')
-  console.log('📄 Article data:', article.value)
-  console.log('🆔 Article ID:', article.value?._id)
-  
-  if (!article.value?._id) {
-    console.error('❌ No hay ID de artículo disponible')
-    return
-  }
-  
-  addingImages.value = true
-  
-  try {
-    const apiUrl = `${API_BASE_URL}/api/articles/${article.value._id}/add-images`
-    console.log('🌐 API URL:', apiUrl)
-    console.log('🔧 API_BASE_URL:', API_BASE_URL)
-    
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    
-    console.log('📡 Response status:', response.status)
-    console.log('📡 Response ok:', response.ok)
-    
-    if (response.ok) {
-      const data = await response.json()
-      console.log('📄 Response data:', data)
-      
-      if (data.success) {
-        console.log('✅ Imágenes añadidas exitosamente:', data.data)
-        // Recargar el artículo para mostrar las nuevas imágenes
-        console.log('🔄 Recargando artículo...')
-        await loadArticle()
-        console.log('✅ Artículo recargado')
-      } else {
-        console.error('❌ Error en respuesta:', data.message)
-      }
-    } else {
-      const errorText = await response.text()
-      console.error('❌ Error HTTP:', response.status, errorText)
-    }
-  } catch (error) {
-    console.error('❌ Error en fetch:', error)
-  } finally {
-    addingImages.value = false
-  }
+
+// Función para manejar el scroll
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50
 }
 
 // Lifecycle
 onMounted(() => {
   loadArticle()
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
