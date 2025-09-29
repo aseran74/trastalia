@@ -336,27 +336,21 @@ const router = createRouter({
 export default router
 
 router.beforeEach(async (to, from, next) => {
-  console.log('🚀 Router beforeEach:', { from: from.path, to: to.path })
-  
   const authStore = useAuthStore()
   
   // Evitar verificaciones innecesarias si ya estamos en la misma ruta
   if (to.path === from.path) {
-    console.log('🔄 Misma ruta, saltando...')
     next()
     return
   }
   
   // Solo verificar autenticación si no está ya verificada
   if (!authStore.isAuthenticated) {
-    console.log('🔍 Router: Verificando autenticación para:', to.path)
     await authStore.checkAuth()
-  } else {
-    console.log('✅ Usuario ya autenticado, saltando verificación')
   }
   
-  // TEMPORALMENTE DESHABILITADO: Actualizar título
-  // document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
+  // Actualizar título
+  document.title = `${to.meta.title} - Trastalia`
   
   // Verificar si la ruta requiere autenticación
   if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
@@ -371,7 +365,6 @@ router.beforeEach(async (to, from, next) => {
   } else if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
     next('/comprar-articulos') // Redirigir a comprar artículos si no es admin
   } else {
-    console.log('✅ Router: Navegación permitida a:', to.path)
     next()
   }
 })

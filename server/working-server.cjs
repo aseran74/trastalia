@@ -1015,6 +1015,7 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
       category: categoria || category,
       condition: condicion || condition,
       images: images || [],
+      fotos: images || [], // Guardar también en el campo principal
       seller: req.userId,
       status: initialStatus,
       isForSale,
@@ -2590,6 +2591,19 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
+    
+    // Si hay nuevas imágenes, asegurar que se guarden en ambos campos
+    if (updateData.newImages && updateData.newImages.length > 0) {
+      // Combinar imágenes existentes con las nuevas
+      const existingImages = updateData.images || updateData.fotos || [];
+      const allImages = [...existingImages, ...updateData.newImages];
+      
+      updateData.images = allImages;
+      updateData.fotos = allImages; // Guardar también en el campo principal
+      
+      // Limpiar newImages del updateData para evitar conflictos
+      delete updateData.newImages;
+    }
     
     const article = await Article.findByIdAndUpdate(
       id,

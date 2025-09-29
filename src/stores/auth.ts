@@ -147,7 +147,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (storedToken && storedUser) {
         // Verificar token con API real
-        console.log('🔍 checkAuth - Verificando token con API');
         
         // Verificar si es un usuario de Firebase (tiene uid)
         try {
@@ -157,7 +156,6 @@ export const useAuthStore = defineStore('auth', () => {
           if (userData.id && userData.email && userData.id.length > 20) { // Firebase UIDs son largos
             user.value = userData;
             token.value = storedToken;
-            console.log('✅ checkAuth - Usuario Firebase autenticado');
             isCheckingAuth.value = false;
             return true;
           }
