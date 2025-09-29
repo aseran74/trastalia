@@ -338,8 +338,17 @@ export default router
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
-  // Verificar autenticación
-  await authStore.checkAuth()
+  // Evitar verificaciones innecesarias si ya estamos en la misma ruta
+  if (to.path === from.path) {
+    next()
+    return
+  }
+  
+  // Solo verificar autenticación si no está ya verificada
+  if (!authStore.isAuthenticated) {
+    console.log('🔍 Router: Verificando autenticación para:', to.path)
+    await authStore.checkAuth()
+  }
   
   // Actualizar título
   document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
