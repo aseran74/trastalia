@@ -39,6 +39,7 @@
                 class="w-full rounded border border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               >
                 <option value="">Selecciona una categoría</option>
+                <option value="pack_tematico">📦 Pack Temático - Todo lo que necesitas para un tema específico</option>
                 <option value="tecnologia">Tecnología</option>
                 <option value="hogar">Hogar</option>
                 <option value="deportes">Deportes</option>
