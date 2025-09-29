@@ -184,15 +184,24 @@ const handleImageError = (event) => {
 
 // Obtener imagen del artículo
 const getArticleImage = (article) => {
+  console.log('🖼️ Getting image for article:', article.title || article.nombre, {
+    images: article.images,
+    fotos: article.fotos
+  })
+  
   if (article.images && article.images.length > 0) {
+    console.log('✅ Using images[0]:', article.images[0])
     return article.images[0]
   }
   if (article.fotos && article.fotos.length > 0) {
+    console.log('✅ Using fotos[0]:', article.fotos[0])
     return article.fotos[0]
   }
   
   const title = article.title || article.nombre || 'Artículo'
-  return `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(title)}`
+  const placeholderUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(title)}`
+  console.log('🔄 Using placeholder:', placeholderUrl)
+  return placeholderUrl
 }
 
 // Obtener etiqueta de condición

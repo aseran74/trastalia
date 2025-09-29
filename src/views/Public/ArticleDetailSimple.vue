@@ -257,15 +257,24 @@ const handleImageError = (event) => {
 
 // Obtener imagen del artículo
 const getArticleImage = (article) => {
+  console.log('🖼️ ArticleDetail - Getting image for article:', article.title || article.nombre, {
+    images: article.images,
+    fotos: article.fotos
+  })
+  
   if (article.images && article.images.length > 0) {
+    console.log('✅ ArticleDetail - Using images[0]:', article.images[0])
     return article.images[0]
   }
   if (article.fotos && article.fotos.length > 0) {
+    console.log('✅ ArticleDetail - Using fotos[0]:', article.fotos[0])
     return article.fotos[0]
   }
   
   const title = article.title || article.nombre || 'Artículo'
-  return `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
+  const placeholderUrl = `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
+  console.log('🔄 ArticleDetail - Using placeholder:', placeholderUrl)
+  return placeholderUrl
 }
 
 // Login para comprar
