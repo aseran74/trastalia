@@ -247,7 +247,7 @@ const getCategoryLabel = (category) => {
 
 // Manejar error de imagen
 const handleImageError = (event) => {
-  const placeholderSrc = 'https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+no+disponible'
+  const placeholderSrc = '/images/placeholder.jpg'
   
   // ✅ CORRECCIÓN: Evita el bucle comprobando si ya estamos usando el placeholder
   if (event.target.src !== placeholderSrc) {
@@ -271,10 +271,8 @@ const getArticleImage = (article) => {
     return article.fotos[0]
   }
   
-  const title = article.title || article.nombre || 'Artículo'
-  const placeholderUrl = `https://via.placeholder.com/800x600/cccccc/666666?text=${encodeURIComponent(title)}`
-  console.log('🔄 ArticleDetail - Using placeholder:', placeholderUrl)
-  return placeholderUrl
+  console.log('🔄 ArticleDetail - Using local placeholder')
+  return '/images/placeholder.jpg'
 }
 
 // Login para comprar
