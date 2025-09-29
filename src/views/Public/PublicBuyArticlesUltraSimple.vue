@@ -128,27 +128,74 @@
         </div>
         
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <!-- Botón "Todas las categorías" -->
+          <div 
+            @click="filterByCategory(null)"
+            :class="[
+              'bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all cursor-pointer',
+              !selectedCategory ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+            ]"
+          >
+            <div class="text-2xl mb-2">🌟</div>
+            <div class="text-sm font-medium text-gray-700">Todos</div>
+          </div>
+          <div 
+            @click="filterByCategory('tecnologia')"
+            :class="[
+              'bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all cursor-pointer',
+              selectedCategory === 'tecnologia' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+            ]"
+          >
             <div class="text-2xl mb-2">📱</div>
             <div class="text-sm font-medium text-gray-700">Tecnología</div>
           </div>
-          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <div 
+            @click="filterByCategory('moda')"
+            :class="[
+              'bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all cursor-pointer',
+              selectedCategory === 'moda' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+            ]"
+          >
             <div class="text-2xl mb-2">👕</div>
-            <div class="text-sm font-medium text-gray-700">Ropa</div>
+            <div class="text-sm font-medium text-gray-700">Moda</div>
           </div>
-          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <div 
+            @click="filterByCategory('hogar')"
+            :class="[
+              'bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all cursor-pointer',
+              selectedCategory === 'hogar' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+            ]"
+          >
             <div class="text-2xl mb-2">🏠</div>
             <div class="text-sm font-medium text-gray-700">Hogar</div>
           </div>
-          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="text-2xl mb-2">🚗</div>
-            <div class="text-sm font-medium text-gray-700">Automóviles</div>
+          <div 
+            @click="filterByCategory('deportes')"
+            :class="[
+              'bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all cursor-pointer',
+              selectedCategory === 'deportes' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+            ]"
+          >
+            <div class="text-2xl mb-2">⚽</div>
+            <div class="text-sm font-medium text-gray-700">Deportes</div>
           </div>
-          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <div 
+            @click="filterByCategory('juegos')"
+            :class="[
+              'bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all cursor-pointer',
+              selectedCategory === 'juegos' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+            ]"
+          >
             <div class="text-2xl mb-2">🎮</div>
             <div class="text-sm font-medium text-gray-700">Gaming</div>
           </div>
-          <div class="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <div 
+            @click="filterByCategory('libros')"
+            :class="[
+              'bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-all cursor-pointer',
+              selectedCategory === 'libros' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+            ]"
+          >
             <div class="text-2xl mb-2">📚</div>
             <div class="text-sm font-medium text-gray-700">Libros</div>
           </div>
@@ -186,6 +233,23 @@
           </div>
         </div>
       </section>
+
+      <!-- Filtro activo -->
+      <div v-if="selectedCategory" class="mb-8 text-center">
+        <div class="inline-flex items-center space-x-3 bg-blue-100 text-blue-800 px-6 py-3 rounded-full">
+          <span class="text-sm font-medium">
+            Filtrando por: <span class="font-bold">{{ getCategoryLabel(selectedCategory) }}</span>
+          </span>
+          <button 
+            @click="filterByCategory(selectedCategory)"
+            class="ml-2 text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
 
       <div v-if="loading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -276,8 +340,20 @@
          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
          </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No hay artículos disponibles</h3>
-        <p class="mt-1 text-sm text-gray-500">No se encontraron artículos en este momento.</p>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">
+          {{ selectedCategory ? `No hay artículos en la categoría "${getCategoryLabel(selectedCategory)}"` : 'No hay artículos disponibles' }}
+        </h3>
+        <p class="mt-1 text-sm text-gray-500">
+          {{ selectedCategory ? 'Prueba con otra categoría o ver todos los artículos.' : 'No se encontraron artículos en este momento.' }}
+        </p>
+        <div v-if="selectedCategory" class="mt-4">
+          <button 
+            @click="filterByCategory(selectedCategory)"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Ver todos los artículos
+          </button>
+        </div>
       </div>
     </div>
 
@@ -369,7 +445,9 @@ const authStore = useAuthStore()
 
 // Estado ultra simple - solo lo esencial
 const articles = ref([])
+const allArticles = ref([]) // Guardar todos los artículos para filtrado
 const loading = ref(false)
+const selectedCategory = ref(null) // Categoría seleccionada para filtrar
 
 // Modal de login/registro
 const showLoginModal = ref(false)
@@ -405,7 +483,8 @@ const loadPublicArticles = async () => {
     
     if (response.ok) {
       const data = await response.json()
-      articles.value = data.data || []
+      allArticles.value = data.data || []
+      articles.value = allArticles.value // Mostrar todos inicialmente
       console.log('✅ Artículos cargados:', articles.value.length)
       console.log('📋 Primer artículo:', articles.value[0])
     } else {
@@ -528,6 +607,35 @@ const goToLogin = () => {
 const goToRegister = () => {
   showLoginModal.value = false
   router.push('/signup')
+}
+
+// Filtrar por categoría
+const filterByCategory = (category) => {
+  console.log('🔍 Filtrando por categoría:', category)
+  
+  // Si category es null o se hace clic en la misma categoría, mostrar todos
+  if (category === null || selectedCategory.value === category) {
+    selectedCategory.value = null
+    articles.value = allArticles.value
+    console.log('📋 Mostrando todos los artículos:', articles.value.length)
+  } else {
+    // Filtrar por la categoría seleccionada
+    selectedCategory.value = category
+    articles.value = allArticles.value.filter(article => {
+      const articleCategory = article.category || article.categoria
+      return articleCategory === category
+    })
+    console.log(`📋 Artículos de ${category}:`, articles.value.length)
+  }
+  
+  // Scroll suave hacia los artículos
+  const articlesSection = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2')
+  if (articlesSection) {
+    articlesSection.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    })
+  }
 }
 
 // Funciones para la navbar
