@@ -29,6 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null);
   const isLoading = ref(false);
   const isCheckingAuth = ref(false);
+  const lastCheckTime = ref(0);
 
   // Getters
   const isAuthenticated = computed(() => {
@@ -129,13 +130,16 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const checkAuth = async () => {
-    // Evitar llamadas múltiples simultáneas
-    if (isCheckingAuth.value) {
-      console.log('🔄 checkAuth ya en progreso, saltando...');
+    const now = Date.now();
+    
+    // Evitar llamadas múltiples simultáneas o muy frecuentes
+    if (isCheckingAuth.value || (now - lastCheckTime.value < 1000)) {
+      console.log('🔄 checkAuth ya en progreso o muy reciente, saltando...');
       return isAuthenticated.value;
     }
     
     isCheckingAuth.value = true;
+    lastCheckTime.value = now;
     
     try {
       const storedToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
