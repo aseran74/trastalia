@@ -126,13 +126,28 @@
                 </h1>
 
                 <!-- Price -->
-                <div class="flex items-baseline space-x-4">
-                  <span class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    €{{ article.price || article.precio }}
-                  </span>
-                  <span v-if="article.tipo_venta === 'gestionada'" class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                    +5% comisión Trastalia
-                  </span>
+                <div class="space-y-4">
+                  <div class="flex items-baseline space-x-4">
+                    <span class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      €{{ article.price || article.precio }}
+                    </span>
+                    <span v-if="article.tipo_venta === 'gestionada'" class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                      +5% comisión Trastalia
+                    </span>
+                  </div>
+                  
+                  <!-- Precio en puntos -->
+                  <div class="bg-gradient-to-r from-purple-100 to-purple-200 p-4 rounded-xl border border-purple-300">
+                    <div class="flex items-center space-x-3">
+                      <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                      </svg>
+                      <div>
+                        <span class="text-2xl font-bold text-purple-800">{{ articlePoints }} puntos</span>
+                        <p class="text-sm text-purple-600">Equivalente en puntos (1 punto = 1€)</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Description -->
@@ -167,7 +182,7 @@
                     </svg>
                     Vendedor
                   </h3>
-                  <div class="flex items-center space-x-4">
+                  <div class="flex items-center space-x-4 mb-4">
                     <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                       <span class="text-white font-bold text-lg">
                         {{ (article.seller?.name || article.vendedor?.nombre || 'Usuario')[0].toUpperCase() }}
@@ -182,6 +197,18 @@
                       </p>
                     </div>
                   </div>
+                  
+                  <!-- Mensaje al vendedor -->
+                  <button
+                    v-if="isAuthenticated"
+                    @click="openMessageModal"
+                    class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Mensaje al Vendedor</span>
+                  </button>
                 </div>
 
                 <!-- Action Buttons -->
@@ -225,16 +252,6 @@
                       <span class="text-lg">Comprar por {{ articlePoints }} puntos</span>
                     </button>
                     
-                    <!-- Mensaje al vendedor -->
-                    <button
-                      @click="openMessageModal"
-                      class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-3"
-                    >
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                      </svg>
-                      <span class="text-lg">Mensaje al Vendedor</span>
-                    </button>
                   </div>
                   
                   <!-- Botón de edición para admin -->

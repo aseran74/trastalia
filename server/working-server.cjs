@@ -411,7 +411,14 @@ const ArticleSchema = new mongoose.Schema({
   saleMode: String, // Alias para compatibilidad
   adminStatus: { type: String, default: 'pending' }, // Alias para compatibilidad
   logisticsShip: String, // Alias para compatibilidad
-  logisticsShipLocation: String // Alias para compatibilidad
+  logisticsShipLocation: String, // Alias para compatibilidad
+  
+  // Información de compra por puntos
+  compra_puntos: {
+    puntos_gastados: Number,
+    fecha_compra: Date,
+    comprador: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  }
 }, { timestamps: true });
 
 // Esquema para Paquetes Temáticos
@@ -3477,6 +3484,116 @@ app.put('/api/articles/:id', authMiddleware, async (req, res) => {
 
   } catch (error) {
     console.error('Error actualizando artículo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// ===== ENDPOINT PARA COMPRA POR PUNTOS =====
+
+// POST /api/articles/:id/buy-points - Comprar artículo con puntos
+app.post('/api/articles/:id/buy-points', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de artículo no válido'
+      });
+    }
+
+    // Buscar el artículo
+    const article = await Article.findById(id)
+      .populate('seller', 'name email points logisticsLevel reputation');
+    
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Verificar que el artículo esté disponible
+    if (article.estado_articulo !== 'disponible' && article.estado_articulo !== 'EN_LOGISTICA') {
+      return res.status(400).json({
+        success: false,
+        message: 'El artículo no está disponible para la venta'
+      });
+    }
+
+    // Obtener el comprador
+    const buyer = await User.findById(req.userId);
+    if (!buyer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    // Calcular puntos necesarios (1 punto = 1€)
+    const pointsNeeded = Math.ceil(article.price || article.precio_propuesto_vendedor || 0);
+    
+    // Verificar que el comprador tenga suficientes puntos
+    if ((buyer.points || 0) < pointsNeeded) {
+      return res.status(400).json({
+        success: false,
+        message: `No tienes suficientes puntos. Necesitas ${pointsNeeded} puntos y tienes ${buyer.points || 0}`
+      });
+    }
+
+    // Verificar que no sea el mismo vendedor
+    if (article.seller._id.toString() === buyer._id.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: 'No puedes comprar tu propio artículo'
+      });
+    }
+
+    // Actualizar puntos del comprador (restar puntos)
+    buyer.points = (buyer.points || 0) - pointsNeeded;
+    await buyer.save();
+
+    // Actualizar puntos del vendedor (sumar puntos)
+    const seller = await User.findById(article.seller._id);
+    if (seller) {
+      seller.points = (seller.points || 0) + pointsNeeded;
+      await seller.save();
+    }
+
+    // Actualizar el artículo
+    const updatedArticle = await Article.findByIdAndUpdate(
+      id,
+      {
+        estado_articulo: 'VENDIDO_PUNTOS',
+        comprador: buyer._id,
+        comprador_tipo: 'user',
+        fecha_venta: new Date(),
+        // Guardar información de la compra
+        compra_puntos: {
+          puntos_gastados: pointsNeeded,
+          fecha_compra: new Date(),
+          comprador: buyer._id
+        }
+      },
+      { new: true }
+    ).populate('seller', 'name email points logisticsLevel reputation')
+     .populate('comprador', 'name email points logisticsLevel reputation');
+
+    res.json({
+      success: true,
+      message: `¡Artículo comprado exitosamente por ${pointsNeeded} puntos!`,
+      data: {
+        article: updatedArticle,
+        pointsSpent: pointsNeeded,
+        remainingPoints: buyer.points
+      }
+    });
+
+  } catch (error) {
+    console.error('Error en compra por puntos:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'
