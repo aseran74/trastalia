@@ -9,21 +9,71 @@
       <!-- Article Detail -->
       <div v-else-if="article" class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Article Image -->
-          <div class="aspect-video bg-gray-200 relative">
-            <img
-              :src="articleImage"
-              :alt="article.title || article.nombre"
-              class="w-full h-full object-cover"
-            />
-            <!-- Badges -->
-            <div class="absolute top-4 left-4 flex flex-col space-y-2">
-              <span class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                {{ getCategoryLabel(article.category || article.categoria) }}
-              </span>
-              <span v-if="article.tipo_venta === 'gestionada'" class="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                Gestionado por Trastalia
-              </span>
+          <!-- Article Image Gallery -->
+          <div class="space-y-4">
+            <!-- Main Image -->
+            <div class="aspect-video bg-gray-200 relative rounded-lg overflow-hidden">
+              <img
+                :src="currentImage"
+                :alt="article.title || article.nombre"
+                class="w-full h-full object-cover transition-all duration-300"
+              />
+              
+              <!-- Navigation Arrows -->
+              <button
+                v-if="hasMultipleImages"
+                @click="previousImage"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+              <button
+                v-if="hasMultipleImages"
+                @click="nextImage"
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+              
+              <!-- Image Counter -->
+              <div v-if="hasMultipleImages" class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white text-sm px-3 py-1 rounded-full">
+                {{ currentImageIndex + 1 }} / {{ allImages.length }}
+              </div>
+              
+              <!-- Badges -->
+              <div class="absolute top-4 left-4 flex flex-col space-y-2">
+                <span class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                  {{ getCategoryLabel(article.category || article.categoria) }}
+                </span>
+                <span v-if="article.tipo_venta === 'gestionada'" class="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                  Gestionado por Trastalia
+                </span>
+              </div>
+            </div>
+            
+            <!-- Thumbnail Gallery -->
+            <div v-if="hasMultipleImages" class="flex space-x-2 overflow-x-auto pb-2">
+              <button
+                v-for="(image, index) in allImages"
+                :key="index"
+                @click="selectImage(index)"
+                :class="[
+                  'flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all',
+                  currentImageIndex === index 
+                    ? 'border-blue-500 ring-2 ring-blue-200' 
+                    : 'border-gray-200 hover:border-gray-300'
+                ]"
+              >
+                <img
+                  :src="image"
+                  :alt="`Thumbnail ${index + 1}`"
+                  class="w-full h-full object-cover"
+                />
+              </button>
             </div>
           </div>
 
@@ -149,28 +199,40 @@ const authStore = useAuthStore()
 const article = ref(null)
 const loading = ref(false)
 const addingImages = ref(false)
+const currentImageIndex = ref(0)
 
 // Computed
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.user?.role === 'admin')
 
-// Imagen del artículo - versión simplificada sin manejo de errores
-const articleImage = computed(() => {
-  if (!article.value) {
-    console.log('🔄 No hay artículo, usando placeholder')
-    return 'images/placeholder.jpg'
-  }
+// Todas las imágenes del artículo
+const allImages = computed(() => {
+  if (!article.value) return ['images/placeholder.jpg']
   
-  // Priorizar fotos (campo principal) sobre images (compatibilidad)
-  const firstImage = article.value.fotos?.[0] || article.value.images?.[0]
+  // Combinar fotos e images, priorizando fotos
+  const fotos = article.value.fotos || []
+  const images = article.value.images || []
   
-  console.log('🖼️ Computed image:', {
-    fotos: article.value.fotos,
-    images: article.value.images,
-    firstImage: firstImage
+  // Crear array único de imágenes
+  const combinedImages = [...fotos, ...images.filter(img => !fotos.includes(img))]
+  
+  console.log('🖼️ All images:', {
+    fotos: fotos,
+    images: images,
+    combined: combinedImages
   })
   
-  return firstImage || 'images/placeholder.jpg'
+  return combinedImages.length > 0 ? combinedImages : ['images/placeholder.jpg']
+})
+
+// Imagen actual seleccionada
+const currentImage = computed(() => {
+  return allImages.value[currentImageIndex.value] || 'images/placeholder.jpg'
+})
+
+// Si hay múltiples imágenes
+const hasMultipleImages = computed(() => {
+  return allImages.value.length > 1
 })
 
 // Cargar artículo desde MongoDB
@@ -194,6 +256,7 @@ const loadArticle = async () => {
       const data = await response.json()
       if (data.success) {
         article.value = data.data
+        currentImageIndex.value = 0 // Resetear índice de imagen
         console.log('✅ Artículo cargado:', data.data)
         console.log('🖼️ Imágenes disponibles:', {
           fotos: data.data.fotos,
@@ -242,6 +305,27 @@ const buyArticle = () => {
 
 const editArticle = () => {
   router.push(`/admin/articulos/${article.value?.id}/editar`)
+}
+
+// Funciones para navegar entre imágenes
+const selectImage = (index) => {
+  currentImageIndex.value = index
+}
+
+const nextImage = () => {
+  if (currentImageIndex.value < allImages.value.length - 1) {
+    currentImageIndex.value++
+  } else {
+    currentImageIndex.value = 0 // Volver al inicio
+  }
+}
+
+const previousImage = () => {
+  if (currentImageIndex.value > 0) {
+    currentImageIndex.value--
+  } else {
+    currentImageIndex.value = allImages.value.length - 1 // Ir al final
+  }
 }
 
 // Función temporal para añadir imágenes de prueba
