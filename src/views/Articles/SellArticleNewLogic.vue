@@ -37,6 +37,22 @@
           />
         </div>
 
+        <!-- Descripción de Pack Temático -->
+        <div v-if="formData.categoria === 'pack_tematico'" class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+          <div class="flex items-start space-x-3">
+            <div class="text-2xl">📦</div>
+            <div>
+              <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-1">Pack Temático</h4>
+              <p class="text-sm text-blue-700 dark:text-blue-300">
+                Vende múltiples artículos relacionados como un conjunto con descuento especial. 
+                Ideal para temas como: <strong>Bebé</strong> (carrito, cuna, sillita), 
+                <strong>Esquí</strong> (botas, esquís, anorak), <strong>Boxeo</strong> (guantes, protector), 
+                <strong>Música</strong> (instrumento, amplificador, accesorios), etc.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Selección de Pack (solo si categoría es pack_tematico) -->
         <div v-if="formData.categoria === 'pack_tematico'" class="mb-4.5">
           <label class="mb-2.5 block text-black dark:text-white">
@@ -150,7 +166,7 @@
               required
             >
               <option value="">Selecciona una categoría</option>
-              <option value="pack_tematico">📦 Pack Temático</option>
+              <option value="pack_tematico">📦 Pack Temático - Todo lo que necesitas para un tema específico</option>
               <option value="tecnologia">Tecnología</option>
               <option value="hogar">Hogar</option>
               <option value="deportes">Deportes</option>
