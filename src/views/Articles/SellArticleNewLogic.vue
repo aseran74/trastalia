@@ -592,6 +592,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import PackSelectionModal from '@/components/modals/PackSelectionModal.vue'
+import API_BASE_URL from '@/config/api.js'
 // import { useToast } from '@/composables/useToast'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
@@ -889,7 +890,7 @@ const uploadPhotos = async () => {
       const formData = new FormData()
       formData.append('photo', fileData.file)
       
-      const response = await fetch('/api/upload-photo', {
+      const response = await fetch(`${API_BASE_URL}/api/upload-photo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')}`
@@ -916,8 +917,8 @@ const uploadPhotos = async () => {
 // Cargar centros logísticos
 const loadCentrosLogisticos = async () => {
   try {
-    console.log('🚀 Cargando centros logísticos desde /api/logistics-centers...')
-    const response = await fetch('/api/logistics-centers')
+    console.log('🚀 Cargando centros logísticos desde:', `${API_BASE_URL}/api/logistics-centers`)
+    const response = await fetch(`${API_BASE_URL}/api/logistics-centers`)
     console.log('📡 Respuesta del servidor:', response.status, response.statusText)
     
     if (response.ok) {
@@ -1021,7 +1022,7 @@ const submitArticle = async () => {
     console.log('📤 Enviando artículo:', payload)
     
     // Determinar el endpoint según el tipo de venta
-    let endpoint = '/api/articles'
+    let endpoint = `${API_BASE_URL}/api/articles`
     
     // Establecer estado inicial como pendiente para revisión del admin
     payload.adminStatus = 'pending'
