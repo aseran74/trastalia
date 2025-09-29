@@ -142,10 +142,20 @@ const isAdmin = computed(() => authStore.user?.role === 'admin')
 
 // Imagen del artículo - versión simplificada sin manejo de errores
 const articleImage = computed(() => {
-  if (!article.value) return 'images/placeholder.jpg'
+  if (!article.value) {
+    console.log('🔄 No hay artículo, usando placeholder')
+    return 'images/placeholder.jpg'
+  }
   
   // Priorizar fotos (campo principal) sobre images (compatibilidad)
   const firstImage = article.value.fotos?.[0] || article.value.images?.[0]
+  
+  console.log('🖼️ Computed image:', {
+    fotos: article.value.fotos,
+    images: article.value.images,
+    firstImage: firstImage
+  })
+  
   return firstImage || 'images/placeholder.jpg'
 })
 
@@ -168,6 +178,10 @@ const loadArticle = async () => {
       if (data.success) {
         article.value = data.data
         console.log('✅ Artículo cargado:', data.data)
+        console.log('🖼️ Imágenes disponibles:', {
+          fotos: data.data.fotos,
+          images: data.data.images
+        })
       } else {
         console.error('❌ Error en respuesta:', data.message)
       }
