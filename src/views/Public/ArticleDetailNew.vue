@@ -22,15 +22,30 @@
               <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Inicio</router-link>
               <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
               
-              <!-- Botón de login -->
-              <router-link to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+              <!-- Si está autenticado, mostrar menú de usuario -->
+              <UserProfileMenu v-if="isAuthenticated" />
+              
+              <!-- Si NO está autenticado, mostrar botón de login -->
+              <router-link 
+                v-else 
+                to="/login" 
+                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+              >
                 Iniciar Sesión
               </router-link>
             </div>
 
-            <!-- Mobile Menu Button -->
+            <!-- Mobile Menu -->
             <div class="md:hidden flex items-center space-x-4">
-              <router-link to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm">
+              <!-- Si está autenticado -->
+              <UserProfileMenu v-if="isAuthenticated" />
+              
+              <!-- Si NO está autenticado -->
+              <router-link 
+                v-else 
+                to="/login" 
+                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm"
+              >
                 Login
               </router-link>
             </div>
@@ -213,11 +228,14 @@
 
                 <!-- Action Buttons -->
                 <div class="space-y-4 pt-6">
-                  <!-- Botones de compra -->
-                  <div v-if="!isAuthenticated" class="flex space-x-4">
+                  <!-- Botones de compra - Si NO está autenticado -->
+                  <div v-if="!isAuthenticated" class="space-y-3">
+                    <p class="text-sm text-gray-600 text-center bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      🔒 Inicia sesión para comprar este artículo
+                    </p>
                     <button
                       @click="loginToBuy"
-                      class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
                       <div class="flex items-center justify-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,30 +314,67 @@
     @close="closeMessageModal"
     @message-sent="onMessageSent"
   />
+
+  <!-- Stripe Payment Modal -->
+  <StripePaymentModal
+    :is-open="showPaymentModal"
+    :cart-items="cartItem ? [cartItem] : []"
+    @close="closePaymentModal"
+    @payment-success="handlePaymentSuccess"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/composables/useToast'
 import API_BASE_URL from '@/config/api.js'
 import MessageToSellerModal from '@/components/modals/MessageToSellerModal.vue'
+import StripePaymentModal from '@/components/modals/StripePaymentModal.vue'
+import UserProfileMenu from '@/components/landing/UserProfileMenu.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const toast = useToast()
 
 // Estado
 const article = ref(null)
 const loading = ref(false)
 const currentImageIndex = ref(0)
 const showMessageModal = ref(false)
+const showPaymentModal = ref(false)
 const isScrolled = ref(false)
 
 // Computed
-const isAuthenticated = computed(() => authStore.isAuthenticated)
+const isAuthenticated = computed(() => {
+  const auth = authStore.isAuthenticated
+  console.log('🔐 isAuthenticated computed:', auth, {
+    user: authStore.user,
+    token: authStore.token,
+    hasLocalToken: !!localStorage.getItem('auth_token'),
+    hasSessionToken: !!sessionStorage.getItem('auth_token')
+  })
+  return auth
+})
 const isAdmin = computed(() => authStore.user?.role === 'admin')
 const userPoints = computed(() => authStore.user?.points || 0)
+
+// Cart item para el modal de pago
+const cartItem = computed(() => {
+  if (!article.value) return null
+  return {
+    id: article.value._id,
+    article: {
+      title: article.value.title || article.value.nombre,
+      description: article.value.description || article.value.descripcion,
+      images: article.value.images || article.value.fotos || []
+    },
+    price: article.value.price || article.value.precio_propuesto_vendedor || 0,
+    originalArticle: article.value
+  }
+})
 
 // Puntos necesarios para comprar el artículo (1 punto = 1€)
 const articlePoints = computed(() => {
@@ -403,69 +458,161 @@ const loginToBuy = () => {
 }
 
 // Funciones de compra
-const buyWithMoney = async () => {
-  if (!article.value?._id) return
+const buyWithMoney = () => {
+  if (!article.value?._id) {
+    console.error('❌ No hay artículo para comprar')
+    return
+  }
+  
+  console.log('💰 Comprando con dinero:', article.value._id)
+  console.log('🔐 Usuario autenticado:', isAuthenticated.value)
+  
+  // Verificar autenticación
+  if (!isAuthenticated.value) {
+    console.log('❌ Usuario no autenticado, redirigiendo a login...')
+    router.push('/login')
+    return
+  }
+  
+  // Abrir modal de pago
+  showPaymentModal.value = true
+}
+
+// Cerrar modal de pago
+const closePaymentModal = () => {
+  showPaymentModal.value = false
+}
+
+// Manejar pago exitoso
+const handlePaymentSuccess = async (paymentData) => {
+  console.log('💳 Pago exitoso:', paymentData)
   
   try {
+    // Procesar la compra en el backend
     const response = await fetch(`${API_BASE_URL}/api/articles/${article.value._id}/buy-money`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')}`
-      }
+      },
+      body: JSON.stringify({
+        paymentMethod: paymentData.method,
+        amount: paymentData.amount
+      })
     })
     
     if (response.ok) {
       const data = await response.json()
       if (data.success) {
-        alert('¡Artículo comprado exitosamente!')
+        toast.success(
+          '¡Compra realizada!',
+          'El artículo ha sido comprado exitosamente. Recibirás más información por email.',
+          { duration: 5000 }
+        )
+        
         // Recargar el artículo para actualizar el estado
         await loadArticle()
       } else {
-        alert('Error al comprar: ' + data.message)
+        toast.error(
+          'Error en la compra',
+          data.message || 'No se pudo completar la compra',
+          { duration: 5000 }
+        )
       }
     } else {
-      alert('Error al procesar la compra')
+      toast.error(
+        'Error al procesar',
+        'No se pudo procesar la compra. Por favor, intenta de nuevo.',
+        { duration: 5000 }
+      )
     }
   } catch (error) {
     console.error('Error comprando con dinero:', error)
-    alert('Error al procesar la compra')
+    toast.error(
+      'Error de conexión',
+      'Hubo un problema al procesar la compra. Por favor, intenta de nuevo.',
+      { duration: 5000 }
+    )
   }
 }
 
 const buyWithPoints = async () => {
-  if (!article.value?._id) return
+  if (!article.value?._id) {
+    console.error('❌ No hay artículo para comprar')
+    return
+  }
+  
+  console.log('⭐ Comprando con puntos:', article.value._id)
+  console.log('🔐 Usuario autenticado:', isAuthenticated.value)
+  
+  // Verificar autenticación
+  if (!isAuthenticated.value) {
+    console.log('❌ Usuario no autenticado, redirigiendo a login...')
+    router.push('/login')
+    return
+  }
   
   if (userPoints.value < articlePoints.value) {
-    alert(`No tienes suficientes puntos. Necesitas ${articlePoints.value} puntos y tienes ${userPoints.value}`)
+    toast.warning(
+      'Puntos insuficientes',
+      `No tienes suficientes puntos. Necesitas ${articlePoints.value} puntos y tienes ${userPoints.value}`,
+      { duration: 5000 }
+    )
     return
   }
   
   try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    console.log('🔑 Token presente:', !!token)
+    
     const response = await fetch(`${API_BASE_URL}/api/articles/${article.value._id}/buy-points`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')}`
+        'Authorization': `Bearer ${token}`
       }
     })
+    
+    console.log('📡 Respuesta del servidor:', response.status)
     
     if (response.ok) {
       const data = await response.json()
       if (data.success) {
-        alert('¡Artículo comprado con puntos exitosamente!')
+        toast.success(
+          '¡Compra exitosa!',
+          'El artículo ha sido comprado con puntos exitosamente.',
+          { duration: 5000 }
+        )
         // Recargar el artículo y actualizar puntos del usuario
         await loadArticle()
         await authStore.checkAuth()
+        
+        // Redirigir a mis compras después de 2 segundos
+        setTimeout(() => {
+          router.push('/mis-compras')
+        }, 2000)
       } else {
-        alert('Error al comprar: ' + data.message)
+        toast.error(
+          'Error en la compra',
+          data.message || 'No se pudo completar la compra con puntos',
+          { duration: 5000 }
+        )
       }
     } else {
-      alert('Error al procesar la compra con puntos')
+      const errorData = await response.json().catch(() => ({}))
+      toast.error(
+        'Error al procesar',
+        errorData.message || 'No se pudo procesar la compra con puntos. Por favor, intenta de nuevo.',
+        { duration: 5000 }
+      )
     }
   } catch (error) {
     console.error('Error comprando con puntos:', error)
-    alert('Error al procesar la compra')
+    toast.error(
+      'Error de conexión',
+      'Hubo un problema al procesar la compra. Por favor, intenta de nuevo.',
+      { duration: 5000 }
+    )
   }
 }
 
@@ -528,8 +675,32 @@ const handleScroll = () => {
 }
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
+  console.log('🎬 ArticleDetailNew - onMounted iniciado')
+  
+  // Verificar autenticación al cargar la página
+  try {
+    await authStore.checkAuth()
+    console.log('✅ checkAuth completado:', {
+      isAuthenticated: authStore.isAuthenticated,
+      user: authStore.user
+    })
+  } catch (error) {
+    console.error('❌ Error en checkAuth:', error)
+  }
+  
+  // Log final del estado de autenticación
+  console.log('🔐 Estado final de autenticación:', {
+    isAuthenticated: authStore.isAuthenticated,
+    hasUser: !!authStore.user,
+    hasToken: !!authStore.token,
+    userEmail: authStore.user?.email
+  })
+  
+  // Cargar artículo
   loadArticle()
+  
+  // Listener de scroll
   window.addEventListener('scroll', handleScroll)
 })
 

@@ -27,13 +27,16 @@
               <!-- Botón del carrito -->
               <button
                 @click="openCart"
-                class="relative bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                class="relative bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
                 </svg>
-                <span>Carrito</span>
-                <span v-if="cartStore.totalItems > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span class="font-semibold">Carrito</span>
+                <span 
+                  v-if="cartStore.totalItems > 0" 
+                  class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white shadow-lg"
+                >
                   {{ cartStore.totalItems }}
                 </span>
               </button>
@@ -188,8 +191,8 @@
       @remove-item="cartStore.removeItem"
     />
 
-    <!-- Modal de pasarela de pago -->
-    <PaymentModal
+    <!-- Modal de pasarela de pago con Stripe -->
+    <StripePaymentModal
       :is-open="showPaymentModal"
       :cart-items="cartStore.items"
       @close="closePayment"
@@ -208,6 +211,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useToast } from '@/composables/useToast'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
@@ -219,10 +223,12 @@ import { useSidebar } from '@/composables/useSidebar'
 const { isExpanded, isHovered } = useSidebar()
 import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import ShoppingCartModal from '@/components/modals/ShoppingCartModal.vue'
-import PaymentModal from '@/components/modals/PaymentModal.vue'
+import StripePaymentModal from '@/components/modals/StripePaymentModal.vue'
 import PointsPurchaseConfirmModal from '@/components/modals/PointsPurchaseConfirmModal.vue'
 import { getSupabaseImageUrl, getImageByCategory } from '@/config/supabase'
 import API_BASE_URL from '@/config/api'
+
+const router = useRouter()
 
 // Estado reactivo
 const articles = ref([])
@@ -415,7 +421,7 @@ const handleImageError = (event) => {
 // Ver artículo
 const viewArticle = (article) => {
   // Redirigir a la vista de detalles del artículo
-  window.open(`/articulos/${article._id}`, '_blank')
+  router.push(`/articulos/${article._id}`)
 }
 
 // Comprar con dinero

@@ -125,15 +125,6 @@ const router = createRouter({
       },
     },
     {
-      path: '/mis-compras',
-      name: 'Mis Compras',
-      component: () => import('../views/Articles/MyPurchases.vue'),
-      meta: {
-        title: 'Mis Compras',
-        requiresAuth: true
-      },
-    },
-    {
       path: '/mis-intercambios',
       name: 'Mis Canjes',
       component: () => import('../views/Articles/MyExchanges.vue'),
@@ -338,6 +329,24 @@ const router = createRouter({
         requiresAdmin: true
       },
     },
+    {
+      path: '/payment/success',
+      name: 'Payment Success',
+      component: () => import('../views/Payment/PaymentSuccess.vue'),
+      meta: {
+        title: 'Pago Exitoso - Trastalia',
+        requiresAuth: true
+      },
+    },
+    {
+      path: '/payment/cancel',
+      name: 'Payment Cancel',
+      component: () => import('../views/Payment/PaymentCancel.vue'),
+      meta: {
+        title: 'Pago Cancelado - Trastalia',
+        requiresAuth: false
+      },
+    },
 
   ],
 })
@@ -347,33 +356,75 @@ export default router
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
+  console.log('🛣️ Router Guard:', {
+    to: to.path,
+    from: from.path,
+    requiresAuth: to.meta.requiresAuth,
+    isAuthenticated: authStore.isAuthenticated,
+    user: authStore.user?.email
+  })
+  
   // Evitar verificaciones innecesarias si ya estamos en la misma ruta
   if (to.path === from.path) {
     next()
     return
   }
   
-  // Solo verificar autenticación si no está ya verificada
-  if (!authStore.isAuthenticated) {
-    await authStore.checkAuth()
-  }
-  
   // Actualizar título
   document.title = `${to.meta.title} - Trastalia`
   
-  // Verificar si la ruta requiere autenticación
-  if (to.meta.requiresAuth !== false && !authStore.isAuthenticated) {
+  // Verificar si la ruta requiere autenticación explícitamente
+  const requiresAuth = to.meta.requiresAuth === true
+  
+  // Verificar si hay token en storage
+  const hasToken = !!(localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token'))
+  const hasUserData = !!(localStorage.getItem('user_data') || sessionStorage.getItem('user_data'))
+  
+  // Si hay datos de usuario en storage pero no está autenticado, cargar datos locales
+  if (hasToken && hasUserData && !authStore.isAuthenticated) {
+    console.log('🔄 Router: Cargando datos de usuario desde storage...')
+    try {
+      const userData = JSON.parse(localStorage.getItem('user_data') || sessionStorage.getItem('user_data'))
+      const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+      
+      // Actualizar el store directamente
+      authStore.$patch({
+        user: userData,
+        token: token
+      })
+      
+      console.log('✅ Usuario cargado desde storage:', userData.email)
+    } catch (error) {
+      console.error('❌ Error cargando datos de usuario:', error)
+    }
+  }
+  
+  console.log('🔐 Auth check:', { 
+    requiresAuth, 
+    isAuthenticated: authStore.isAuthenticated,
+    hasToken,
+    userRole: authStore.user?.role
+  })
+  
+  // Si la ruta requiere autenticación y no está autenticado
+  if (requiresAuth && !authStore.isAuthenticated) {
+    console.log('❌ Redirigiendo a login - requiere autenticación')
     next('/login')
   } else if (to.path === '/login' && authStore.isAuthenticated) {
-    // Redirigir según el rol del usuario
+    // Si ya está autenticado y va a login, redirigir según el rol
+    console.log('✅ Ya autenticado, redirigiendo según rol')
     if (authStore.user?.role === 'admin') {
-      next('/dashboard')
+      next('/admin')
     } else {
       next('/comprar-articulos')
     }
   } else if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
-    next('/comprar-articulos') // Redirigir a comprar artículos si no es admin
+    // Si requiere admin y no es admin
+    console.log('❌ No es admin, redirigiendo')
+    next('/comprar-articulos')
   } else {
+    // Todo OK, permitir navegación
+    console.log('✅ Navegación permitida')
     next()
   }
 })

@@ -140,18 +140,17 @@ const userInitials = computed(() => {
 
 const menuItems = computed(() => {
   const baseItems = [
-    { href: '/dashboard', icon: DashboardIcon, text: 'Dashboard' },
-    { href: '/my-articles', icon: MyArticlesIcon, text: 'Mis Artículos' },
-    { href: '/my-purchases', icon: MyPurchasesIcon, text: 'Mis Compras' },
-    { href: '/my-exchanges', icon: MyExchangesIcon, text: 'Mis Intercambios' },
+    { href: '/comprar-articulos', icon: DashboardIcon, text: 'Comprar Artículos' },
+    { href: '/mis-articulos', icon: MyArticlesIcon, text: 'Mis Artículos' },
+    { href: '/mis-compras', icon: MyPurchasesIcon, text: 'Mis Compras' },
+    { href: '/mis-intercambios', icon: MyExchangesIcon, text: 'Mis Canjes' },
     { href: '/profile', icon: ProfileIcon, text: 'Mi Perfil' }
   ]
 
   // Si es administrador, agregar opciones adicionales
   if (authStore.user?.role === 'admin') {
-    baseItems.splice(1, 0, 
-      { href: '/admin/articles', icon: DashboardIcon, text: 'Administrar Artículos' },
-      { href: '/admin/dashboard', icon: DashboardIcon, text: 'Panel Admin' }
+    baseItems.unshift(
+      { href: '/admin', icon: DashboardIcon, text: 'Dashboard Admin' }
     )
   }
 
