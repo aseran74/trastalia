@@ -908,6 +908,11 @@ app.get('/api/auth/me', authMiddleware, async (req, res) => {
   }
 });
 
+// ===== RUTAS DE STRIPE =====
+// Importar rutas de Stripe
+const stripeRoutes = require('./routes/stripe.cjs');
+app.use('/api/stripe', stripeRoutes);
+
 // Rutas de artículos
 app.get('/api/articles', async (req, res) => {
   try {
@@ -2770,11 +2775,16 @@ app.get('/api/articles/admin-owned', async (req, res) => {
         $in: [
           'COMPRADO_POR_ADMIN',
           'TRASPASADO_A_TRASTALIA_POR_PUNTOS',
-          'TRASPASADO_A_TRASTALIA_POR_DINERO',
-          'PENDIENTE_VALORACION_PRECIO_TIENDA'
+          'TRASPASADO_A_TRASTALIA_POR_DINERO'
         ]
       },
-      comprador: { $exists: false } // Excluir artículos ya vendidos
+      comprador: { $exists: false }, // Excluir artículos ya vendidos
+      // Solo artículos con precio válido
+      $or: [
+        { precio_sugerido: { $gt: 0 } },
+        { precio_propuesto_vendedor: { $gt: 0 } },
+        { price: { $gt: 0 } }
+      ]
     })
       .populate('seller', 'name email points logisticsLevel reputation')
       .populate('id_vendedor', 'name email points logisticsLevel reputation')
@@ -2799,6 +2809,8 @@ app.get('/api/articles/admin-owned', async (req, res) => {
 // Ruta pública para obtener artículos disponibles para compra (sin autenticación)
 app.get('/api/articles/public', async (req, res) => {
   try {
+    console.log('🔍 Buscando artículos públicos disponibles para compra...');
+    
     // Obtener artículos que son propiedad del admin y están disponibles para compra
     const articles = await Article.find({
       estado_articulo: { 
@@ -2808,15 +2820,20 @@ app.get('/api/articles/public', async (req, res) => {
           'TRASPASADO_A_TRASTALIA_POR_DINERO'
         ]
       },
+      comprador: { $exists: false }, // Excluir artículos ya vendidos
       // Solo artículos con precio válido
       $or: [
+        { precio_sugerido: { $gt: 0 } },
         { precio_propuesto_vendedor: { $gt: 0 } },
         { price: { $gt: 0 } }
       ]
     })
-    .populate('id_vendedor', 'name email')
+    .populate('seller', 'name email points logisticsLevel reputation')
+    .populate('id_vendedor', 'name email points logisticsLevel reputation')
     .sort({ createdAt: -1 })
-    .limit(50); // Limitar a 50 artículos para rendimiento
+    .limit(100); // Limitar a 100 artículos para rendimiento
+
+    console.log(`📦 Encontrados ${articles.length} artículos públicos disponibles`);
 
     res.json({
       success: true,

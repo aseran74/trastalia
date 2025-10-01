@@ -241,7 +241,7 @@
             Filtrando por: <span class="font-bold">{{ getCategoryLabel(selectedCategory) }}</span>
           </span>
           <button 
-            @click="filterByCategory(selectedCategory)"
+            @click="filterByCategory(null)"
             class="ml-2 text-blue-600 hover:text-blue-800 transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,7 +348,7 @@
         </p>
         <div v-if="selectedCategory" class="mt-4">
           <button 
-            @click="filterByCategory(selectedCategory)"
+            @click="filterByCategory(null)"
             class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
           >
             Ver todos los artículos
@@ -586,15 +586,27 @@ const getCategoryLabel = (category) => {
 
 // Ver artículo
 const viewArticle = (article) => {
+  console.log('🔍 Navegando a detalles del artículo:', article._id)
   router.push(`/articulos/${article._id}`)
 }
 
 // Agregar al carrito (requiere login)
 const addToCart = (article, type = 'money') => {
-  // Mostrar modal de opciones de login/registro
-  showLoginModal.value = true
-  selectedArticle.value = article
-  purchaseType.value = type
+  console.log('🛒 addToCart llamado:', { article: article._id, type, isAuthenticated: authStore.isAuthenticated })
+  
+  // Verificar si el usuario está autenticado
+  if (!authStore.isAuthenticated) {
+    // Si no está autenticado, mostrar modal de opciones de login/registro
+    console.log('❌ Usuario no autenticado, mostrando modal de login...')
+    showLoginModal.value = true
+    selectedArticle.value = article
+    purchaseType.value = type
+    return
+  }
+  
+  // Si está autenticado, redirigir a la vista de detalles del artículo donde puede comprar
+  console.log('✅ Usuario autenticado, redirigiendo a detalles del artículo...')
+  router.push(`/articulos/${article._id}`)
 }
 
 // Redirigir a login
@@ -629,13 +641,15 @@ const filterByCategory = (category) => {
   }
   
   // Scroll suave hacia los artículos
-  const articlesSection = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2')
-  if (articlesSection) {
-    articlesSection.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'start' 
-    })
-  }
+  setTimeout(() => {
+    const articlesSection = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2')
+    if (articlesSection) {
+      articlesSection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      })
+    }
+  }, 100)
 }
 
 // Funciones para la navbar
@@ -647,8 +661,13 @@ const handleScroll = () => {
   isScrolled.value = window.scrollY > 50
 }
 
-onMounted(() => {
+onMounted(async () => {
   console.log('🎯 Componente montado, cargando artículos...')
+  
+  // Verificar autenticación al cargar la página
+  await authStore.checkAuth()
+  
+  // Cargar artículos
   loadPublicArticles()
   
   // Add scroll event listener
