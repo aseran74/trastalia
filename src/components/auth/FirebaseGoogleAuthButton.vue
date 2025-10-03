@@ -38,7 +38,12 @@ const handleGoogleSignIn = async () => {
       
       // Llamar al backend para crear/obtener usuario en MongoDB
       console.log('🔄 Calling backend sync endpoint...')
-      const syncResponse = await fetch('http://localhost:3002/api/auth/firebase-user', {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 
+        (import.meta.env.PROD 
+          ? 'https://web-production-08299.up.railway.app' 
+          : 'http://localhost:3001')
+      
+      const syncResponse = await fetch(`${apiBaseUrl}/api/auth/firebase-user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

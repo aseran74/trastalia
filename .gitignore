@@ -149,3 +149,5 @@ dist/
 # Environment files (keep example files)
 .env.example
 .vercel
+
+.vercel
