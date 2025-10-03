@@ -206,6 +206,80 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
 });
 
 /**
+ * GET /api/stripe/my-purchases
+ * Obtener compras del usuario autenticado
+ */
+router.get('/my-purchases', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    console.log('📦 Obteniendo compras del usuario:', userId);
+
+    const mongoose = require('mongoose');
+    
+    // Obtener compras del usuario
+    const purchases = await mongoose.connection.db.collection('user_purchases')
+      .find({ userId: new mongoose.Types.ObjectId(userId) })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    // Obtener información detallada de los artículos para cada compra
+    const purchasesWithDetails = await Promise.all(
+      purchases.map(async (purchase) => {
+        if (purchase.type === 'article_purchase' && purchase.articleIds) {
+          // Obtener detalles de los artículos
+          const articles = await mongoose.connection.db.collection('articles')
+            .find({ _id: { $in: purchase.articleIds } })
+            .toArray();
+          
+          return {
+            ...purchase,
+            articles: articles.map(article => ({
+              id: article._id,
+              title: article.title,
+              price: article.price,
+              images: article.images || [],
+              category: article.category
+            }))
+          };
+        }
+        return purchase;
+      })
+    );
+
+    // Contar total de compras
+    const totalPurchases = await mongoose.connection.db.collection('user_purchases')
+      .countDocuments({ userId: new mongoose.Types.ObjectId(userId) });
+
+    res.json({
+      success: true,
+      data: {
+        purchases: purchasesWithDetails,
+        pagination: {
+          page,
+          limit,
+          total: totalPurchases,
+          pages: Math.ceil(totalPurchases / limit)
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error obteniendo compras:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener las compras',
+      error: error.message
+    });
+  }
+});
+
+/**
  * POST /api/stripe/webhook
  * Webhook para recibir eventos de Stripe
  */
@@ -258,9 +332,10 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
             }
           );
           
-          // Registrar la compra de puntos
-          await mongoose.connection.db.collection('points_purchases').insertOne({
+          // Registrar la compra de puntos en user_purchases
+          await mongoose.connection.db.collection('user_purchases').insertOne({
             userId: new mongoose.Types.ObjectId(userId),
+            type: 'points_purchase',
             amount: session.amount_total / 100,
             pointsAmount: pointsAmount,
             bonusPoints: bonusPoints,
@@ -269,6 +344,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
             paymentMethod: 'stripe_checkout',
             stripeSessionId: session.id,
             status: 'completed',
+            shippingCost: 0,
+            totalCost: session.amount_total / 100,
             createdAt: new Date()
           });
           
@@ -302,15 +379,44 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
             console.log(`✅ Artículo ${articleId} marcado como vendido`);
           }
           
-          // Registrar la transacción
-          await mongoose.connection.db.collection('transactions').insertOne({
+          // Calcular gastos de envío según el tipo de paquete
+          let shippingCost = 0;
+          let packageType = 'individual';
+          
+          // Obtener información de los artículos para determinar el tipo de paquete
+          const articles = await mongoose.connection.db.collection('articles').find({
+            _id: { $in: articleIdArray.map(id => new mongoose.Types.ObjectId(id)) }
+          }).toArray();
+          
+          // Determinar si es un paquete completo
+          const totalValue = articles.reduce((sum, article) => sum + (article.price || 0), 0);
+          
+          if (totalValue >= 1000) {
+            packageType = 'premium';
+            shippingCost = 25; // Envío premium
+          } else if (totalValue >= 500) {
+            packageType = 'standard';
+            shippingCost = 15; // Envío estándar
+          } else {
+            packageType = 'basic';
+            shippingCost = 8; // Envío básico
+          }
+          
+          const totalCost = (session.amount_total / 100) + shippingCost;
+          
+          // Registrar la transacción en user_purchases
+          await mongoose.connection.db.collection('user_purchases').insertOne({
             userId: new mongoose.Types.ObjectId(userId),
+            type: 'article_purchase',
             articleIds: articleIdArray.map(id => new mongoose.Types.ObjectId(id)),
             amount: session.amount_total / 100,
             currency: session.currency,
             paymentMethod: 'stripe_checkout',
             stripeSessionId: session.id,
             status: 'completed',
+            shippingCost: shippingCost,
+            totalCost: totalCost,
+            packageType: packageType,
             createdAt: new Date()
           });
           

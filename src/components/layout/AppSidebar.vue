@@ -281,6 +281,11 @@ const menuGroups = [
         path: "/comprar-articulos",
       },
       {
+        icon: PurchaseIcon,
+        name: "Mis Compras",
+        path: "/mis-compras",
+      },
+      {
         icon: SellIcon,
         name: "Vender Artículo",
         path: "/vender-articulo-nuevo",
