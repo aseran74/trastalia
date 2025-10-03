@@ -34,7 +34,7 @@
         />
         <img
           v-else
-          src="/favicon-32x32.png"
+          src="/Trastalia Isotipo SVG Transparente.png"
           alt="Trastalia"
           class="h-8 w-8 object-contain rounded-lg"
         />
