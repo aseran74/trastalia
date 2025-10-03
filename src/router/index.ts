@@ -91,12 +91,12 @@ const router = createRouter({
     {
       path: '/mis-ventas',
       name: 'Mis Ventas',
-      component: () => import('../views/Articles/MySales.vue'),
+      component: () => import('../views/Articles/SoldArticles.vue'),
       meta: {
-          title: 'Mis Canjes - Trastalia',
-          requiresAuth: true
-        },
+        title: 'Mis Ventas - Trastalia',
+        requiresAuth: true
       },
+    },
       {
         path: '/mis-compras-dinero',
         name: 'My Money Purchases',
