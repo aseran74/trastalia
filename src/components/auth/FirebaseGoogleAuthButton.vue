@@ -79,12 +79,8 @@ const handleGoogleSignIn = async () => {
         authStore.user = syncData.data.user
         authStore.token = syncData.data.token
         
-        // Redirigir según el rol del usuario
-        if (syncData.data.user.role === 'admin') {
-          router.push('/dashboard')
-        } else {
-          router.push('/comprar-articulos')
-        }
+        // Redirigir a la página pública de artículos por defecto
+        router.push('/articulos')
       } else {
         console.error('❌ Error sincronizando con MongoDB:', syncData.message)
         alert('Error al sincronizar usuario: ' + syncData.message)

@@ -103,9 +103,9 @@ onMounted(async () => {
             console.log('✅ Usuario autenticado con Google:', userData)
             success.value = true
             
-            // Redirigir al dashboard después de 2 segundos
+            // Redirigir a la página de artículos después de 2 segundos
             setTimeout(() => {
-              router.push('/dashboard')
+              router.push('/articulos')
             }, 2000)
             return
           }
@@ -133,7 +133,7 @@ onMounted(async () => {
       success.value = true
       
       setTimeout(() => {
-        router.push('/dashboard')
+        router.push('/articulos')
       }, 2000)
     } else {
       success.value = false

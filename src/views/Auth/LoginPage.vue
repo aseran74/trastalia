@@ -163,8 +163,8 @@ const handleLogin = async () => {
       // Actualizar store
       await authStore.checkAuth()
       
-      // Redirigir al dashboard
-      router.push('/dashboard')
+      // Redirigir a la página de artículos
+      router.push('/articulos')
     } else {
       alert('Error: ' + data.message)
     }

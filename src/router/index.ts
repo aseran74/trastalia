@@ -420,17 +420,13 @@ router.beforeEach(async (to, from, next) => {
     console.log('❌ Redirigiendo a login - requiere autenticación')
     next('/login')
   } else if (to.path === '/login' && authStore.isAuthenticated) {
-    // Si ya está autenticado y va a login, redirigir según el rol
-    console.log('✅ Ya autenticado, redirigiendo según rol')
-    if (authStore.user?.role === 'admin') {
-      next('/admin')
-    } else {
-      next('/comprar-articulos')
-    }
+    // Si ya está autenticado y va a login, redirigir a artículos
+    console.log('✅ Ya autenticado, redirigiendo a artículos')
+    next('/articulos')
   } else if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
     // Si requiere admin y no es admin
     console.log('❌ No es admin, redirigiendo')
-    next('/comprar-articulos')
+    next('/articulos')
   } else {
     // Todo OK, permitir navegación
     console.log('✅ Navegación permitida')
