@@ -230,51 +230,92 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       const session = event.data.object;
       console.log('✅ Pago completado:', session.id);
       
-      const { userId, articleIds } = session.metadata;
+      const { userId, articleIds, type } = session.metadata;
       console.log('👤 Usuario:', userId);
       console.log('📦 Artículos:', articleIds);
+      console.log('🔍 Tipo:', type);
       
       try {
-        // Conectar a MongoDB (asumiendo que mongoose ya está conectado)
         const mongoose = require('mongoose');
         
-        // Si articleIds es un string separado por comas, convertir a array
-        const articleIdArray = articleIds.split(',');
-        
-        // Actualizar cada artículo como vendido
-        for (const articleId of articleIdArray) {
-          await mongoose.connection.db.collection('articles').updateOne(
-            { _id: new mongoose.Types.ObjectId(articleId) },
+        // Verificar si es compra de puntos
+        if (type === 'points_purchase') {
+          console.log('⭐ Procesando compra de puntos...');
+          
+          const pointsAmount = parseInt(session.metadata.pointsAmount) || 0;
+          const bonusPoints = parseInt(session.metadata.bonusPoints) || 0;
+          const totalPoints = pointsAmount + bonusPoints;
+          
+          // Actualizar puntos del usuario
+          await mongoose.connection.db.collection('users').updateOne(
+            { _id: new mongoose.Types.ObjectId(userId) },
             { 
+              $inc: { points: totalPoints },
               $set: { 
-                status: 'sold',
-                estado: 'vendido',
-                sold: true,
-                buyer: new mongoose.Types.ObjectId(userId),
-                soldAt: new Date(),
-                paymentMethod: 'stripe_checkout',
-                stripeSessionId: session.id,
-                paidAmount: session.amount_total / 100, // Convertir de centavos a euros
-                currency: session.currency
+                lastPointsPurchase: new Date(),
+                lastPointsAmount: totalPoints
               }
             }
           );
-          console.log(`✅ Artículo ${articleId} marcado como vendido`);
+          
+          // Registrar la compra de puntos
+          await mongoose.connection.db.collection('points_purchases').insertOne({
+            userId: new mongoose.Types.ObjectId(userId),
+            amount: session.amount_total / 100,
+            pointsAmount: pointsAmount,
+            bonusPoints: bonusPoints,
+            totalPoints: totalPoints,
+            currency: session.currency,
+            paymentMethod: 'stripe_checkout',
+            stripeSessionId: session.id,
+            status: 'completed',
+            createdAt: new Date()
+          });
+          
+          console.log(`✅ ${totalPoints} puntos añadidos al usuario ${userId}`);
+          
+        } else {
+          // Procesar compra de artículos (lógica existente)
+          console.log('📦 Procesando compra de artículos...');
+          
+          // Si articleIds es un string separado por comas, convertir a array
+          const articleIdArray = articleIds.split(',');
+          
+          // Actualizar cada artículo como vendido
+          for (const articleId of articleIdArray) {
+            await mongoose.connection.db.collection('articles').updateOne(
+              { _id: new mongoose.Types.ObjectId(articleId) },
+              { 
+                $set: { 
+                  status: 'sold',
+                  estado: 'vendido',
+                  sold: true,
+                  buyer: new mongoose.Types.ObjectId(userId),
+                  soldAt: new Date(),
+                  paymentMethod: 'stripe_checkout',
+                  stripeSessionId: session.id,
+                  paidAmount: session.amount_total / 100,
+                  currency: session.currency
+                }
+              }
+            );
+            console.log(`✅ Artículo ${articleId} marcado como vendido`);
+          }
+          
+          // Registrar la transacción
+          await mongoose.connection.db.collection('transactions').insertOne({
+            userId: new mongoose.Types.ObjectId(userId),
+            articleIds: articleIdArray.map(id => new mongoose.Types.ObjectId(id)),
+            amount: session.amount_total / 100,
+            currency: session.currency,
+            paymentMethod: 'stripe_checkout',
+            stripeSessionId: session.id,
+            status: 'completed',
+            createdAt: new Date()
+          });
+          
+          console.log('✅ Transacción registrada en MongoDB');
         }
-        
-        // Registrar la transacción
-        await mongoose.connection.db.collection('transactions').insertOne({
-          userId: new mongoose.Types.ObjectId(userId),
-          articleIds: articleIdArray.map(id => new mongoose.Types.ObjectId(id)),
-          amount: session.amount_total / 100,
-          currency: session.currency,
-          paymentMethod: 'stripe_checkout',
-          stripeSessionId: session.id,
-          status: 'completed',
-          createdAt: new Date()
-        });
-        
-        console.log('✅ Transacción registrada en MongoDB');
         
         // TODO: Enviar email de confirmación al comprador y vendedor
         

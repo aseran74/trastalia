@@ -188,6 +188,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useToast } from '@/composables/useToast'
+import API_BASE_URL from '@/config/api'
 
 const props = defineProps({
   isOpen: {
@@ -231,31 +232,68 @@ const proceedToPayment = async () => {
   loading.value = true
 
   try {
-    // Simular procesamiento de pago
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // Mostrar toast de éxito
-    toast.success(
-      '¡Puntos comprados!',
-      `Se han añadido ${getPointsForAmount(selectedAmount.value)} puntos a tu cuenta.`,
-      { duration: 5000 }
-    )
-
-    // Emitir evento de éxito
-    emit('purchase-success', {
-      amount: selectedAmount.value,
-      points: getPointsForAmount(selectedAmount.value),
-      bonus: getBonusPoints(selectedAmount.value)
+    console.log('💳 Iniciando compra de puntos con Stripe...')
+    console.log('💰 Cantidad:', selectedAmount.value)
+    console.log('⭐ Puntos:', getPointsForAmount(selectedAmount.value))
+    
+    // Obtener token de autenticación
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    
+    if (!token) {
+      toast.error(
+        'No autenticado',
+        'Por favor, inicia sesión para continuar con la compra de puntos.',
+        { duration: 5000 }
+      )
+      loading.value = false
+      return
+    }
+    
+    // Crear sesión de checkout en el backend para compra de puntos
+    const response = await fetch(`${API_BASE_URL}/api/stripe/create-checkout-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        items: [{
+          id: `points-${selectedAmount.value}`,
+          title: `Compra de ${getPointsForAmount(selectedAmount.value)} puntos`,
+          price: selectedAmount.value * 100, // Stripe usa centavos
+          quantity: 1
+        }],
+        metadata: {
+          type: 'points_purchase',
+          pointsAmount: getPointsForAmount(selectedAmount.value),
+          bonusPoints: getBonusPoints(selectedAmount.value),
+          originalAmount: selectedAmount.value
+        }
+      })
     })
-
-    closeModal()
+    
+    if (!response.ok) {
+      throw new Error('Error al crear la sesión de pago')
+    }
+    
+    const data = await response.json()
+    console.log('✅ Sesión de Stripe creada:', data.sessionId)
+    console.log('🔗 URL de Stripe:', data.url)
+    
+    // Redirigir directamente a la URL de Stripe Checkout
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      throw new Error('No se recibió URL de Stripe')
+    }
+    
   } catch (error) {
+    console.error('❌ Error procesando compra de puntos:', error)
     toast.error(
       'Error en la compra',
-      'No se pudieron procesar los puntos. Inténtalo de nuevo.',
+      error.message || 'No se pudo procesar la compra de puntos. Por favor, intenta de nuevo.',
       { duration: 5000 }
     )
-  } finally {
     loading.value = false
   }
 }
