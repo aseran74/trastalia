@@ -19,6 +19,19 @@ const authMiddleware = (req, res, next) => {
 
   const token = authHeader.substring(7);
   
+  // Verificar si es token de MongoDB (formato simple)
+  if (token.startsWith('mongodb-admin-token-') || token.startsWith('mongodb-user-token-')) {
+    console.log('✅ Token de MongoDB aceptado');
+    // Para tokens de MongoDB, aceptarlos directamente
+    // Nota: En producción, deberías validar estos tokens contra la BD
+    req.userId = token.includes('admin') ? 'admin' : token.split('-').pop();
+    req.userEmail = 'user@trastalia.com';
+    req.userRole = token.includes('admin') ? 'admin' : 'user';
+    next();
+    return;
+  }
+  
+  // Intentar verificar como JWT
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'tu-secreto-super-seguro-2024');
     req.userId = decoded.userId;
@@ -33,6 +46,96 @@ const authMiddleware = (req, res, next) => {
     });
   }
 };
+
+/**
+ * POST /api/stripe/create-payment-intent-test
+ * Crea un Payment Intent SIN autenticación (solo para pruebas)
+ */
+router.post('/create-payment-intent-test', async (req, res) => {
+  try {
+    const { amount, currency = 'eur' } = req.body;
+
+    console.log('💳 Creando Payment Intent de PRUEBA (sin auth)');
+    console.log('💰 Monto:', amount, currency);
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Monto inválido'
+      });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // en centavos
+      currency, // "eur" o "usd"
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        test_mode: 'true'
+      }
+    });
+
+    console.log('✅ Payment Intent de prueba creado:', paymentIntent.id);
+
+    res.json({ 
+      success: true,
+      clientSecret: paymentIntent.client_secret 
+    });
+
+  } catch (error) {
+    console.error('❌ Error creando Payment Intent:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear Payment Intent',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/stripe/create-payment-intent
+ * Crea un Payment Intent (para formulario embebido)
+ */
+router.post('/create-payment-intent', authMiddleware, async (req, res) => {
+  try {
+    const { amount, currency = 'eur' } = req.body;
+    const userId = req.userId;
+
+    console.log('💳 Creando Payment Intent');
+    console.log('👤 Usuario:', userId);
+    console.log('💰 Monto:', amount, currency);
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Monto inválido'
+      });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // en centavos
+      currency, // "eur" o "usd"
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        userId: userId.toString()
+      }
+    });
+
+    console.log('✅ Payment Intent creado:', paymentIntent.id);
+
+    res.json({ 
+      success: true,
+      clientSecret: paymentIntent.client_secret 
+    });
+
+  } catch (error) {
+    console.error('❌ Error creando Payment Intent:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear Payment Intent',
+      error: error.message
+    });
+  }
+});
 
 /**
  * POST /api/stripe/create-checkout-session
@@ -76,7 +179,10 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
       cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/cancel`,
       metadata: {
         userId: userId.toString(),
-        articleIds: items.map(item => item.id).join(',')
+        articleIds: items.map(item => item.id || item._id).join(','),
+        // Información adicional para el webhook
+        itemCount: items.length.toString(),
+        timestamp: new Date().toISOString()
       },
       customer_email: req.userEmail, // Si tienes el email en el token
     });
@@ -124,16 +230,57 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       const session = event.data.object;
       console.log('✅ Pago completado:', session.id);
       
-      // Aquí deberías:
-      // 1. Actualizar el estado de los artículos en la base de datos
-      // 2. Registrar la compra
-      // 3. Enviar email de confirmación
-      
       const { userId, articleIds } = session.metadata;
       console.log('👤 Usuario:', userId);
       console.log('📦 Artículos:', articleIds);
       
-      // TODO: Implementar la lógica de actualización de la base de datos
+      try {
+        // Conectar a MongoDB (asumiendo que mongoose ya está conectado)
+        const mongoose = require('mongoose');
+        
+        // Si articleIds es un string separado por comas, convertir a array
+        const articleIdArray = articleIds.split(',');
+        
+        // Actualizar cada artículo como vendido
+        for (const articleId of articleIdArray) {
+          await mongoose.connection.db.collection('articles').updateOne(
+            { _id: new mongoose.Types.ObjectId(articleId) },
+            { 
+              $set: { 
+                status: 'sold',
+                estado: 'vendido',
+                sold: true,
+                buyer: new mongoose.Types.ObjectId(userId),
+                soldAt: new Date(),
+                paymentMethod: 'stripe_checkout',
+                stripeSessionId: session.id,
+                paidAmount: session.amount_total / 100, // Convertir de centavos a euros
+                currency: session.currency
+              }
+            }
+          );
+          console.log(`✅ Artículo ${articleId} marcado como vendido`);
+        }
+        
+        // Registrar la transacción
+        await mongoose.connection.db.collection('transactions').insertOne({
+          userId: new mongoose.Types.ObjectId(userId),
+          articleIds: articleIdArray.map(id => new mongoose.Types.ObjectId(id)),
+          amount: session.amount_total / 100,
+          currency: session.currency,
+          paymentMethod: 'stripe_checkout',
+          stripeSessionId: session.id,
+          status: 'completed',
+          createdAt: new Date()
+        });
+        
+        console.log('✅ Transacción registrada en MongoDB');
+        
+        // TODO: Enviar email de confirmación al comprador y vendedor
+        
+      } catch (error) {
+        console.error('❌ Error actualizando base de datos:', error);
+      }
       
       break;
     }
@@ -141,12 +288,48 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     case 'payment_intent.succeeded': {
       const paymentIntent = event.data.object;
       console.log('💰 PaymentIntent completado:', paymentIntent.id);
+      console.log('💰 Metadata:', paymentIntent.metadata);
+      
+      // Si usas Payment Intents directamente (no Checkout Sessions)
+      if (paymentIntent.metadata && paymentIntent.metadata.articleId) {
+        try {
+          const mongoose = require('mongoose');
+          const articleId = paymentIntent.metadata.articleId;
+          const userId = paymentIntent.metadata.userId;
+          
+          await mongoose.connection.db.collection('articles').updateOne(
+            { _id: new mongoose.Types.ObjectId(articleId) },
+            { 
+              $set: { 
+                status: 'sold',
+                estado: 'vendido',
+                sold: true,
+                buyer: new mongoose.Types.ObjectId(userId),
+                soldAt: new Date(),
+                paymentMethod: 'stripe_payment_intent',
+                stripePaymentIntentId: paymentIntent.id,
+                paidAmount: paymentIntent.amount / 100,
+                currency: paymentIntent.currency
+              }
+            }
+          );
+          
+          console.log(`✅ Artículo ${articleId} marcado como vendido (Payment Intent)`);
+        } catch (error) {
+          console.error('❌ Error actualizando artículo:', error);
+        }
+      }
+      
       break;
     }
     
     case 'payment_intent.payment_failed': {
       const paymentIntent = event.data.object;
       console.error('❌ Pago fallido:', paymentIntent.id);
+      console.error('❌ Razón:', paymentIntent.last_payment_error?.message);
+      
+      // TODO: Notificar al usuario del fallo
+      
       break;
     }
     

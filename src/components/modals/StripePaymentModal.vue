@@ -188,21 +188,16 @@ const handleStripeCheckout = async () => {
       throw new Error('Error al crear la sesión de pago')
     }
     
-    const { sessionId } = await response.json()
-    console.log('✅ Sesión de Stripe creada:', sessionId)
+    const data = await response.json()
+    console.log('✅ Sesión de Stripe creada:', data.sessionId)
+    console.log('🔗 URL de Stripe:', data.url)
     
-    // Redirigir a Stripe Checkout
-    const stripe = await getStripe()
-    
-    if (!stripe) {
-      throw new Error('Error al cargar Stripe')
-    }
-    
-    const { error } = await stripe.redirectToCheckout({ sessionId })
-    
-    if (error) {
-      console.error('❌ Error de Stripe:', error)
-      throw error
+    // Redirigir directamente a la URL de Stripe Checkout
+    // (El método redirectToCheckout está deprecado, ahora usamos la URL directamente)
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      throw new Error('No se recibió URL de Stripe')
     }
     
   } catch (error) {

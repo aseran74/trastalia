@@ -347,6 +347,15 @@ const router = createRouter({
         requiresAuth: false
       },
     },
+    {
+      path: '/stripe/test',
+      name: 'Stripe Test Payment',
+      component: () => import('../views/stripe/TestPayment.vue'),
+      meta: {
+        title: 'Prueba de Pago Stripe - Trastalia',
+        requiresAuth: false
+      },
+    },
 
   ],
 })
