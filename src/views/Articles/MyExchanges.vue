@@ -245,7 +245,7 @@ const loadPointExchanges = async () => {
     loading.value = true
     const token = authStore.token
     
-    const response = await fetch('/api/articles/point-exchanges', {
+    const response = await fetch('/api/articles/my-exchanges', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -257,20 +257,24 @@ const loadPointExchanges = async () => {
     }
     
     const data = await response.json()
-    exchanges.value = data.exchanges || []
+    exchanges.value = data.data?.exchanges || []
     
     // Update stats
     stats.value.totalExchanges = exchanges.value.length
-    stats.value.completedExchanges = exchanges.value.filter(ex => ex.status === 'canjeado').length
+    stats.value.completedExchanges = exchanges.value.filter(ex => ex.currentStatus === 'ENTREGADO').length
     
     // Update filter counts
     statusFilters.value.forEach(filter => {
       if (filter.value === 'todos') {
         filter.count = exchanges.value.length
       } else if (filter.value === 'completado') {
-        filter.count = exchanges.value.filter(ex => ex.status === 'canjeado').length
+        filter.count = exchanges.value.filter(ex => ex.currentStatus === 'ENTREGADO').length
+      } else if (filter.value === 'pendiente') {
+        filter.count = exchanges.value.filter(ex => ex.currentStatus === 'VENDIDO_PUNTOS').length
+      } else if (filter.value === 'rechazado') {
+        filter.count = exchanges.value.filter(ex => ex.currentStatus === 'RECHAZADO_ENVIO').length
       } else {
-        filter.count = exchanges.value.filter(ex => ex.status === filter.value).length
+        filter.count = exchanges.value.filter(ex => ex.currentStatus === filter.value).length
       }
     })
     
@@ -301,7 +305,18 @@ const filteredExchanges = computed(() => {
   if (activeFilter.value === 'todos') {
     return exchanges.value
   }
-  return exchanges.value.filter(exchange => exchange.status === activeFilter.value)
+  
+  // Mapear filtros a estados reales
+  const statusMap = {
+    'pendiente': 'VENDIDO_PUNTOS',
+    'aceptado': 'ENVIADO',
+    'rechazado': 'RECHAZADO_ENVIO',
+    'completado': 'ENTREGADO',
+    'cancelado': 'CANCELADO'
+  }
+  
+  const targetStatus = statusMap[activeFilter.value]
+  return exchanges.value.filter(exchange => exchange.currentStatus === targetStatus)
 })
 
 // Methods
