@@ -4601,6 +4601,11 @@ app.post('/api/user/purchase-with-points', async (req, res) => {
     article.sellerAccepted = true;
     article.sellerAcceptedDate = new Date();
     article.updatedAt = new Date();
+    
+    // Asegurar que tipo_paquete esté definido si es requerido
+    if (!article.tipo_paquete) {
+      article.tipo_paquete = 'basic';
+    }
 
     // Restar puntos al usuario
     user.points -= pointsAmount;
