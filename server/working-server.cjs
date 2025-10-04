@@ -802,7 +802,7 @@ app.post('/api/auth/firebase-user', async (req, res) => {
 });
 
 // Endpoint para procesar manualmente la compra de Juan
-app.post('/api/dev/process-juan-purchase', async (req, res) => {
+app.get('/api/dev/process-juan-purchase', async (req, res) => {
   try {
     console.log('🔧 Procesando manualmente la compra de Juan');
     
