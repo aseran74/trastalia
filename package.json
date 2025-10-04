@@ -60,7 +60,7 @@
     "jsonwebtoken": "^9.0.2",
     "jsvectormap": "^1.6.0",
     "lucide-vue-next": "^0.474.0",
-    "mongodb": "^6.19.0",
+    "mongodb": "^6.20.0",
     "mongoose": "^8.18.1",
     "morgan": "^1.10.1",
     "node-fetch": "^3.3.2",

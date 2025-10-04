@@ -3,7 +3,16 @@
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "functions": {
+    "api/stripe/webhook.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/stripe/webhook",
+      "destination": "/api/stripe/webhook"
+    },
     {
       "source": "/api/(.*)",
       "destination": "https://web-production-08299.up.railway.app/api/$1"

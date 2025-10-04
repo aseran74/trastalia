@@ -24,7 +24,7 @@ const authMiddleware = (req, res, next) => {
     console.log('✅ Token de MongoDB aceptado');
     // Para tokens de MongoDB, aceptarlos directamente
     // Nota: En producción, deberías validar estos tokens contra la BD
-    req.userId = token.includes('admin') ? 'admin' : token.split('-').pop();
+    req.userId = token.includes('admin') ? '68cd4472601315508398cd50' : token.split('-').pop();
     req.userEmail = 'user@trastalia.com';
     req.userRole = token.includes('admin') ? 'admin' : 'user';
     next();
@@ -200,6 +200,106 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al crear la sesión de pago',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/stripe/simulate-purchase
+ * Simular una compra para probar la actualización de MongoDB
+ */
+router.post('/simulate-purchase', authMiddleware, async (req, res) => {
+  try {
+    const { articleId, amount = 100 } = req.body;
+    const userId = req.userId;
+
+    console.log('🧪 Simulando compra...');
+    console.log('👤 Usuario:', userId);
+    console.log('📦 Artículo:', articleId);
+    console.log('💰 Monto:', amount);
+
+    if (!articleId) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de artículo requerido'
+      });
+    }
+
+    const mongoose = require('mongoose');
+    
+    // 1. Marcar artículo como vendido
+    await mongoose.connection.db.collection('articles').updateOne(
+      { _id: new mongoose.Types.ObjectId(articleId) },
+      { 
+        $set: { 
+          status: 'sold',
+          estado: 'vendido',
+          sold: true,
+          buyer: new mongoose.Types.ObjectId(userId),
+          soldAt: new Date(),
+          paymentMethod: 'stripe_checkout',
+          stripeSessionId: 'cs_test_simulated_' + Date.now(),
+          paidAmount: amount,
+          currency: 'eur'
+        }
+      }
+    );
+    
+    console.log(`✅ Artículo ${articleId} marcado como vendido`);
+    
+    // 2. Calcular gastos de envío
+    let shippingCost = 0;
+    let packageType = 'basic';
+    
+    if (amount >= 1000) {
+      packageType = 'premium';
+      shippingCost = 25;
+    } else if (amount >= 500) {
+      packageType = 'standard';
+      shippingCost = 15;
+    } else {
+      packageType = 'basic';
+      shippingCost = 8;
+    }
+    
+    const totalCost = amount + shippingCost;
+    
+    // 3. Registrar la compra en user_purchases
+    await mongoose.connection.db.collection('user_purchases').insertOne({
+      userId: new mongoose.Types.ObjectId(userId),
+      type: 'article_purchase',
+      articleIds: [new mongoose.Types.ObjectId(articleId)],
+      amount: amount,
+      currency: 'eur',
+      paymentMethod: 'stripe_checkout',
+      stripeSessionId: 'cs_test_simulated_' + Date.now(),
+      status: 'completed',
+      shippingCost: shippingCost,
+      totalCost: totalCost,
+      packageType: packageType,
+      createdAt: new Date()
+    });
+    
+    console.log('✅ Compra registrada en user_purchases');
+
+    res.json({
+      success: true,
+      message: 'Compra simulada exitosamente',
+      data: {
+        articleId,
+        amount,
+        shippingCost,
+        totalCost,
+        packageType
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error simulando compra:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al simular la compra',
       error: error.message
     });
   }
