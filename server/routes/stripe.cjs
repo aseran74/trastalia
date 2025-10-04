@@ -23,34 +23,34 @@ const authMiddleware = (req, res, next) => {
   if (token.startsWith('mongodb-admin-token-') || token.startsWith('mongodb-user-token-')) {
     console.log('✅ Token de MongoDB aceptado');
     
-    try {
-      const mongoose = require('mongoose');
-      const userId = token.includes('admin') ? '68cd4472601315508398cd50' : token.split('-').pop();
-      
-      // Obtener el usuario desde la base de datos para obtener el email correcto
-      const user = await mongoose.connection.db.collection('users').findOne({ _id: new mongoose.Types.ObjectId(userId) });
-      
-      if (user) {
-        req.userId = userId;
-        req.userEmail = user.email;
-        req.userRole = token.includes('admin') ? 'admin' : 'user';
-        console.log('👤 Usuario autenticado:', { userId: req.userId, email: req.userEmail, role: req.userRole });
-      } else {
-        console.log('❌ Usuario no encontrado en BD:', userId);
-        return res.status(401).json({
-          success: false,
-          message: 'Usuario no encontrado'
-        });
-      }
-    } catch (error) {
-      console.error('❌ Error obteniendo usuario desde BD:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Error de autenticación'
-      });
-    }
+    const mongoose = require('mongoose');
+    const userId = token.includes('admin') ? '68cd4472601315508398cd50' : token.split('-').pop();
     
-    next();
+    // Obtener el usuario desde la base de datos para obtener el email correcto
+    mongoose.connection.db.collection('users').findOne({ _id: new mongoose.Types.ObjectId(userId) })
+      .then(user => {
+        if (user) {
+          req.userId = userId;
+          req.userEmail = user.email;
+          req.userRole = token.includes('admin') ? 'admin' : 'user';
+          console.log('👤 Usuario autenticado:', { userId: req.userId, email: req.userEmail, role: req.userRole });
+          next();
+        } else {
+          console.log('❌ Usuario no encontrado en BD:', userId);
+          return res.status(401).json({
+            success: false,
+            message: 'Usuario no encontrado'
+          });
+        }
+      })
+      .catch(error => {
+        console.error('❌ Error obteniendo usuario desde BD:', error);
+        return res.status(500).json({
+          success: false,
+          message: 'Error de autenticación'
+        });
+      });
+    
     return;
   }
   
