@@ -2571,8 +2571,9 @@ app.get('/api/user/points-balance', authMiddleware, async (req, res) => {
   }
 });
 
-// Ruta para obtener transacciones de puntos del usuario
-app.get('/api/user/points-transactions', authMiddleware, async (req, res) => {
+// Ruta para obtener transacciones de puntos del usuario (COMENTADA - usando endpoint alternativo)
+/*
+// app.get('/api/user/points-transactions', authMiddleware, async (req, res) => {
   try {
     // Obtener artículos canjeados por puntos del usuario
     const pointExchanges = await Article.find({ 
@@ -2651,6 +2652,7 @@ app.get('/api/user/points-transactions', authMiddleware, async (req, res) => {
     });
   }
 });
+*/
 
 // Ruta de salud
 app.get('/api/health', (req, res) => {
