@@ -4397,6 +4397,128 @@ app.delete('/api/packages/:id', authMiddleware, async (req, res) => {
 });
 
 // Conectar a MongoDB
+// Endpoint de desarrollo para consultar compras por email (sin autenticación)
+app.get('/api/dev/user-purchases/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    console.log(`🔍 Consultando compras del usuario: ${email}`);
+    
+    // Buscar el usuario por email
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.json({
+        success: true,
+        data: {
+          user: null,
+          purchases: [],
+          message: `Usuario ${email} no encontrado`
+        }
+      });
+    }
+    
+    console.log(`👤 Usuario encontrado: ${user.name} (${user.email})`);
+    
+    // 1. Buscar en la colección user_purchases (compras con Stripe)
+    const userPurchases = await mongoose.connection.db.collection('user_purchases')
+      .find({ userId: user._id })
+      .sort({ createdAt: -1 })
+      .toArray();
+    
+    // 2. Buscar en la colección articles (artículos comprados con dinero)
+    const articlesPurchased = await Article.find({
+      comprador: user._id,
+      comprador_tipo: 'usuario',
+      estado_articulo: 'VENDIDO_DINERO'
+    }).populate('id_vendedor', 'name email');
+    
+    // 3. Buscar artículos canjeados con puntos
+    const articlesExchanged = await Article.find({
+      comprador: user._id,
+      comprador_tipo: 'usuario',
+      estado_articulo: { 
+        $in: ['VENDIDO_PUNTOS', 'ENVIADO', 'ENTREGADO', 'RECHAZADO_ENVIO'] 
+      }
+    }).populate('id_vendedor', 'name email');
+    
+    // Formatear datos
+    const formattedPurchases = userPurchases.map(purchase => ({
+      id: purchase._id,
+      type: purchase.type,
+      amount: purchase.amount,
+      currency: purchase.currency,
+      paymentMethod: purchase.paymentMethod,
+      stripeSessionId: purchase.stripeSessionId,
+      status: purchase.status,
+      createdAt: purchase.createdAt,
+      totalCost: purchase.totalCost,
+      packageType: purchase.packageType
+    }));
+    
+    const formattedArticlesPurchased = articlesPurchased.map(article => ({
+      id: article._id,
+      title: article.title || article.nombre,
+      price: article.price || article.precio_propuesto_vendedor,
+      purchaseDate: article.updatedAt,
+      seller: {
+        id: article.id_vendedor._id,
+        name: article.id_vendedor.name,
+        email: article.id_vendedor.email
+      },
+      status: article.estado_articulo
+    }));
+    
+    const formattedArticlesExchanged = articlesExchanged.map(article => ({
+      id: article._id,
+      title: article.title || article.nombre,
+      pointsUsed: article.adminDecision?.finalPoints || 0,
+      exchangeDate: article.updatedAt,
+      seller: {
+        id: article.id_vendedor._id,
+        name: article.id_vendedor.name,
+        email: article.id_vendedor.email
+      },
+      status: article.estado_articulo
+    }));
+    
+    console.log(`📊 Compras encontradas:`);
+    console.log(`- Compras Stripe: ${userPurchases.length}`);
+    console.log(`- Artículos comprados con dinero: ${articlesPurchased.length}`);
+    console.log(`- Artículos canjeados con puntos: ${articlesExchanged.length}`);
+    
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          points: user.points,
+          createdAt: user.createdAt
+        },
+        stripePurchases: formattedPurchases,
+        articlesPurchased: formattedArticlesPurchased,
+        articlesExchanged: formattedArticlesExchanged,
+        summary: {
+          totalStripePurchases: userPurchases.length,
+          totalArticlesPurchased: articlesPurchased.length,
+          totalArticlesExchanged: articlesExchanged.length,
+          totalMoneySpent: formattedArticlesPurchased.reduce((sum, article) => sum + (article.price || 0), 0),
+          totalPointsSpent: formattedArticlesExchanged.reduce((sum, article) => sum + (article.pointsUsed || 0), 0)
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Error consultando compras del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint de administración para consultar compras por email
 app.get('/api/admin/user-purchases/:email', authMiddleware, async (req, res) => {
   try {
