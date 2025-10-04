@@ -49,6 +49,18 @@
         </button>
         <HeaderLogo />
         
+        <!-- Enlace al Dashboard - solo visible cuando el usuario esté logueado -->
+        <router-link
+          v-if="authStore.isAuthenticated"
+          to="/dashboard"
+          class="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
+          </svg>
+          Dashboard
+        </router-link>
         
         <button
           v-if="authStore.isAuthenticated"
