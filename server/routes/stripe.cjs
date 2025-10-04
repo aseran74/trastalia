@@ -184,7 +184,7 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
         itemCount: items.length.toString(),
         timestamp: new Date().toISOString()
       },
-      // customer_email se obtendrá del webhook desde session.customer_email
+      customer_email: req.userEmail, // Email del usuario autenticado
     });
 
     console.log('✅ Sesión de Stripe creada:', session.id);

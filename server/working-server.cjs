@@ -575,6 +575,7 @@ const authMiddleware = (req, res, next) => {
         if (user) {
           req.userId = user._id.toString();
           req.userRole = user.role;
+          req.userEmail = user.email;
           next();
         } else {
           res.status(401).json({
@@ -597,15 +598,16 @@ const authMiddleware = (req, res, next) => {
       const userId = token.replace('mongodb-user-token-', '');
       User.findById(userId)
         .then(user => {
-          if (user) {
-            req.userId = user._id.toString();
-            req.userRole = user.role;
-            console.log('🔐 Middleware - Usuario autenticado:', {
-              userId: req.userId,
-              userRole: req.userRole,
-              email: user.email
-            });
-            next();
+        if (user) {
+          req.userId = user._id.toString();
+          req.userRole = user.role;
+          req.userEmail = user.email;
+          console.log('🔐 Middleware - Usuario autenticado:', {
+            userId: req.userId,
+            userRole: req.userRole,
+            email: user.email
+          });
+          next();
           } else {
             res.status(401).json({
               success: false,
