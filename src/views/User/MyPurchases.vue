@@ -41,7 +41,7 @@
                     {{ getPurchaseTitle(purchase) }}
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ formatDate(purchase.createdAt) }}
+                    {{ formatDate(purchase.soldAt || purchase.createdAt) }}
                   </p>
                 </div>
                 <div class="text-right">
@@ -58,55 +58,34 @@
                 </div>
               </div>
 
-              <!-- Detalles de la compra -->
+              <!-- Detalles del artículo -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <!-- Artículos (si es compra de artículos) -->
-                <div v-if="purchase.type === 'article_purchase' && purchase.articles">
+                <!-- Información del artículo -->
+                <div>
                   <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Artículos Comprados:
+                    Artículo Comprado:
                   </h4>
-                  <div class="space-y-2">
-                    <div
-                      v-for="article in purchase.articles"
-                      :key="article.id"
-                      class="flex items-center space-x-3 p-2 bg-gray-50 dark:bg-gray-700 rounded"
-                    >
-                      <img
-                        v-if="article.images && article.images.length > 0"
-                        :src="article.images[0]"
-                        :alt="article.title"
-                        class="w-12 h-12 object-cover rounded"
-                      />
-                      <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                          {{ article.title }}
-                        </p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                          {{ article.category }}
-                        </p>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-900 dark:text-white">
-                        €{{ article.price }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Puntos (si es compra de puntos) -->
-                <div v-if="purchase.type === 'points_purchase'">
-                  <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Puntos Comprados:
-                  </h4>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-2xl">⭐</span>
-                    <div>
-                      <p class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ purchase.totalPoints }} puntos
+                  <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                    <img
+                      v-if="purchase.images && purchase.images.length > 0"
+                      :src="purchase.images[0]"
+                      :alt="purchase.title"
+                      class="w-16 h-16 object-cover rounded"
+                    />
+                    <div class="flex-1">
+                      <p class="text-sm font-medium text-gray-900 dark:text-white">
+                        {{ purchase.title || purchase.nombre }}
                       </p>
-                      <p v-if="purchase.bonusPoints > 0" class="text-sm text-green-600 dark:text-green-400">
-                        +{{ purchase.bonusPoints }} de regalo
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ purchase.category || purchase.categoria }}
+                      </p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Condición: {{ purchase.condition || purchase.condicion }}
                       </p>
                     </div>
+                    <span class="text-lg font-semibold text-gray-900 dark:text-white">
+                      €{{ purchase.price || purchase.precio_propuesto_vendedor }}
+                    </span>
                   </div>
                 </div>
 
@@ -117,17 +96,13 @@
                   </h4>
                   <div class="space-y-1 text-sm">
                     <div class="flex justify-between">
-                      <span class="text-gray-600 dark:text-gray-400">Subtotal:</span>
-                      <span class="text-gray-900 dark:text-white">€{{ purchase.amount }}</span>
-                    </div>
-                    <div v-if="purchase.shippingCost > 0" class="flex justify-between">
-                      <span class="text-gray-600 dark:text-gray-400">Envío:</span>
-                      <span class="text-gray-900 dark:text-white">€{{ purchase.shippingCost }}</span>
+                      <span class="text-gray-600 dark:text-gray-400">Precio del artículo:</span>
+                      <span class="text-gray-900 dark:text-white">€{{ purchase.paidAmount || purchase.price || purchase.precio_propuesto_vendedor }}</span>
                     </div>
                     <div class="flex justify-between border-t border-gray-200 dark:border-gray-600 pt-1">
-                      <span class="font-medium text-gray-900 dark:text-white">Total:</span>
+                      <span class="font-medium text-gray-900 dark:text-white">Total pagado:</span>
                       <span class="font-semibold text-blue-600 dark:text-blue-400">
-                        €{{ purchase.totalCost }}
+                        €{{ purchase.paidAmount || purchase.price || purchase.precio_propuesto_vendedor }}
                       </span>
                     </div>
                   </div>
@@ -136,9 +111,9 @@
 
               <!-- Información adicional -->
               <div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                <span>ID de sesión: {{ purchase.stripeSessionId }}</span>
-                <span v-if="purchase.packageType" class="capitalize">
-                  Paquete: {{ purchase.packageType }}
+                <span>ID de sesión: {{ purchase.stripeSessionId || 'N/A' }}</span>
+                <span v-if="purchase.soldAt" class="capitalize">
+                  Comprado: {{ formatDate(purchase.soldAt) }}
                 </span>
               </div>
             </div>
@@ -221,7 +196,7 @@ const loadPurchases = async (page = 1) => {
       return
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/articles/my-purchases?page=${page}&limit=${pagination.value.limit}`, {
+    const response = await fetch(`${API_BASE_URL}/api/user/my-purchases`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -234,13 +209,13 @@ const loadPurchases = async (page = 1) => {
     const data = await response.json()
     
     if (data.success) {
-      // El endpoint /api/articles/my-purchases devuelve data.purchases directamente
-      purchases.value = data.data.purchases || []
+      // El endpoint /api/user/my-purchases devuelve data.data como array de artículos
+      purchases.value = data.data || []
       // No hay paginación en este endpoint, así que simulamos la estructura
       pagination.value = {
         page: 1,
         limit: 10,
-        total: data.data.totalPurchases || purchases.value.length,
+        total: data.count || purchases.value.length,
         pages: 1
       }
     } else {
@@ -256,7 +231,7 @@ const loadPurchases = async (page = 1) => {
 }
 
 const getPurchaseTitle = (purchase) => {
-  // Para el endpoint /api/articles/my-purchases, cada elemento es un artículo comprado
+  // Para el endpoint /api/user/my-purchases, cada elemento es un artículo comprado
   return purchase.title || purchase.nombre || 'Artículo comprado'
 }
 
@@ -265,7 +240,9 @@ const getStatusText = (status) => {
     'completed': 'Completado',
     'pending': 'Pendiente',
     'failed': 'Fallido',
-    'cancelled': 'Cancelado'
+    'cancelled': 'Cancelado',
+    'sold': 'Vendido',
+    'VENDIDO_DINERO': 'Comprado'
   }
   return statusMap[status] || status
 }
