@@ -4519,6 +4519,120 @@ app.get('/api/user/my-purchases', async (req, res) => {
   }
 });
 
+// Endpoint alternativo para comprar con puntos (sin authMiddleware problemático)
+app.post('/api/user/purchase-with-points', async (req, res) => {
+  try {
+    console.log('🚀 Endpoint alternativo purchase-with-points ejecutándose');
+    console.log('📦 req.body:', req.body);
+    
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token de acceso requerido'
+      });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    if (!token.startsWith('mongodb-user-token-')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token no válido'
+      });
+    }
+
+    const userId = token.replace('mongodb-user-token-', '');
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de usuario no válido'
+      });
+    }
+
+    const { articleId, pointsAmount } = req.body;
+    
+    if (!articleId || !pointsAmount) {
+      console.log('❌ Faltan datos requeridos:', { articleId, pointsAmount });
+      return res.status(400).json({
+        success: false,
+        message: 'Faltan datos requeridos'
+      });
+    }
+
+    console.log('🔑 Usuario autenticado:', userId);
+    console.log('📦 Datos de compra:', { articleId, pointsAmount });
+
+    // Buscar el artículo
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: 'Artículo no encontrado'
+      });
+    }
+
+    // Verificar que el artículo esté disponible para compra con puntos
+    if (!article.adminDecision?.points) {
+      console.log('❌ Artículo no disponible para compra con puntos');
+      return res.status(400).json({
+        success: false,
+        message: 'Este artículo no está disponible para compra con puntos'
+      });
+    }
+
+    // Verificar que el usuario tenga suficientes puntos
+    const user = await User.findById(userId);
+    if (!user || user.points < pointsAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'No tienes suficientes puntos para esta compra'
+      });
+    }
+
+    // Actualizar el artículo
+    article.estado_articulo = 'VENDIDO_PUNTOS';
+    article.comprador = new mongoose.Types.ObjectId(userId);
+    article.comprador_tipo = 'usuario';
+    article.adminDecision.selectedOption = 'points';
+    article.adminDecision.finalPoints = pointsAmount;
+    article.sellerAccepted = true;
+    article.sellerAcceptedDate = new Date();
+    article.updatedAt = new Date();
+
+    // Restar puntos al usuario
+    user.points -= pointsAmount;
+    user.updatedAt = new Date();
+
+    // Guardar cambios
+    await article.save();
+    await user.save();
+
+    console.log('✅ Artículo comprado con puntos exitosamente');
+
+    res.json({
+      success: true,
+      message: 'Artículo comprado con puntos exitosamente',
+      data: {
+        articleId: article._id,
+        userId: userId,
+        pointsUsed: pointsAmount,
+        remainingPoints: user.points
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error en compra con puntos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al procesar la compra con puntos',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint de desarrollo para consultar todas las compras recientes
 app.get('/api/dev/recent-purchases', async (req, res) => {
   try {
