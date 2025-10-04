@@ -22,11 +22,34 @@ const authMiddleware = (req, res, next) => {
   // Verificar si es token de MongoDB (formato simple)
   if (token.startsWith('mongodb-admin-token-') || token.startsWith('mongodb-user-token-')) {
     console.log('✅ Token de MongoDB aceptado');
-    // Para tokens de MongoDB, aceptarlos directamente
-    // Nota: En producción, deberías validar estos tokens contra la BD
-    req.userId = token.includes('admin') ? '68cd4472601315508398cd50' : token.split('-').pop();
-    req.userEmail = 'user@trastalia.com';
-    req.userRole = token.includes('admin') ? 'admin' : 'user';
+    
+    try {
+      const mongoose = require('mongoose');
+      const userId = token.includes('admin') ? '68cd4472601315508398cd50' : token.split('-').pop();
+      
+      // Obtener el usuario desde la base de datos para obtener el email correcto
+      const user = await mongoose.connection.db.collection('users').findOne({ _id: new mongoose.Types.ObjectId(userId) });
+      
+      if (user) {
+        req.userId = userId;
+        req.userEmail = user.email;
+        req.userRole = token.includes('admin') ? 'admin' : 'user';
+        console.log('👤 Usuario autenticado:', { userId: req.userId, email: req.userEmail, role: req.userRole });
+      } else {
+        console.log('❌ Usuario no encontrado en BD:', userId);
+        return res.status(401).json({
+          success: false,
+          message: 'Usuario no encontrado'
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error obteniendo usuario desde BD:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Error de autenticación'
+      });
+    }
+    
     next();
     return;
   }
