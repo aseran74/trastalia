@@ -605,6 +605,16 @@ const authMiddleware = (req, res, next) => {
     // El token tiene formato: mongodb-user-token-{userId}
     if (token.startsWith('mongodb-user-token-')) {
       const userId = token.replace('mongodb-user-token-', '');
+      
+      // Validar que userId sea un ObjectId válido
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        console.log('❌ Auth Middleware - ID de usuario no válido:', userId);
+        return res.status(400).json({
+          success: false,
+          message: 'ID de artículo no válido'
+        });
+      }
+      
       User.findById(userId)
         .then(user => {
         if (user) {
@@ -4760,6 +4770,16 @@ app.get('/api/admin/user-purchases/:email', authMiddleware, async (req, res) => 
       error: error.message
     });
   }
+});
+
+// Ruta raíz
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Trastalia API Server',
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
 });
 
 mongoose.connect(process.env.MONGODB_URI)
