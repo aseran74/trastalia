@@ -4782,13 +4782,14 @@ app.get('/', (req, res) => {
   });
 });
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('✅ Conectado a MongoDB Atlas');
-  })
-  .catch((error) => {
-    console.error('❌ Error conectando a MongoDB:', error);
-  });
+// Usar la cadena de conexión correcta (ya conectado arriba)
+// mongoose.connect(process.env.MONGODB_URI)
+//   .then(() => {
+//     console.log('✅ Conectado a MongoDB Atlas');
+//   })
+//   .catch((error) => {
+//     console.error('❌ Error conectando a MongoDB:', error);
+//   });
 
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
