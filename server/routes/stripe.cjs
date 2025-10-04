@@ -184,7 +184,7 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
         itemCount: items.length.toString(),
         timestamp: new Date().toISOString()
       },
-      customer_email: req.userEmail, // Si tienes el email en el token
+      // customer_email se obtendrá del webhook desde session.customer_email
     });
 
     console.log('✅ Sesión de Stripe creada:', session.id);
@@ -405,12 +405,36 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       console.log('✅ Pago completado:', session.id);
       
       const { userId, articleIds, type } = session.metadata;
-      console.log('👤 Usuario:', userId);
+      const customerEmail = session.customer_email;
+      console.log('👤 Usuario ID:', userId);
+      console.log('📧 Email del cliente:', customerEmail);
       console.log('📦 Artículos:', articleIds);
       console.log('🔍 Tipo:', type);
       
       try {
         const mongoose = require('mongoose');
+        
+        // Determinar el userId real - buscar por email si no se encuentra por metadata
+        let actualUserId = userId;
+        
+        if (customerEmail && !userId) {
+          console.log('🔍 Buscando usuario por email:', customerEmail);
+          const userByEmail = await mongoose.connection.db.collection('users').findOne({ email: customerEmail });
+          if (userByEmail) {
+            actualUserId = userByEmail._id.toString();
+            console.log('✅ Usuario encontrado por email:', actualUserId);
+          } else {
+            console.log('❌ Usuario no encontrado por email:', customerEmail);
+            return res.status(200).send('Usuario no encontrado');
+          }
+        }
+        
+        if (!actualUserId) {
+          console.log('❌ No se pudo determinar el userId');
+          return res.status(200).send('UserId no encontrado');
+        }
+        
+        console.log('🎯 Usuario final a procesar:', actualUserId);
         
         // Verificar si es compra de puntos
         if (type === 'points_purchase') {
@@ -422,7 +446,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           
           // Actualizar puntos del usuario
           await mongoose.connection.db.collection('users').updateOne(
-            { _id: new mongoose.Types.ObjectId(userId) },
+            { _id: new mongoose.Types.ObjectId(actualUserId) },
             { 
               $inc: { points: totalPoints },
               $set: { 
@@ -434,7 +458,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           
           // Registrar la compra de puntos en user_purchases
           await mongoose.connection.db.collection('user_purchases').insertOne({
-            userId: new mongoose.Types.ObjectId(userId),
+            userId: new mongoose.Types.ObjectId(actualUserId),
             type: 'points_purchase',
             amount: session.amount_total / 100,
             pointsAmount: pointsAmount,
@@ -509,7 +533,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           
           // Registrar la transacción en user_purchases
           await mongoose.connection.db.collection('user_purchases').insertOne({
-            userId: new mongoose.Types.ObjectId(userId),
+            userId: new mongoose.Types.ObjectId(actualUserId),
             type: 'article_purchase',
             articleIds: articleIdArray.map(id => new mongoose.Types.ObjectId(id)),
             amount: session.amount_total / 100,
@@ -555,8 +579,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
                 estado: 'vendido',
                 estado_articulo: 'VENDIDO_DINERO',
                 sold: true,
-                buyer: new mongoose.Types.ObjectId(userId),
-                comprador: new mongoose.Types.ObjectId(userId),
+                buyer: new mongoose.Types.ObjectId(actualUserId),
+                comprador: new mongoose.Types.ObjectId(actualUserId),
                 comprador_tipo: 'usuario',
                 soldAt: new Date(),
                 paymentMethod: 'stripe_payment_intent',
