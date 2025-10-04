@@ -466,8 +466,11 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
                 $set: { 
                   status: 'sold',
                   estado: 'vendido',
+                  estado_articulo: 'VENDIDO_DINERO',
                   sold: true,
                   buyer: new mongoose.Types.ObjectId(userId),
+                  comprador: new mongoose.Types.ObjectId(userId),
+                  comprador_tipo: 'usuario',
                   soldAt: new Date(),
                   paymentMethod: 'stripe_checkout',
                   stripeSessionId: session.id,
@@ -550,8 +553,11 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
               $set: { 
                 status: 'sold',
                 estado: 'vendido',
+                estado_articulo: 'VENDIDO_DINERO',
                 sold: true,
                 buyer: new mongoose.Types.ObjectId(userId),
+                comprador: new mongoose.Types.ObjectId(userId),
+                comprador_tipo: 'usuario',
                 soldAt: new Date(),
                 paymentMethod: 'stripe_payment_intent',
                 stripePaymentIntentId: paymentIntent.id,
