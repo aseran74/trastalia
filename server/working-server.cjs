@@ -611,7 +611,7 @@ const authMiddleware = (req, res, next) => {
         console.log('❌ Auth Middleware - ID de usuario no válido:', userId);
         return res.status(400).json({
           success: false,
-          message: 'ID de artículo no válido'
+          message: 'ID de usuario no válido'
         });
       }
       
