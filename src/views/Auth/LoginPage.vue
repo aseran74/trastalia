@@ -100,41 +100,26 @@
               <div class="flex-1">
                 <div class="text-xs font-medium text-red-800">Administrador</div>
                 <div class="text-xs text-red-600">admin@trastalia.com</div>
-                <div class="text-xs text-red-600">admin123</div>
+                <div class="text-xs text-red-600">admin123456</div>
               </div>
               <button
-                @click="fillCredentials('admin@trastalia.com', 'admin123')"
+                @click="fillCredentials('admin@trastalia.com', 'admin123456')"
                 class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
               >
                 Usar
               </button>
             </div>
 
-            <!-- Usuario Normal -->
+            <!-- Usuario Juan -->
             <div class="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-200">
               <div class="flex-1">
-                <div class="text-xs font-medium text-blue-800">Usuario Normal</div>
-                <div class="text-xs text-blue-600">mikabodea@gmail.com</div>
-                <div class="text-xs text-blue-600">password123</div>
+                <div class="text-xs font-medium text-blue-800">Usuario Juan</div>
+                <div class="text-xs text-blue-600">juan@example.com</div>
+                <div class="text-xs text-blue-600">juan123</div>
               </div>
               <button
-                @click="fillCredentials('mikabodea@gmail.com', 'password123')"
+                @click="fillCredentials('juan@example.com', 'juan123')"
                 class="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Usar
-              </button>
-            </div>
-
-            <!-- Usuario de prueba adicional -->
-            <div class="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200">
-              <div class="flex-1">
-                <div class="text-xs font-medium text-green-800">Usuario de Prueba</div>
-                <div class="text-xs text-green-600">juan@example.com</div>
-                <div class="text-xs text-green-600">password123</div>
-              </div>
-              <button
-                @click="fillCredentials('juan@example.com', 'password123')"
-                class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
               >
                 Usar
               </button>
