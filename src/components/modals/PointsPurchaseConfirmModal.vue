@@ -155,7 +155,7 @@ const confirmPurchase = async () => {
   loading.value = true
   
   try {
-    const url = `${API_BASE_URL}/api/articles/purchase-with-points`
+    const url = `${API_BASE_URL}/api/user/purchase-with-points`
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${authStore.token}`
