@@ -4399,6 +4399,35 @@ app.delete('/api/packages/:id', authMiddleware, async (req, res) => {
 });
 
 // Conectar a MongoDB
+// Endpoint de desarrollo para verificar autenticación
+app.get('/api/dev/check-auth', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    
+    res.json({
+      success: true,
+      data: {
+        userId: req.userId,
+        userRole: req.userRole,
+        userEmail: req.userEmail,
+        userFromDB: user ? {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        } : null
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error verificando autenticación:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint de desarrollo para consultar todas las compras recientes
 app.get('/api/dev/recent-purchases', async (req, res) => {
   try {
