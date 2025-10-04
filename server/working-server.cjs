@@ -4463,6 +4463,62 @@ app.get('/api/dev/debug-auth', (req, res) => {
   });
 });
 
+// Endpoint alternativo para obtener compras del usuario (sin authMiddleware problemático)
+app.get('/api/user/my-purchases', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token de acceso requerido'
+      });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    if (!token.startsWith('mongodb-user-token-')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token no válido'
+      });
+    }
+
+    const userId = token.replace('mongodb-user-token-', '');
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de usuario no válido'
+      });
+    }
+
+    // Buscar artículos comprados por el usuario con dinero
+    const purchases = await Article.find({
+      comprador: new mongoose.Types.ObjectId(userId),
+      comprador_tipo: 'usuario',
+      estado_articulo: 'VENDIDO_DINERO'
+    }).populate('id_vendedor', 'name email')
+      .sort({ updatedAt: -1 });
+
+    console.log('✅ Compras encontradas:', purchases.length);
+
+    res.json({
+      success: true,
+      data: purchases,
+      count: purchases.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error obteniendo compras del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener las compras',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint de desarrollo para consultar todas las compras recientes
 app.get('/api/dev/recent-purchases', async (req, res) => {
   try {
