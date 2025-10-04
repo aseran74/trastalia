@@ -801,6 +801,60 @@ app.post('/api/auth/firebase-user', async (req, res) => {
   }
 });
 
+// Endpoint para procesar manualmente la compra de Juan
+app.post('/api/dev/process-juan-purchase', async (req, res) => {
+  try {
+    console.log('🔧 Procesando manualmente la compra de Juan');
+    
+    // ID de Juan
+    const juanUserId = '68cd4472601315508398cd51';
+    
+    // Buscar un artículo disponible para comprar (que no esté ya vendido)
+    const availableArticle = await Article.findOne({
+      estado_articulo: 'COMPRADO_POR_ADMIN',
+      comprador: { $exists: false }
+    });
+    
+    if (!availableArticle) {
+      return res.status(404).json({
+        success: false,
+        message: 'No hay artículos disponibles para procesar'
+      });
+    }
+    
+    console.log('📦 Artículo encontrado:', availableArticle.title, availableArticle._id);
+    
+    // Actualizar el artículo como comprado por Juan
+    await Article.findByIdAndUpdate(availableArticle._id, {
+      estado_articulo: 'VENDIDO_DINERO',
+      comprador: new mongoose.Types.ObjectId(juanUserId),
+      comprador_tipo: 'usuario',
+      updatedAt: new Date()
+    });
+    
+    console.log('✅ Artículo actualizado como comprado por Juan');
+    
+    res.json({
+      success: true,
+      message: 'Compra de Juan procesada manualmente',
+      data: {
+        articleId: availableArticle._id,
+        articleTitle: availableArticle.title,
+        buyerId: juanUserId,
+        buyerEmail: 'juan@example.com'
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Error procesando compra de Juan:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al procesar la compra',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint para obtener información de tipos de paquetes
 app.get('/api/package-types', (req, res) => {
   try {
