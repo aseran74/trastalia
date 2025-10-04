@@ -421,7 +421,10 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
   console.log('📨 Webhook recibido:', event.type);
 
-  // Manejar el evento
+  // Responder inmediatamente a Stripe para evitar timeouts
+  res.status(200).send('Webhook recibido');
+
+  // Manejar el evento de forma asíncrona
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object;
@@ -434,7 +437,9 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       console.log('📦 Artículos:', articleIds);
       console.log('🔍 Tipo:', type);
       
-      try {
+      // Procesar de forma asíncrona para no bloquear la respuesta
+      setImmediate(async () => {
+        try {
         const mongoose = require('mongoose');
         
         // Determinar el userId real - buscar por email si no se encuentra por metadata
@@ -573,11 +578,12 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           console.log('✅ Transacción registrada en MongoDB');
         }
         
-        // TODO: Enviar email de confirmación al comprador y vendedor
-        
-      } catch (error) {
-        console.error('❌ Error actualizando base de datos:', error);
-      }
+          // TODO: Enviar email de confirmación al comprador y vendedor
+          
+        } catch (error) {
+          console.error('❌ Error actualizando base de datos:', error);
+        }
+      });
       
       break;
     }
