@@ -4397,6 +4397,78 @@ app.delete('/api/packages/:id', authMiddleware, async (req, res) => {
 });
 
 // Conectar a MongoDB
+// Endpoint de desarrollo para consultar todas las compras recientes
+app.get('/api/dev/recent-purchases', async (req, res) => {
+  try {
+    console.log('🔍 Consultando compras recientes...');
+    
+    // 1. Buscar compras recientes en user_purchases
+    const recentUserPurchases = await mongoose.connection.db.collection('user_purchases')
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .toArray();
+    
+    // 2. Buscar artículos vendidos recientemente
+    const recentArticlesSold = await Article.find({
+      estado_articulo: 'VENDIDO_DINERO'
+    })
+    .populate('comprador', 'name email')
+    .populate('id_vendedor', 'name email')
+    .sort({ updatedAt: -1 })
+    .limit(10);
+    
+    // 3. Buscar artículos canjeados recientemente
+    const recentArticlesExchanged = await Article.find({
+      estado_articulo: { 
+        $in: ['VENDIDO_PUNTOS', 'ENVIADO', 'ENTREGADO', 'RECHAZADO_ENVIO'] 
+      }
+    })
+    .populate('comprador', 'name email')
+    .populate('id_vendedor', 'name email')
+    .sort({ updatedAt: -1 })
+    .limit(10);
+    
+    console.log(`📊 Compras recientes encontradas:`);
+    console.log(`- Compras Stripe: ${recentUserPurchases.length}`);
+    console.log(`- Artículos vendidos: ${recentArticlesSold.length}`);
+    console.log(`- Artículos canjeados: ${recentArticlesExchanged.length}`);
+    
+    res.json({
+      success: true,
+      data: {
+        recentUserPurchases: recentUserPurchases,
+        recentArticlesSold: recentArticlesSold.map(article => ({
+          id: article._id,
+          title: article.title || article.nombre,
+          price: article.price,
+          buyer: article.comprador,
+          seller: article.id_vendedor,
+          status: article.estado_articulo,
+          updatedAt: article.updatedAt
+        })),
+        recentArticlesExchanged: recentArticlesExchanged.map(article => ({
+          id: article._id,
+          title: article.title || article.nombre,
+          pointsUsed: article.adminDecision?.finalPoints || 0,
+          buyer: article.comprador,
+          seller: article.id_vendedor,
+          status: article.estado_articulo,
+          updatedAt: article.updatedAt
+        }))
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Error consultando compras recientes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint de desarrollo para consultar compras por email (sin autenticación)
 app.get('/api/dev/user-purchases/:email', async (req, res) => {
   try {
