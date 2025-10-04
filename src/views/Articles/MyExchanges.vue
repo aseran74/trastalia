@@ -257,24 +257,40 @@ const loadPointExchanges = async () => {
     }
     
     const data = await response.json()
-    exchanges.value = data.data?.exchanges || []
+    
+    // Transformar los datos del endpoint para que coincidan con la estructura esperada por el template
+    exchanges.value = (data.data || []).map(article => ({
+      id: article._id,
+      article: {
+        title: article.title || article.nombre,
+        description: article.description || article.descripcion,
+        images: article.images || []
+      },
+      points: article.adminDecision?.finalPoints || article.adminDecision?.pointsAmount || 0,
+      status: getExchangeStatus(article.estado_articulo),
+      currentStatus: article.estado_articulo,
+      exchangeDate: article.updatedAt || article.createdAt,
+      createdAt: article.createdAt,
+      message: `Artículo comprado con ${article.adminDecision?.finalPoints || article.adminDecision?.pointsAmount || 0} puntos`,
+      role: 'requester'
+    }))
     
     // Update stats
     stats.value.totalExchanges = exchanges.value.length
-    stats.value.completedExchanges = exchanges.value.filter(ex => ex.currentStatus === 'ENTREGADO').length
+    stats.value.completedExchanges = exchanges.value.filter(ex => ex.estado_articulo === 'ENTREGADO').length
     
     // Update filter counts
     statusFilters.value.forEach(filter => {
       if (filter.value === 'todos') {
         filter.count = exchanges.value.length
       } else if (filter.value === 'completado') {
-        filter.count = exchanges.value.filter(ex => ex.currentStatus === 'ENTREGADO').length
+        filter.count = exchanges.value.filter(ex => ex.estado_articulo === 'ENTREGADO').length
       } else if (filter.value === 'pendiente') {
-        filter.count = exchanges.value.filter(ex => ex.currentStatus === 'VENDIDO_PUNTOS').length
+        filter.count = exchanges.value.filter(ex => ex.estado_articulo === 'VENDIDO_PUNTOS').length
       } else if (filter.value === 'rechazado') {
-        filter.count = exchanges.value.filter(ex => ex.currentStatus === 'RECHAZADO_ENVIO').length
+        filter.count = exchanges.value.filter(ex => ex.estado_articulo === 'RECHAZADO_ENVIO').length
       } else {
-        filter.count = exchanges.value.filter(ex => ex.currentStatus === filter.value).length
+        filter.count = exchanges.value.filter(ex => ex.estado_articulo === filter.value).length
       }
     })
     
@@ -357,6 +373,17 @@ const completeExchange = (exchange) => {
   console.log('Completing exchange:', exchange)
   // Implement complete logic
   alert('Intercambio marcado como completado!')
+}
+
+// Función para mapear estados de artículo a estados de intercambio
+const getExchangeStatus = (estadoArticulo) => {
+  const statusMap = {
+    'VENDIDO_PUNTOS': 'pendiente',
+    'ENVIADO': 'aceptado', 
+    'ENTREGADO': 'completado',
+    'RECHAZADO_ENVIO': 'rechazado'
+  }
+  return statusMap[estadoArticulo] || 'pendiente'
 }
 
 onMounted(() => {
