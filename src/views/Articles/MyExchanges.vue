@@ -245,7 +245,7 @@ const loadPointExchanges = async () => {
     loading.value = true
     const token = authStore.token
     
-    const response = await fetch('/api/articles/my-exchanges', {
+    const response = await fetch('/api/user/my-exchanges', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

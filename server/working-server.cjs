@@ -4519,6 +4519,66 @@ app.get('/api/user/my-purchases', async (req, res) => {
   }
 });
 
+// Endpoint alternativo para obtener intercambios del usuario (sin authMiddleware problemático)
+app.get('/api/user/my-exchanges', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token de acceso requerido'
+      });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    if (!token.startsWith('mongodb-user-token-')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token no válido'
+      });
+    }
+
+    const userId = token.replace('mongodb-user-token-', '');
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de usuario no válido'
+      });
+    }
+
+    console.log('🔍 Obteniendo intercambios del usuario:', userId);
+    
+    // Buscar artículos comprados por el usuario con puntos
+    const exchanges = await Article.find({
+      comprador: new mongoose.Types.ObjectId(userId),
+      comprador_tipo: 'usuario',
+      estado_articulo: { 
+        $in: ['VENDIDO_PUNTOS', 'ENVIADO', 'ENTREGADO', 'RECHAZADO_ENVIO'] 
+      }
+    }).populate('id_vendedor', 'name email')
+      .sort({ updatedAt: -1 });
+
+    console.log('✅ Intercambios encontrados:', exchanges.length);
+
+    res.json({
+      success: true,
+      data: exchanges,
+      count: exchanges.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error obteniendo intercambios del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener los intercambios',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint alternativo para comprar con puntos (sin authMiddleware problemático)
 app.post('/api/user/purchase-with-points', async (req, res) => {
   try {
