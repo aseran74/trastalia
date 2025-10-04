@@ -4604,7 +4604,7 @@ app.post('/api/user/purchase-with-points', async (req, res) => {
     
     // Asegurar que tipo_paquete esté definido si es requerido
     if (!article.tipo_paquete) {
-      article.tipo_paquete = 'basic';
+      article.tipo_paquete = 'CAJA_PEQUEÑA';
     }
 
     // Restar puntos al usuario
