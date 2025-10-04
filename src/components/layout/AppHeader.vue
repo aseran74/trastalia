@@ -51,6 +51,7 @@
         
         
         <button
+          v-if="authStore.isAuthenticated"
           @click="toggleApplicationMenu"
           class="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-99999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden"
         >
@@ -77,7 +78,9 @@
         </div>
       </div>
 
+      <!-- Menú de aplicación - solo visible cuando el usuario esté logueado -->
       <div
+        v-if="authStore.isAuthenticated"
         :class="[isApplicationMenuOpen ? 'flex' : 'hidden']"
         class="items-center justify-between w-full gap-4 px-5 py-4 shadow-theme-md lg:flex lg:justify-end lg:px-0 lg:shadow-none"
       >
@@ -97,6 +100,7 @@
 import { ref } from 'vue'
 import { useSidebar } from '@/composables/useSidebar'
 import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
 import ThemeToggler from '../common/ThemeToggler.vue'
 import SearchBar from './header/SearchBar.vue'
 import HeaderLogo from './header/HeaderLogo.vue'
@@ -108,6 +112,7 @@ import UserMenu from '../UserMenu.vue'
 
 const { toggleSidebar, toggleMobileSidebar, isMobileOpen } = useSidebar()
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 
 const handleToggle = () => {
   if (window.innerWidth >= 1024) {
