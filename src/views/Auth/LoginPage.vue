@@ -90,6 +90,58 @@
           </button>
         </form>
 
+        <!-- Datos de prueba para desarrollo -->
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 class="text-sm font-medium text-gray-900 mb-3">Datos de prueba para desarrollo:</h3>
+          
+          <div class="space-y-3">
+            <!-- Usuario Admin -->
+            <div class="flex items-center justify-between p-2 bg-red-50 rounded border border-red-200">
+              <div class="flex-1">
+                <div class="text-xs font-medium text-red-800">Administrador</div>
+                <div class="text-xs text-red-600">admin@trastalia.com</div>
+                <div class="text-xs text-red-600">admin123</div>
+              </div>
+              <button
+                @click="fillCredentials('admin@trastalia.com', 'admin123')"
+                class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Usar
+              </button>
+            </div>
+
+            <!-- Usuario Normal -->
+            <div class="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-200">
+              <div class="flex-1">
+                <div class="text-xs font-medium text-blue-800">Usuario Normal</div>
+                <div class="text-xs text-blue-600">mikabodea@gmail.com</div>
+                <div class="text-xs text-blue-600">password123</div>
+              </div>
+              <button
+                @click="fillCredentials('mikabodea@gmail.com', 'password123')"
+                class="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Usar
+              </button>
+            </div>
+
+            <!-- Usuario de prueba adicional -->
+            <div class="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200">
+              <div class="flex-1">
+                <div class="text-xs font-medium text-green-800">Usuario de Prueba</div>
+                <div class="text-xs text-green-600">juan@example.com</div>
+                <div class="text-xs text-green-600">password123</div>
+              </div>
+              <button
+                @click="fillCredentials('juan@example.com', 'password123')"
+                class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+              >
+                Usar
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Enlaces adicionales -->
         <div class="mt-6 text-center">
           <p class="text-sm text-gray-600">
@@ -127,6 +179,12 @@ const form = ref({
   password: '',
   rememberMe: false
 })
+
+// Función para llenar automáticamente las credenciales
+const fillCredentials = (email, password) => {
+  form.value.email = email
+  form.value.password = password
+}
 
 const handleLogin = async () => {
   loading.value = true
