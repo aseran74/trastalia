@@ -4447,6 +4447,22 @@ app.get('/api/dev/check-auth', authMiddleware, async (req, res) => {
   }
 });
 
+// Endpoint de debug para verificar el authMiddleware paso a paso
+app.get('/api/dev/debug-auth', (req, res) => {
+  const authHeader = req.headers.authorization;
+  
+  res.json({
+    success: true,
+    data: {
+      authHeader: authHeader,
+      token: authHeader ? authHeader.split(' ')[1] : null,
+      tokenStartsWith: authHeader ? authHeader.split(' ')[1]?.startsWith('mongodb-user-token-') : false,
+      userId: authHeader ? authHeader.split(' ')[1]?.replace('mongodb-user-token-', '') : null,
+      isValidObjectId: authHeader ? require('mongoose').Types.ObjectId.isValid(authHeader.split(' ')[1]?.replace('mongodb-user-token-', '')) : false
+    }
+  });
+});
+
 // Endpoint de desarrollo para consultar todas las compras recientes
 app.get('/api/dev/recent-purchases', async (req, res) => {
   try {
