@@ -3639,10 +3639,10 @@ app.get('/api/packages', async (req, res) => {
 // GET /api/packages/:id - Obtener un paquete específico
 app.get('/api/packages/:id', async (req, res) => {
   try {
-    const package = await Package.findOne({ id: req.params.id, isActive: true })
+    const packageData = await Package.findOne({ id: req.params.id, isActive: true })
       .populate('createdBy', 'name email');
     
-    if (!package) {
+    if (!packageData) {
       return res.status(404).json({
         success: false,
         message: 'Paquete no encontrado'
@@ -3651,7 +3651,7 @@ app.get('/api/packages/:id', async (req, res) => {
     
     res.json({
       success: true,
-      data: package
+      data: packageData
     });
   } catch (error) {
     console.error('Error obteniendo paquete:', error);
@@ -4328,13 +4328,13 @@ app.put('/api/packages/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    const package = await Package.findOneAndUpdate(
+    const packageData = await Package.findOneAndUpdate(
       { id: id },
       updateData,
       { new: true }
     );
 
-    if (!package) {
+    if (!packageData) {
       return res.status(404).json({
         success: false,
         message: 'Paquete no encontrado'
@@ -4344,7 +4344,7 @@ app.put('/api/packages/:id', authMiddleware, async (req, res) => {
     res.json({
       success: true,
       message: 'Paquete actualizado exitosamente',
-      data: package
+      data: packageData
     });
 
   } catch (error) {
@@ -4369,9 +4369,9 @@ app.delete('/api/packages/:id', authMiddleware, async (req, res) => {
 
     const { id } = req.params;
 
-    const package = await Package.findOneAndDelete({ id: id });
+    const packageData = await Package.findOneAndDelete({ id: id });
 
-    if (!package) {
+    if (!packageData) {
       return res.status(404).json({
         success: false,
         message: 'Paquete no encontrado'
