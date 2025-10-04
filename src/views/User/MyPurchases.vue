@@ -221,7 +221,7 @@ const loadPurchases = async (page = 1) => {
       return
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/stripe/my-purchases?page=${page}&limit=${pagination.value.limit}`, {
+    const response = await fetch(`${API_BASE_URL}/api/articles/my-purchases?page=${page}&limit=${pagination.value.limit}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -234,8 +234,15 @@ const loadPurchases = async (page = 1) => {
     const data = await response.json()
     
     if (data.success) {
-      purchases.value = data.data.purchases
-      pagination.value = data.data.pagination
+      // El endpoint /api/articles/my-purchases devuelve data.purchases directamente
+      purchases.value = data.data.purchases || []
+      // No hay paginación en este endpoint, así que simulamos la estructura
+      pagination.value = {
+        page: 1,
+        limit: 10,
+        total: data.data.totalPurchases || purchases.value.length,
+        pages: 1
+      }
     } else {
       throw new Error(data.message || 'Error al cargar las compras')
     }
@@ -249,12 +256,8 @@ const loadPurchases = async (page = 1) => {
 }
 
 const getPurchaseTitle = (purchase) => {
-  if (purchase.type === 'points_purchase') {
-    return `Compra de ${purchase.totalPoints} puntos`
-  } else if (purchase.type === 'article_purchase') {
-    return `Compra de ${purchase.articles?.length || 0} artículo(s)`
-  }
-  return 'Compra'
+  // Para el endpoint /api/articles/my-purchases, cada elemento es un artículo comprado
+  return purchase.title || purchase.nombre || 'Artículo comprado'
 }
 
 const getStatusText = (status) => {
