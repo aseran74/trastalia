@@ -4519,6 +4519,143 @@ app.get('/api/user/my-purchases', async (req, res) => {
   }
 });
 
+// Endpoint alternativo para obtener transacciones de puntos del usuario (sin authMiddleware problemático)
+app.get('/api/user/points-transactions', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token de acceso requerido'
+      });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    if (!token.startsWith('mongodb-user-token-')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token no válido'
+      });
+    }
+
+    const userId = token.replace('mongodb-user-token-', '');
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de usuario no válido'
+      });
+    }
+
+    console.log('🔍 Obteniendo transacciones de puntos del usuario:', userId);
+
+    // 1. Obtener artículos vendidos por el usuario que fueron comprados con puntos por el admin
+    const soldForPoints = await Article.find({ 
+      'id_vendedor': new mongoose.Types.ObjectId(userId),
+      'estado_articulo': 'COMPRADO_POR_ADMIN',
+      'adminDecision.selectedOption': 'points'
+    })
+    .populate('id_vendedor', 'name email points')
+    .sort({ 'adminDecision.date': -1 });
+
+    // 2. Obtener artículos comprados por el usuario con puntos (gastados)
+    const boughtWithPoints = await Article.find({ 
+      'comprador': new mongoose.Types.ObjectId(userId),
+      'estado_articulo': 'VENDIDO_PUNTOS'
+    })
+    .sort({ 'updatedAt': -1 });
+
+    // 3. Buscar transacciones directas de puntos del admin (si existe una colección de transacciones)
+    let directTransactions = [];
+    try {
+      const PointsTransaction = require('./models/PointsTransaction');
+      directTransactions = await PointsTransaction.find({
+        userId: new mongoose.Types.ObjectId(userId),
+        type: 'admin_adjustment'
+      }).sort({ createdAt: -1 });
+    } catch (error) {
+      console.log('⚠️ No se encontró modelo PointsTransaction, continuando sin transacciones directas');
+    }
+
+    // Transformar datos en transacciones
+    const transactions = [];
+
+    // Puntos ganados por ventas
+    soldForPoints.forEach(article => {
+      transactions.push({
+        id: `earned_${article._id}`,
+        type: 'earn',
+        amount: article.adminDecision?.finalPoints || article.adminDecision?.pointsAmount || 0,
+        description: `Puntos ganados por venta: ${article.title || article.nombre}`,
+        date: article.adminDecision?.date || article.sellerAcceptedDate || article.updatedAt,
+        status: 'completed',
+        category: 'sale',
+        article: {
+          title: article.title || article.nombre,
+          id: article._id
+        }
+      });
+    });
+
+    // Puntos gastados en compras
+    boughtWithPoints.forEach(article => {
+      transactions.push({
+        id: `spent_${article._id}`,
+        type: 'spend',
+        amount: article.adminDecision?.finalPoints || article.adminDecision?.pointsAmount || 0,
+        description: `Puntos gastados en: ${article.title || article.nombre}`,
+        date: article.updatedAt || article.createdAt,
+        status: 'completed',
+        category: 'purchase',
+        article: {
+          title: article.title || article.nombre,
+          id: article._id
+        }
+      });
+    });
+
+    // Transacciones directas del admin
+    directTransactions.forEach(transaction => {
+      transactions.push({
+        id: `admin_${transaction._id}`,
+        type: 'admin_adjustment',
+        amount: transaction.amount,
+        description: transaction.description || 'Ajuste de puntos por administrador',
+        date: transaction.createdAt,
+        status: 'completed',
+        category: 'admin'
+      });
+    });
+
+    // Ordenar por fecha (más recientes primero)
+    transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    console.log('✅ Transacciones encontradas:', transactions.length);
+
+    res.json({
+      success: true,
+      data: {
+        transactions,
+        pagination: {
+          current: 1,
+          total: 1,
+          count: transactions.length
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error obteniendo transacciones de puntos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener las transacciones de puntos',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint alternativo para obtener intercambios del usuario (sin authMiddleware problemático)
 app.get('/api/user/my-exchanges', async (req, res) => {
   try {
