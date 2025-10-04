@@ -21,7 +21,16 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json({ limit: '10mb' }));
+// Configurar parsing JSON pero excluir webhook de Stripe
+app.use((req, res, next) => {
+  if (req.path === '/api/stripe/webhook') {
+    // Para webhook de Stripe, no parsear JSON (se maneja en la ruta)
+    next();
+  } else {
+    // Para otras rutas, parsear JSON normalmente
+    express.json({ limit: '10mb' })(req, res, next);
+  }
+});
 app.use(express.urlencoded({ extended: true }));
 
 // Configuración de sesiones
