@@ -196,9 +196,9 @@
               <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-truck-trail opacity-80"></div>
               <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-emerald-400 rounded-full animate-truck-trail opacity-60" style="animation-delay: 0.4s;"></div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-green-600 transition-colors duration-300">Centro Logístico</h3>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-green-600 transition-colors duration-300">Compra instantanea</h3>
             <p class="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
-              Sistema de "Nave" como centro logístico centralizado para gestionar envíos y entregas de forma eficiente.
+              Si tienes prisa te compramos tu articulo al momento se acabaron las esperas.
             </p>
           </div>
 
