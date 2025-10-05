@@ -43,6 +43,24 @@ const router = createRouter({
           requiresAuth: false
         },
       },
+      {
+        path: '/testing',
+        name: 'Connection Test',
+        component: () => import('../views/Testing/ConnectionTest.vue'),
+        meta: {
+          title: 'Connection Testing - Trastalia',
+          requiresAuth: false
+        },
+      },
+      {
+        path: '/mobile-test',
+        name: 'Mobile Connection Test',
+        component: () => import('../views/Testing/MobileConnectionTest.vue'),
+        meta: {
+          title: 'Mobile Connection Testing - Trastalia',
+          requiresAuth: false
+        },
+      },
     {
       path: '/auth/callback',
       name: 'AuthCallback',

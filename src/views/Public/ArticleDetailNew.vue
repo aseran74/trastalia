@@ -18,9 +18,9 @@
             </div>
             
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-6">
-              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Inicio</router-link>
-              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
+            <div class="hidden md:flex items-center space-x-8">
+              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Inicio</router-link>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Ver Artículos</router-link>
               
               <!-- Si está autenticado, mostrar menú de usuario -->
               <UserProfileMenu v-if="isAuthenticated" />

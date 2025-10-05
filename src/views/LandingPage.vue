@@ -16,11 +16,13 @@
             </div>
             
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-6">
-              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Características</a>
-              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Cómo funciona</a>
-              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Precios</a>
-              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
+            <div class="hidden md:flex items-center space-x-8">
+              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Características</a>
+              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Cómo funciona</a>
+              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Precios</a>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Ver Artículos</router-link>
+              <router-link to="/testing" class="text-blue-600 hover:text-blue-800 transition-colors px-2 py-1">🔧 Testing</router-link>
+              <router-link to="/mobile-test" class="text-purple-600 hover:text-purple-800 transition-colors px-2 py-1">📱 Mobile Test</router-link>
               
               <!-- Menú de perfil si está logueado, botón de login si no -->
               <UserProfileMenu v-if="authStore.isAuthenticated" />
@@ -48,11 +50,13 @@
 
           <!-- Mobile Menu -->
           <div v-if="mobileMenuOpen" class="md:hidden mt-4 mx-4 py-6 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative z-50 shadow-lg rounded-xl">
-            <div class="flex flex-col space-y-5">
-              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Características</a>
-              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Cómo funciona</a>
-              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Precios</a>
-              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Ver Artículos</router-link>
+            <div class="flex flex-col space-y-6">
+              <a href="#features" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Características</a>
+              <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Cómo funciona</a>
+              <a href="#pricing" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Precios</a>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Ver Artículos</router-link>
+              <router-link to="/testing" class="text-blue-600 hover:text-blue-800 transition-colors ml-4 py-3" @click="mobileMenuOpen = false">🔧 Testing</router-link>
+              <router-link to="/mobile-test" class="text-purple-600 hover:text-purple-800 transition-colors ml-4 py-3" @click="mobileMenuOpen = false">📱 Mobile Test</router-link>
               
               <!-- Botón de login para móvil si no está logueado -->
               <router-link v-if="!authStore.isAuthenticated" to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-center" @click="mobileMenuOpen = false">

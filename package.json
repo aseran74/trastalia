@@ -30,9 +30,19 @@
     "server:dev": "tsx --watch server/index.ts",
     "seed:users": "tsx server/scripts/seed-users.ts",
     "dev:full": "concurrently \"npm run server:dev\" \"npm run dev\"",
-    "vercel-build": "npm run build-only"
+    "vercel-build": "npm run build-only",
+    "build:android": "npm run build && npx cap sync",
+    "android:open": "npx cap open android",
+    "android:run": "npx cap run android",
+    "android:build": "npm run build:android && npx cap open android",
+    "apk:build": "node build-apk.cjs"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/network": "^7.0.2",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",

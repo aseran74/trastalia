@@ -16,11 +16,11 @@
             </div>
             
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-6">
-              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Inicio</router-link>
-              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Categorías</a>
-              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Destacados</a>
-              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">Ver Artículos</router-link>
+            <div class="hidden md:flex items-center space-x-8">
+              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Inicio</router-link>
+              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Categorías</a>
+              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Destacados</a>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 py-1">Ver Artículos</router-link>
               
               <!-- Menú de perfil si está logueado, botón de login si no -->
               <UserProfileMenu v-if="authStore.isAuthenticated" />
@@ -48,12 +48,12 @@
 
           <!-- Mobile Menu -->
           <div v-if="mobileMenuOpen" class="md:hidden mt-4 mx-4 py-6 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative z-50 shadow-lg rounded-xl">
-            <div class="flex flex-col space-y-5">
+            <div class="flex flex-col space-y-6">
               
-              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Inicio</router-link>
-              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Categorías</a>
-              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Destacados</a>
-              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4" @click="mobileMenuOpen = false">Ver Artículos</router-link>
+              <router-link to="/" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Inicio</router-link>
+              <a href="#categorias" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Categorías</a>
+              <a href="#destacados" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Destacados</a>
+              <router-link to="/articulos" class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors ml-4 py-3" @click="mobileMenuOpen = false">Ver Artículos</router-link>
               
               <!-- Botón de login para móvil si no está logueado -->
               <router-link v-if="!authStore.isAuthenticated" to="/login" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-center" @click="mobileMenuOpen = false">
@@ -458,18 +458,40 @@ const purchaseType = ref('money') // 'money' o 'points'
 const mobileMenuOpen = ref(false)
 const isScrolled = ref(false)
 
+// Test de conectividad directo
+const testConnectivity = async () => {
+  console.log('🔍 Testing connectivity to Railway...')
+  try {
+    const testUrl = 'https://web-production-08299.up.railway.app/api/health'
+    const testResponse = await fetch(testUrl)
+    console.log('✅ Railway connectivity test:', testResponse.status)
+    return testResponse.ok
+  } catch (error) {
+    console.error('❌ Railway connectivity test failed:', error)
+    return false
+  }
+}
+
 // Cargar artículos públicos - versión ultra simple
 const loadPublicArticles = async () => {
   console.log('🚀 Iniciando carga de artículos...')
   loading.value = true
   
   try {
+    // Test de conectividad primero
+    const isRailwayReachable = await testConnectivity()
+    console.log('🔍 Railway reachable:', isRailwayReachable)
+    
     const baseUrl = API_BASE_URL ? `${API_BASE_URL}/api/articles/public` : '/api/articles/public'
     const url = `${baseUrl}?t=${Date.now()}`
     console.log('🔍 Cargando artículos desde:', url)
     console.log('🔧 API_BASE_URL:', API_BASE_URL)
     console.log('🔧 PROD:', import.meta.env.PROD)
     console.log('🔧 DEV:', import.meta.env.DEV)
+    console.log('🔧 VITE_API_URL:', import.meta.env.VITE_API_URL)
+    console.log('🔧 Capacitor:', window.Capacitor)
+    console.log('🔧 User Agent:', navigator.userAgent)
+    console.log('🔧 Platform:', window.navigator.platform)
     
     const response = await fetch(url, {
       method: 'GET',
