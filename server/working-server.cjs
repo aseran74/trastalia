@@ -2670,6 +2670,88 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Health check específico para APK con MongoDB directo
+app.get('/api/mobile/health', async (req, res) => {
+  try {
+    // Test directo de MongoDB
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
+    
+    res.json({
+      status: 'OK',
+      message: 'Mobile API working',
+      timestamp: new Date().toISOString(),
+      mongodb: {
+        connected: mongoose.connection.readyState === 1,
+        collections: collections.map(c => c.name),
+        readyState: mongoose.connection.readyState
+      },
+      server: {
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        platform: process.platform
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Mobile API error',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Artículos específicos para APK con MongoDB directo
+app.get('/api/mobile/articles', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const articlesCollection = db.collection('articles');
+    
+    // Obtener artículos directamente de MongoDB
+    const articles = await articlesCollection
+      .find({ 
+        isActive: true,
+        status: { $in: ['active', 'pending'] }
+      })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .toArray();
+    
+    // Agregar información adicional
+    const articlesWithInfo = articles.map(article => ({
+      ...article,
+      _id: article._id.toString(),
+      createdAt: article.createdAt,
+      updatedAt: article.updatedAt,
+      // Asegurar que los campos requeridos existan
+      title: article.title || 'Sin título',
+      description: article.description || 'Sin descripción',
+      price: article.price || 0,
+      category: article.category || 'general',
+      images: article.images || [],
+      sellerId: article.sellerId || null
+    }));
+    
+    res.json({
+      status: 'OK',
+      message: 'Articles retrieved successfully',
+      count: articlesWithInfo.length,
+      articles: articlesWithInfo,
+      timestamp: new Date().toISOString(),
+      source: 'MongoDB Direct'
+    });
+  } catch (error) {
+    console.error('Error getting mobile articles:', error);
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Error retrieving articles',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Ruta para actualizar balance de usuario (solo para desarrollo)
 app.post('/api/user/update-balance', authMiddleware, async (req, res) => {
   try {

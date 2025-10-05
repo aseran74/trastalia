@@ -187,6 +187,71 @@
               </p>
             </div>
           </div>
+
+          <!-- Test 6: Mobile API Direct MongoDB -->
+          <div class="border rounded-lg p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold">Mobile API (Direct MongoDB)</h3>
+              <button 
+                @click="testMobileAPI" 
+                :disabled="testing.mobileAPI"
+                class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 disabled:opacity-50"
+              >
+                {{ testing.mobileAPI ? 'Testing...' : 'Test' }}
+              </button>
+            </div>
+            <div v-if="results.mobileAPI" class="mt-2">
+              <p :class="results.mobileAPI.success ? 'text-green-600' : 'text-red-600'">
+                {{ results.mobileAPI.success ? '✅ Mobile API Working' : '❌ Mobile API Failed' }}
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Status: {{ results.mobileAPI.status }}
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Time: {{ results.mobileAPI.responseTime }}ms
+              </p>
+              <p v-if="results.mobileAPI.mongodb" class="text-sm text-gray-600 dark:text-gray-300">
+                MongoDB: {{ results.mobileAPI.mongodb }}
+              </p>
+              <p v-if="results.mobileAPI.collections" class="text-sm text-gray-600 dark:text-gray-300">
+                Collections: {{ results.mobileAPI.collections }}
+              </p>
+              <p v-if="results.mobileAPI.error" class="text-sm text-red-600">
+                Error: {{ results.mobileAPI.error }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Test 7: Mobile Articles Direct -->
+          <div class="border rounded-lg p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold">Mobile Articles (Direct MongoDB)</h3>
+              <button 
+                @click="testMobileArticles" 
+                :disabled="testing.mobileArticles"
+                class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 disabled:opacity-50"
+              >
+                {{ testing.mobileArticles ? 'Testing...' : 'Test' }}
+              </button>
+            </div>
+            <div v-if="results.mobileArticles" class="mt-2">
+              <p :class="results.mobileArticles.success ? 'text-green-600' : 'text-red-600'">
+                {{ results.mobileArticles.success ? '✅ Articles Retrieved' : '❌ Articles Failed' }}
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Status: {{ results.mobileArticles.status }}
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Count: {{ results.mobileArticles.count }}
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Time: {{ results.mobileArticles.responseTime }}ms
+              </p>
+              <p v-if="results.mobileArticles.error" class="text-sm text-red-600">
+                Error: {{ results.mobileArticles.error }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -227,7 +292,9 @@ const testing = ref({
   articles: false,
   simple: false,
   multiMethod: false,
-  cors: false
+  cors: false,
+  mobileAPI: false,
+  mobileArticles: false
 })
 
 const results = ref({
@@ -235,7 +302,9 @@ const results = ref({
   articles: null,
   simple: null,
   multiMethod: null,
-  cors: null
+  cors: null,
+  mobileAPI: null,
+  mobileArticles: null
 })
 
 const debugLogs = ref('')
@@ -532,6 +601,107 @@ const testCORSAfterUpdate = async () => {
   }
   
   testing.value.cors = false
+}
+
+const testMobileAPI = async () => {
+  testing.value.mobileAPI = true
+  log('🧪 Testing Mobile API with Direct MongoDB...')
+  
+  try {
+    const start = Date.now()
+    const response = await fetch('https://web-production-08299.up.railway.app/api/mobile/health', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    
+    const end = Date.now()
+    const responseTime = end - start
+    
+    if (response.ok) {
+      const data = await response.json()
+      log(`✅ Mobile API: Success (${responseTime}ms) - MongoDB Direct Access Working!`)
+      results.value.mobileAPI = {
+        success: true,
+        status: 'Mobile API Working',
+        responseTime,
+        mongodb: data.mongodb?.connected ? 'Connected' : 'Disconnected',
+        collections: data.mongodb?.collections?.length || 0,
+        data
+      }
+    } else {
+      log(`❌ Mobile API: HTTP ${response.status} (${responseTime}ms)`)
+      results.value.mobileAPI = {
+        success: false,
+        status: `HTTP ${response.status}`,
+        responseTime,
+        error: `HTTP ${response.status}`
+      }
+    }
+  } catch (error) {
+    const end = Date.now()
+    const responseTime = end - Date.now()
+    log(`❌ Mobile API: ${error.message}`)
+    results.value.mobileAPI = {
+      success: false,
+      status: 'Mobile API Failed',
+      responseTime,
+      error: error.message
+    }
+  }
+  
+  testing.value.mobileAPI = false
+}
+
+const testMobileArticles = async () => {
+  testing.value.mobileArticles = true
+  log('🧪 Testing Mobile Articles with Direct MongoDB...')
+  
+  try {
+    const start = Date.now()
+    const response = await fetch('https://web-production-08299.up.railway.app/api/mobile/articles', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    
+    const end = Date.now()
+    const responseTime = end - start
+    
+    if (response.ok) {
+      const data = await response.json()
+      log(`✅ Mobile Articles: Success (${responseTime}ms) - ${data.count} articles retrieved!`)
+      results.value.mobileArticles = {
+        success: true,
+        status: 'Articles Retrieved',
+        responseTime,
+        count: data.count,
+        data
+      }
+    } else {
+      log(`❌ Mobile Articles: HTTP ${response.status} (${responseTime}ms)`)
+      results.value.mobileArticles = {
+        success: false,
+        status: `HTTP ${response.status}`,
+        responseTime,
+        error: `HTTP ${response.status}`
+      }
+    }
+  } catch (error) {
+    const end = Date.now()
+    const responseTime = end - Date.now()
+    log(`❌ Mobile Articles: ${error.message}`)
+    results.value.mobileArticles = {
+      success: false,
+      status: 'Articles Failed',
+      responseTime,
+      error: error.message
+    }
+  }
+  
+  testing.value.mobileArticles = false
 }
 
 // Initialize
