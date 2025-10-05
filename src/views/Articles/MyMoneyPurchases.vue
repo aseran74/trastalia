@@ -162,7 +162,7 @@ const loadPurchases = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const url = `${API_BASE_URL}/api/articles/my-purchases`
+    const url = `${API_BASE_URL}/api/user/my-purchases`
     console.log('🔍 Cargando compras del usuario desde:', url)
     console.log('🔑 Token:', token ? 'Presente' : 'Ausente')
     
@@ -177,9 +177,30 @@ const loadPurchases = async () => {
     
     if (response.ok) {
       const data = await response.json()
-      purchases.value = data.data.purchases || []
-      totalPurchases.value = data.data.totalPurchases || 0
-      totalSpent.value = data.data.totalSpent || 0
+      console.log('📦 Datos recibidos del servidor:', data)
+      
+      // El nuevo endpoint devuelve data.data como array de artículos
+      const rawPurchases = data.data || []
+      
+      // Transformar los datos para que coincidan con la estructura esperada
+      purchases.value = rawPurchases.map(article => ({
+        id: article._id,
+        title: article.title || article.nombre,
+        description: article.description || article.descripcion,
+        category: article.category || article.categoria,
+        images: article.images || article.fotos || [],
+        purchasePrice: article.adminDecision?.finalPrice || article.price || article.precio_propuesto_vendedor,
+        purchaseDate: article.updatedAt || article.createdAt,
+        currentStatus: article.estado_articulo,
+        seller: article.id_vendedor,
+        condition: article.condition || article.condicion,
+        location: article.location || article.ubicacion
+      }))
+      
+      // Calcular totales
+      totalPurchases.value = purchases.value.length
+      totalSpent.value = purchases.value.reduce((sum, purchase) => sum + (purchase.purchasePrice || 0), 0)
+      
       console.log('✅ Compras cargadas:', purchases.value.length)
       console.log('📊 Total compras:', totalPurchases.value)
       console.log('💰 Dinero gastado:', totalSpent.value)
