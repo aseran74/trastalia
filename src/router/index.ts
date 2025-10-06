@@ -43,24 +43,6 @@ const router = createRouter({
           requiresAuth: false
         },
       },
-      {
-        path: '/testing',
-        name: 'Connection Test',
-        component: () => import('../views/Testing/ConnectionTest.vue'),
-        meta: {
-          title: 'Connection Testing - Trastalia',
-          requiresAuth: false
-        },
-      },
-      {
-        path: '/mobile-test',
-        name: 'Mobile Connection Test',
-        component: () => import('../views/Testing/MobileConnectionTest.vue'),
-        meta: {
-          title: 'Mobile Connection Testing - Trastalia',
-          requiresAuth: false
-        },
-      },
     {
       path: '/auth/callback',
       name: 'AuthCallback',
@@ -371,15 +353,6 @@ const router = createRouter({
       component: () => import('../views/Payment/PaymentCancel.vue'),
       meta: {
         title: 'Pago Cancelado - Trastalia',
-        requiresAuth: false
-      },
-    },
-    {
-      path: '/stripe/test',
-      name: 'Stripe Test Payment',
-      component: () => import('../views/stripe/TestPayment.vue'),
-      meta: {
-        title: 'Prueba de Pago Stripe - Trastalia',
         requiresAuth: false
       },
     },
