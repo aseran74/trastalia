@@ -233,111 +233,163 @@
           </div>
 
           <!-- Dashboard Content para Usuarios Normales -->
-          <div v-else-if="!isAdmin" class="space-y-6">
-            <!-- Mensaje de bienvenida -->
-            <div class="rounded-lg border border-stroke bg-white p-8 shadow-default dark:border-strokedark dark:bg-boxdark text-center">
-              <div class="mx-auto mb-6 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
+          <div v-else-if="!isAdmin" class="space-y-8">
+            <!-- Mensaje de bienvenida mejorado -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-8 shadow-2xl">
+              <!-- Elementos decorativos de fondo -->
+              <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
+              <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-24 -translate-x-24"></div>
+              <div class="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+              
+              <!-- Contenido principal -->
+              <div class="relative z-10 text-center">
+                <div class="mx-auto mb-6 h-20 w-20 rounded-full bg-gradient-to-r from-white/20 to-white/30 backdrop-blur-sm flex items-center justify-center shadow-xl">
+                  <svg class="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-4xl font-black text-white mb-3">¡Bienvenido a Trastalia!</h3>
+                <p class="text-xl text-white/90 mb-6 max-w-2xl mx-auto">Tu plataforma para vender y comprar artículos de segunda mano</p>
+                
+                <!-- Indicadores de estado -->
+                <div class="flex items-center justify-center space-x-6 text-white/80">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="text-sm font-medium">Plataforma activa</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                      <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm font-medium">+1000 artículos</span>
+                  </div>
+                </div>
               </div>
-              <h3 class="text-2xl font-bold text-black dark:text-white mb-2">¡Bienvenido a Trastalia!</h3>
-              <p class="text-gray-600 dark:text-gray-400 mb-6">Tu plataforma para vender y comprar artículos de segunda mano</p>
             </div>
 
-            <!-- Acciones rápidas para usuarios -->
+            <!-- Acciones rápidas mejoradas -->
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               <!-- Vender Artículo -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                  <div class="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
-                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
+              <div class="group relative overflow-hidden rounded-2xl border border-green-200/50 bg-white p-8 shadow-lg hover:shadow-2xl dark:border-green-800/30 dark:bg-boxdark transition-all duration-300 hover:scale-[1.02]">
+                <!-- Fondo con gradiente al hover -->
+                <div class="absolute inset-0 bg-gradient-to-br from-green-500/0 to-emerald-500/0 group-hover:from-green-500/5 group-hover:to-emerald-500/5 transition-all duration-300"></div>
+                
+                <div class="relative z-10">
+                  <div class="flex items-center mb-6">
+                    <div class="h-14 w-14 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                    </div>
+                    <div class="ml-4">
+                      <h3 class="text-xl font-bold text-black dark:text-white">Vender</h3>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">Sube tu artículo</p>
+                    </div>
                   </div>
-                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Vender Artículo</h3>
+                  <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">Sube tu artículo y recibe una oferta de Trastalia al instante</p>
+                  <router-link 
+                    to="/vender-articulo" 
+                    class="inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    Crear artículo
+                    <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                  </router-link>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Sube tu artículo y recibe una oferta de Trastalia</p>
-                <router-link 
-                  to="/vender-articulo" 
-                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Crear artículo
-                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </router-link>
               </div>
 
               <!-- Comprar Artículos -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                  <div class="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                    </svg>
+              <div class="group relative overflow-hidden rounded-2xl border border-blue-200/50 bg-white p-8 shadow-lg hover:shadow-2xl dark:border-blue-800/30 dark:bg-boxdark transition-all duration-300 hover:scale-[1.02]">
+                <!-- Fondo con gradiente al hover -->
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/5 group-hover:to-cyan-500/5 transition-all duration-300"></div>
+                
+                <div class="relative z-10">
+                  <div class="flex items-center mb-6">
+                    <div class="h-14 w-14 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                      </svg>
+                    </div>
+                    <div class="ml-4">
+                      <h3 class="text-xl font-bold text-black dark:text-white">Comprar</h3>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">Artículos disponibles</p>
+                    </div>
                   </div>
-                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Comprar Artículos</h3>
+                  <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">Explora artículos disponibles para compra con dinero o puntos</p>
+                  <router-link 
+                    to="/comprar-articulos" 
+                    class="inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    Ver artículos
+                    <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                  </router-link>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Explora artículos disponibles para compra</p>
-                <router-link 
-                  to="/comprar-articulos" 
-                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Ver artículos
-                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </router-link>
               </div>
 
               <!-- Mis Solicitudes -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                  <div class="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                    <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
+              <div class="group relative overflow-hidden rounded-2xl border border-purple-200/50 bg-white p-8 shadow-lg hover:shadow-2xl dark:border-purple-800/30 dark:bg-boxdark transition-all duration-300 hover:scale-[1.02]">
+                <!-- Fondo con gradiente al hover -->
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-pink-500/0 group-hover:from-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300"></div>
+                
+                <div class="relative z-10">
+                  <div class="flex items-center mb-6">
+                    <div class="h-14 w-14 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                      </svg>
+                    </div>
+                    <div class="ml-4">
+                      <h3 class="text-xl font-bold text-black dark:text-white">Mis Solicitudes</h3>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">Gestiona compras</p>
+                    </div>
                   </div>
-                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Mis Solicitudes</h3>
+                  <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">Gestiona y revisa el estado de tus solicitudes de compra</p>
+                  <router-link 
+                    to="/mis-solicitudes-compra" 
+                    class="inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    Ver solicitudes
+                    <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                  </router-link>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Gestiona tus solicitudes de compra</p>
-                <router-link 
-                  to="/mis-solicitudes-compra" 
-                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Ver solicitudes
-                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </router-link>
               </div>
             </div>
 
-            <!-- Información adicional -->
-            <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-              <h3 class="text-lg font-semibold text-black dark:text-white mb-4">¿Cómo funciona Trastalia?</h3>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="text-center">
-                  <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                    <span class="text-xl font-bold text-yellow-600">1</span>
+            <!-- Información adicional mejorada -->
+            <div class="relative overflow-hidden rounded-2xl border border-gray-200/50 bg-white p-8 shadow-lg dark:border-gray-700/30 dark:bg-boxdark">
+              <!-- Elemento decorativo de fondo -->
+              <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full -translate-y-32 translate-x-32"></div>
+              
+              <div class="relative z-10">
+                <h3 class="text-2xl font-bold text-black dark:text-white mb-8 text-center">¿Cómo funciona Trastalia?</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div class="group text-center hover:scale-105 transition-transform duration-300">
+                    <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+                      <span class="text-2xl font-black text-white">1</span>
+                    </div>
+                    <h4 class="font-bold text-lg text-black dark:text-white mb-3">Sube tu artículo</h4>
+                    <p class="text-base text-gray-600 dark:text-gray-400 leading-relaxed">Describe y fotografía tu artículo en minutos</p>
                   </div>
-                  <h4 class="font-semibold text-black dark:text-white mb-2">Sube tu artículo</h4>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Describe y fotografía tu artículo</p>
-                </div>
-                <div class="text-center">
-                  <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                    <span class="text-xl font-bold text-yellow-600">2</span>
+                  <div class="group text-center hover:scale-105 transition-transform duration-300">
+                    <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+                      <span class="text-2xl font-black text-white">2</span>
+                    </div>
+                    <h4 class="font-bold text-lg text-black dark:text-white mb-3">Recibe una oferta</h4>
+                    <p class="text-base text-gray-600 dark:text-gray-400 leading-relaxed">Trastalia te hace una oferta justa al instante</p>
                   </div>
-                  <h4 class="font-semibold text-black dark:text-white mb-2">Recibe una oferta</h4>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Trastalia te hace una oferta justa</p>
-                </div>
-                <div class="text-center">
-                  <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                    <span class="text-xl font-bold text-yellow-600">3</span>
+                  <div class="group text-center hover:scale-105 transition-transform duration-300">
+                    <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+                      <span class="text-2xl font-black text-white">3</span>
+                    </div>
+                    <h4 class="font-bold text-lg text-black dark:text-white mb-3">Acepta y vende</h4>
+                    <p class="text-base text-gray-600 dark:text-gray-400 leading-relaxed">Recibe tu pago en efectivo o puntos para canjear</p>
                   </div>
-                  <h4 class="font-semibold text-black dark:text-white mb-2">Acepta y vende</h4>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Recibe tu pago o puntos</p>
                 </div>
               </div>
             </div>
