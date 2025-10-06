@@ -268,7 +268,7 @@ const menuGroups = [
       {
         icon: GridIcon,
         name: "Dashboard",
-        path: "/",
+        path: "/dashboard",
       },
     ],
   },

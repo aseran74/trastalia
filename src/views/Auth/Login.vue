@@ -114,8 +114,8 @@ const handleLogin = async () => {
     
     await authStore.login(form.email, form.password, form.rememberMe);
     
-    // Redirigir a la página de artículos
-    router.push('/articulos');
+    // Redirigir al dashboard
+    router.push('/dashboard');
     
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Error al iniciar sesión';
