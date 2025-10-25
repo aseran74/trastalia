@@ -25,11 +25,10 @@ const loading = ref(false)
 const handleGoogleAuth = () => {
   loading.value = true
   
-  // Obtener la URL base del API
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 
-    (import.meta.env.PROD 
-      ? 'https://trastalia.onrender.com' 
-      : 'http://localhost:3001')
+  // Obtener la URL base del API - SIEMPRE usar Render en producción
+  const apiBaseUrl = import.meta.env.PROD 
+    ? 'https://trastalia.onrender.com' 
+    : 'http://localhost:3001'
   
   // Redirigir a la ruta de Google OAuth del backend
   window.location.href = `${apiBaseUrl}/auth/google`
