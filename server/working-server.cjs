@@ -4396,15 +4396,6 @@ app.delete('/api/packages/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('✅ Conectado a MongoDB Atlas');
-  })
-  .catch((error) => {
-    console.error('❌ Error conectando a MongoDB:', error);
-  });
-
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor backend ejecutándose en puerto ${PORT}`);

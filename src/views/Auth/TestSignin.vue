@@ -102,8 +102,8 @@ const handleLogin = async () => {
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 
       (import.meta.env.PROD 
-        ? 'https://web-production-08299.up.railway.app' 
-        : 'http://localhost:3002')
+        ? 'https://trastalia.onrender.com' 
+        : 'http://localhost:3001')
     
     const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
       method: 'POST',
