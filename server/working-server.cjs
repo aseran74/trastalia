@@ -15,10 +15,14 @@ app.use(cors({
   origin: [
     'http://localhost:5173', 
     'http://localhost:3000',
+    'http://localhost:3001',
     'https://trastalia.vercel.app',
-    'https://*.vercel.app'
+    'https://*.vercel.app',
+    'https://trastalia-aw9zrzdx6-aseran74s-projects.vercel.app'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 app.use(express.json({ limit: '10mb' }));

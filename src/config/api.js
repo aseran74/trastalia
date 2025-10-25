@@ -1,17 +1,20 @@
 // Configuración de la API
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.PROD 
-    ? 'https://trastalia.onrender.com' 
-    : 'http://localhost:3001'); // En desarrollo local, usar la URL del backend
-
-// Función para obtener la URL base de la API
 const getApiBaseUrl = () => {
+  // Si hay una variable de entorno específica, usarla
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  // En desarrollo, usar la URL del backend local
+  
+  // En producción (Vercel), usar Render
+  if (import.meta.env.PROD) {
+    return 'https://trastalia.onrender.com';
+  }
+  
+  // En desarrollo local, usar el backend local
   return 'http://localhost:3001';
 };
+
+const API_BASE_URL = getApiBaseUrl();
 
 console.log('🔧 API Configuration:', {
   VITE_API_URL: import.meta.env.VITE_API_URL,
