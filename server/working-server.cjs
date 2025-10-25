@@ -43,12 +43,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configuración de Google OAuth (solo para desarrollo local)
-if (process.env.NODE_ENV !== 'production' && process.env.GOOGLE_CLIENT_ID) {
+// Configuración de Google OAuth
+if (process.env.GOOGLE_CLIENT_ID) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3002/auth/google/callback"
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || (process.env.NODE_ENV === 'production' ? "https://trastalia.onrender.com/auth/google/callback" : "http://localhost:3002/auth/google/callback")
   },
 async (accessToken, refreshToken, profile, done) => {
   try {
@@ -94,7 +94,7 @@ async (accessToken, refreshToken, profile, done) => {
   }
   }));
 } else {
-  console.log('⚠️ Google OAuth deshabilitado en producción');
+  console.log('⚠️ Google OAuth deshabilitado - faltan variables de entorno');
 }
 
 // Serialización del usuario para la sesión
@@ -490,8 +490,8 @@ const assignClosestLogisticsShip = (location) => {
   };
 };
 
-// Rutas de Google OAuth (solo para desarrollo local)
-if (process.env.NODE_ENV !== 'production') {
+// Rutas de Google OAuth
+if (process.env.GOOGLE_CLIENT_ID) {
   app.get('/auth/google', passport.authenticate('google', {
     scope: ['profile', 'email']
   }));
