@@ -133,14 +133,16 @@
             <!-- Segunda fila de estadísticas -->
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <!-- Total de Usuarios -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-50 to-blue-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-indigo-900/20 dark:to-blue-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Usuarios</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ stats.users.total }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Total Usuarios</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ stats.users.total }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Registrados</p>
                   </div>
-                  <div class="rounded-full bg-indigo-100 p-3 dark:bg-indigo-900/20">
-                    <svg class="h-6 w-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                     </svg>
                   </div>
@@ -148,14 +150,16 @@
               </div>
 
               <!-- Usuarios Activos -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-emerald-900/20 dark:to-green-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Usuarios Activos</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ stats.users.active }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Usuarios Activos</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ stats.users.active }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">En línea</p>
                   </div>
-                  <div class="rounded-full bg-emerald-100 p-3 dark:bg-emerald-900/20">
-                    <svg class="h-6 w-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
@@ -163,14 +167,16 @@
               </div>
 
               <!-- Administradores -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-red-50 to-pink-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-red-900/20 dark:to-pink-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Administradores</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ stats.users.admins }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Administradores</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ stats.users.admins }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Con privilegios</p>
                   </div>
-                  <div class="rounded-full bg-red-100 p-3 dark:bg-red-900/20">
-                    <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-red-500 to-pink-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                   </div>
@@ -178,14 +184,16 @@
               </div>
 
               <!-- Total Puntos -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-yellow-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-orange-900/20 dark:to-yellow-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Puntos</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ formatNumber(stats.points.total) }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Total Puntos</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ formatNumber(stats.points.total) }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Acumulados</p>
                   </div>
-                  <div class="rounded-full bg-orange-100 p-3 dark:bg-orange-900/20">
-                    <svg class="h-6 w-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-orange-500 to-yellow-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                     </svg>
                   </div>
@@ -194,145 +202,205 @@
             </div>
 
             <!-- Transacciones del mes -->
-            <div v-if="stats.transactions.monthly.length > 0" class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-              <h3 class="mb-4 text-lg font-semibold text-black dark:text-white">Transacciones del Mes</h3>
-              <div class="space-y-3">
-                <div v-for="transaction in stats.transactions.monthly" :key="`${transaction._id.year}-${transaction._id.month}`" 
-                     class="flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-                  <div>
-                    <p class="font-medium text-black dark:text-white">
-                      {{ getMonthName(transaction._id.month) }} {{ transaction._id.year }}
-                    </p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ transaction.count }} transacciones</p>
+            <div v-if="stats.transactions.monthly.length > 0" class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl dark:border-strokedark dark:bg-boxdark">
+              <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-green-900/20 dark:to-emerald-900/20"></div>
+              <div class="relative">
+                <div class="mb-6 flex items-center gap-3">
+                  <div class="rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 p-3 shadow-lg">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
                   </div>
-                  <div class="text-right">
-                    <p class="text-lg font-bold text-green-600 dark:text-green-400">
-                      {{ formatNumber(transaction.totalValue) }}€
-                    </p>
+                  <h3 class="text-2xl font-bold text-black dark:text-white">Transacciones del Mes</h3>
+                </div>
+                <div class="space-y-4">
+                  <div v-for="transaction in stats.transactions.monthly" :key="`${transaction._id.year}-${transaction._id.month}`" 
+                       class="group/item flex items-center justify-between rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 dark:from-green-900/20 dark:to-emerald-900/20">
+                    <div>
+                      <p class="text-lg font-bold text-black dark:text-white">
+                        {{ getMonthName(transaction._id.month) }} {{ transaction._id.year }}
+                      </p>
+                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ transaction.count }} transacciones</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+                        {{ formatNumber(transaction.totalValue) }}€
+                      </p>
+                      <p class="text-xs text-gray-500 dark:text-gray-500">Valor total</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Categorías populares -->
-            <div v-if="stats.categories.popular.length > 0" class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-              <h3 class="mb-4 text-lg font-semibold text-black dark:text-white">Categorías Populares</h3>
-              <div class="space-y-3">
-                <div v-for="category in stats.categories.popular" :key="category._id" 
-                     class="flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-                  <div>
-                    <p class="font-medium text-black dark:text-white capitalize">{{ category._id }}</p>
+            <div v-if="stats.categories.popular.length > 0" class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl dark:border-strokedark dark:bg-boxdark">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-blue-900/20 dark:to-indigo-900/20"></div>
+              <div class="relative">
+                <div class="mb-6 flex items-center gap-3">
+                  <div class="rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 p-3 shadow-lg">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
                   </div>
-                  <div class="text-right">
-                    <p class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ category.count }} artículos</p>
+                  <h3 class="text-2xl font-bold text-black dark:text-white">Categorías Populares</h3>
+                </div>
+                <div class="space-y-4">
+                  <div v-for="category in stats.categories.popular" :key="category._id" 
+                       class="group/item flex items-center justify-between rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 dark:from-blue-900/20 dark:to-indigo-900/20">
+                    <div>
+                      <p class="text-lg font-bold text-black dark:text-white capitalize">{{ category._id }}</p>
+                      <p class="text-sm text-gray-600 dark:text-gray-400">Categoría popular</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ category.count }}</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-500">artículos</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Top usuarios con puntos -->
-            <div v-if="stats.points.topUsers.length > 0" class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-              <h3 class="mb-4 text-lg font-semibold text-black dark:text-white">Top Usuarios por Puntos</h3>
-              <div class="overflow-x-auto">
-                <table class="w-full">
-                  <thead>
-                    <tr class="border-b border-stroke dark:border-strokedark">
-                      <th class="text-left py-3 px-4 font-medium text-black dark:text-white">Usuario</th>
-                      <th class="text-left py-3 px-4 font-medium text-black dark:text-white">Email</th>
-                      <th class="text-right py-3 px-4 font-medium text-black dark:text-white">Puntos</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="user in stats.points.topUsers" :key="user._id" class="border-b border-stroke dark:border-strokedark">
-                      <td class="py-3 px-4 text-black dark:text-white">{{ user.name }}</td>
-                      <td class="py-3 px-4 text-gray-600 dark:text-gray-400">{{ user.email }}</td>
-                      <td class="py-3 px-4 text-right font-bold text-orange-600 dark:text-orange-400">{{ formatNumber(user.points) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div v-if="stats.points.topUsers.length > 0" class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl dark:border-strokedark dark:bg-boxdark">
+              <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-yellow-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-orange-900/20 dark:to-yellow-900/20"></div>
+              <div class="relative">
+                <div class="mb-6 flex items-center gap-3">
+                  <div class="rounded-2xl bg-gradient-to-br from-orange-500 to-yellow-600 p-3 shadow-lg">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                  </div>
+                  <h3 class="text-2xl font-bold text-black dark:text-white">Top Usuarios por Puntos</h3>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead>
+                      <tr class="border-b-2 border-orange-200 dark:border-orange-800">
+                        <th class="text-left py-4 px-6 font-bold text-black dark:text-white text-lg">Usuario</th>
+                        <th class="text-left py-4 px-6 font-bold text-black dark:text-white text-lg">Email</th>
+                        <th class="text-right py-4 px-6 font-bold text-black dark:text-white text-lg">Puntos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(user, index) in stats.points.topUsers" :key="user._id" 
+                          class="border-b border-orange-100 dark:border-orange-900/50 transition-all duration-300 hover:bg-orange-50 dark:hover:bg-orange-900/20">
+                        <td class="py-4 px-6">
+                          <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-yellow-600 text-white font-bold text-lg">
+                              {{ index + 1 }}
+                            </div>
+                            <span class="font-bold text-black dark:text-white text-lg">{{ user.name }}</span>
+                          </div>
+                        </td>
+                        <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-lg">{{ user.email }}</td>
+                        <td class="py-4 px-6 text-right">
+                          <span class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ formatNumber(user.points) }}</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Dashboard Content para Usuarios Normales -->
-          <div v-else-if="!isAdmin" class="space-y-6">
+          <div v-else-if="!isAdmin" class="space-y-8">
             <!-- Mensaje de bienvenida -->
-            <div class="rounded-lg border border-stroke bg-white p-8 shadow-default dark:border-strokedark dark:bg-boxdark text-center">
-              <div class="mx-auto mb-6 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
+            <div class="group relative overflow-hidden rounded-3xl border border-stroke bg-gradient-to-br from-blue-50 to-purple-50 p-12 shadow-2xl text-center transition-all duration-300 hover:shadow-3xl dark:border-strokedark dark:from-blue-900/20 dark:to-purple-900/20">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+              <div class="relative">
+                <div class="mx-auto mb-8 h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl">
+                  <svg class="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">¡Bienvenido a Trastalia!</h3>
+                <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">Tu plataforma para vender y comprar artículos de segunda mano</p>
+                <div class="flex justify-center">
+                  <div class="rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-3 text-white font-semibold shadow-lg">
+                    ¡Comienza tu experiencia!
+                  </div>
+                </div>
               </div>
-              <h3 class="text-2xl font-bold text-black dark:text-white mb-2">¡Bienvenido a Trastalia!</h3>
-              <p class="text-gray-600 dark:text-gray-400 mb-6">Tu plataforma para vender y comprar artículos de segunda mano</p>
             </div>
 
             <!-- Acciones rápidas para usuarios -->
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               <!-- Vender Artículo -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                  <div class="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
-                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-green-900/20 dark:to-emerald-900/20"></div>
+                <div class="relative">
+                  <div class="mb-6 flex items-center gap-4">
+                    <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                      <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-black dark:text-white">Vender Artículo</h3>
                   </div>
-                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Vender Artículo</h3>
+                  <p class="text-gray-600 dark:text-gray-400 mb-6 text-lg">Sube tu artículo y recibe una oferta de Trastalia</p>
+                  <router-link 
+                    to="/vender-articulo" 
+                    class="group/link inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+                  >
+                    Crear artículo
+                    <svg class="h-5 w-5 group-hover/link:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </router-link>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Sube tu artículo y recibe una oferta de Trastalia</p>
-                <router-link 
-                  to="/vender-articulo" 
-                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Crear artículo
-                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </router-link>
               </div>
 
               <!-- Comprar Artículos -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                  <div class="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                    </svg>
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-blue-900/20 dark:to-indigo-900/20"></div>
+                <div class="relative">
+                  <div class="mb-6 flex items-center gap-4">
+                    <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                      <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                      </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-black dark:text-white">Comprar Artículos</h3>
                   </div>
-                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Comprar Artículos</h3>
+                  <p class="text-gray-600 dark:text-gray-400 mb-6 text-lg">Explora artículos disponibles para compra</p>
+                  <router-link 
+                    to="/comprar-articulos" 
+                    class="group/link inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+                  >
+                    Ver artículos
+                    <svg class="h-5 w-5 group-hover/link:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </router-link>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Explora artículos disponibles para compra</p>
-                <router-link 
-                  to="/comprar-articulos" 
-                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Ver artículos
-                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </router-link>
               </div>
 
               <!-- Mis Solicitudes -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                  <div class="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                    <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-purple-900/20 dark:to-violet-900/20"></div>
+                <div class="relative">
+                  <div class="mb-6 flex items-center gap-4">
+                    <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg">
+                      <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                      </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-black dark:text-white">Mis Solicitudes</h3>
                   </div>
-                  <h3 class="ml-4 text-lg font-semibold text-black dark:text-white">Mis Solicitudes</h3>
+                  <p class="text-gray-600 dark:text-gray-400 mb-6 text-lg">Gestiona tus solicitudes de compra</p>
+                  <router-link 
+                    to="/mis-solicitudes-compra" 
+                    class="group/link inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-violet-600 px-6 py-3 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+                  >
+                    Ver solicitudes
+                    <svg class="h-5 w-5 group-hover/link:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </router-link>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Gestiona tus solicitudes de compra</p>
-                <router-link 
-                  to="/mis-solicitudes-compra" 
-                  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Ver solicitudes
-                  <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </router-link>
               </div>
             </div>
 
