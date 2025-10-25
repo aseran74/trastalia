@@ -1,0 +1,20 @@
+# Variables de entorno para Unsplash
+# Añade estas variables a tu archivo .env o configuración de Render
+
+# Unsplash API Key
+# Obtén tu API key en: https://unsplash.com/developers
+UNSPLASH_ACCESS_KEY=tu_unsplash_access_key_aqui
+
+# Ejemplo de configuración en Render:
+# 1. Ve a tu proyecto en Render
+# 2. Ve a Environment Variables
+# 3. Añade:
+#    - Key: UNSPLASH_ACCESS_KEY
+#    - Value: tu_clave_de_unsplash_aqui
+
+# Para obtener una API key de Unsplash:
+# 1. Ve a https://unsplash.com/developers
+# 2. Crea una cuenta o inicia sesión
+# 3. Crea una nueva aplicación
+# 4. Copia tu Access Key
+# 5. Añádela como variable de entorno en Render

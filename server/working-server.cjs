@@ -912,6 +912,14 @@ app.get('/api/auth/me', authMiddleware, async (req, res) => {
   }
 });
 
+// ===== RUTAS DE FOTOS =====
+// Importar rutas de fotos
+const photoRoutes = require('./routes/photos');
+
+// ===== RUTAS DE FOTOS =====
+// Usar rutas de fotos
+app.use('/api/photos', photoRoutes);
+
 // ===== RUTAS DE STRIPE =====
 // Importar rutas de Stripe
 const stripeRoutes = require('./routes/stripe.cjs');
