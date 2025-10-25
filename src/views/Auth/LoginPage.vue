@@ -16,9 +16,9 @@
 
       <!-- Formulario de Login -->
       <div class="bg-white py-8 px-6 shadow-xl rounded-2xl">
-        <!-- Botón de Google Auth con Firebase -->
+        <!-- Botón de Google Auth -->
         <div class="mb-6">
-          <FirebaseGoogleAuthButton />
+          <GoogleAuthButton />
         </div>
 
         <!-- Separador -->
@@ -116,7 +116,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import FirebaseGoogleAuthButton from '@/components/auth/FirebaseGoogleAuthButton.vue'
+import GoogleAuthButton from '@/components/auth/GoogleAuthButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
