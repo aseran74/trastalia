@@ -69,10 +69,12 @@ onMounted(async () => {
       
       // Obtener información del usuario desde el backend
       try {
-        const apiBaseUrl = import.meta.env.VITE_API_URL || 
-          (import.meta.env.PROD 
-            ? 'https://trastalia.onrender.com' 
-            : 'http://localhost:3001')
+        const apiBaseUrl = import.meta.env.PROD 
+          ? 'https://trastalia.onrender.com' 
+          : 'http://localhost:3001'
+        
+        console.log('🔍 AuthCallback - Llamando a API:', `${apiBaseUrl}/api/auth/me`)
+        console.log('🔑 AuthCallback - Token:', token)
         
         const response = await fetch(`${apiBaseUrl}/api/auth/me`, {
           headers: {
@@ -80,8 +82,12 @@ onMounted(async () => {
           }
         })
         
+        console.log('📡 AuthCallback - Respuesta del servidor:', response.status, response.statusText)
+        
         if (response.ok) {
           const data = await response.json()
+          console.log('📦 AuthCallback - Datos recibidos:', data)
+          
           if (data.success) {
             // Guardar datos del usuario
             const userData = {
@@ -108,10 +114,15 @@ onMounted(async () => {
               router.push('/dashboard')
             }, 2000)
             return
+          } else {
+            console.error('❌ AuthCallback - Error en respuesta:', data.message)
           }
+        } else {
+          const errorText = await response.text()
+          console.error('❌ AuthCallback - Error del servidor:', response.status, errorText)
         }
       } catch (apiError) {
-        console.error('Error obteniendo datos del usuario:', apiError)
+        console.error('❌ AuthCallback - Error obteniendo datos del usuario:', apiError)
       }
       
       // Si no se pudo obtener datos del usuario, usar datos básicos
