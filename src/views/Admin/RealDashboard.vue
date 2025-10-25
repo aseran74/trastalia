@@ -24,6 +24,15 @@
                 </svg>
                 Actualizar
               </button>
+              <button 
+                @click="checkAuthStatus"
+                class="flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
+              >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Verificar Auth
+              </button>
             </div>
           </div>
 
@@ -382,6 +391,7 @@ const loadStats = async () => {
     const url = `${API_BASE_URL}/api/admin/dashboard-stats`
     console.log('🔍 Cargando estadísticas desde:', url)
     console.log('🔑 Token:', authStore.token ? 'Presente' : 'Ausente')
+    console.log('👤 Usuario:', authStore.user?.email, 'Rol:', authStore.user?.role)
     
     const response = await fetch(url, {
       headers: {
@@ -395,6 +405,21 @@ const loadStats = async () => {
     if (!response.ok) {
       const errorText = await response.text()
       console.error('❌ Error del servidor:', errorText)
+      
+      // Si es error 401, el token puede estar expirado
+      if (response.status === 401) {
+        error.value = 'Sesión expirada. Por favor, inicia sesión nuevamente.'
+        // Opcional: redirigir al login
+        // router.push('/login')
+        return
+      }
+      
+      // Si es error 403, el usuario no es admin
+      if (response.status === 403) {
+        error.value = 'No tienes permisos de administrador para acceder a estas estadísticas.'
+        return
+      }
+      
       throw new Error(`Error ${response.status}: ${response.statusText}`)
     }
     
@@ -411,6 +436,24 @@ const loadStats = async () => {
 
 const formatNumber = (num) => {
   return new Intl.NumberFormat('es-ES').format(num)
+}
+
+const checkAuthStatus = () => {
+  console.log('🔍 Estado de autenticación:', {
+    isAuthenticated: authStore.isAuthenticated,
+    user: authStore.user,
+    token: authStore.token ? 'Presente' : 'Ausente',
+    role: authStore.user?.role,
+    isAdmin: isAdmin.value
+  })
+  
+  // Mostrar alerta con la información
+  alert(`Estado de autenticación:
+- Autenticado: ${authStore.isAuthenticated}
+- Usuario: ${authStore.user?.email || 'No disponible'}
+- Rol: ${authStore.user?.role || 'No disponible'}
+- Token: ${authStore.token ? 'Presente' : 'Ausente'}
+- Es Admin: ${isAdmin.value}`)
 }
 
 const getMonthName = (month) => {
