@@ -570,7 +570,7 @@ const authMiddleware = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
-  console.log('🔐 Auth Middleware - Token:', token);
+  console.log('🔐 Auth Middleware - Token extraído:', token);
   
   // Si es un token de admin, buscar el usuario admin
   if (token.startsWith('mongodb-admin-token-')) {
