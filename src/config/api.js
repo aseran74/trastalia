@@ -5,8 +5,12 @@ const getApiBaseUrl = () => {
     return import.meta.env.VITE_API_URL;
   }
   
+  // Detectar si estamos en Vercel (producción)
+  const isVercel = window.location.hostname.includes('vercel.app') || 
+                   window.location.hostname.includes('trastalia.vercel.app');
+  
   // En producción (Vercel), usar Render
-  if (import.meta.env.PROD) {
+  if (import.meta.env.PROD || isVercel) {
     return 'https://trastalia.onrender.com';
   }
   
