@@ -10,28 +10,33 @@
       <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
         <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
           <!-- Header -->
-          <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 class="text-title-md2 font-semibold text-black dark:text-white">
-              {{ isAdmin ? 'Dashboard de Administración' : 'Mi Panel de Usuario' }}
-            </h2>
-            <div v-if="isAdmin" class="flex items-center space-x-2">
+          <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {{ isAdmin ? 'Dashboard de Administración' : 'Mi Panel de Usuario' }}
+              </h2>
+              <p class="mt-2 text-gray-600 dark:text-gray-400">
+                {{ isAdmin ? 'Gestiona y supervisa toda la plataforma' : 'Bienvenido a tu espacio personal' }}
+              </p>
+            </div>
+            <div v-if="isAdmin" class="flex items-center space-x-3">
               <button 
                 @click="loadStats"
-                class="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-white hover:bg-opacity-90"
+                class="group flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-5 w-5 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                Actualizar
+                <span class="font-medium">Actualizar</span>
               </button>
               <button 
                 @click="checkAuthStatus"
-                class="flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
+                class="group flex items-center gap-2 rounded-xl bg-gray-100 dark:bg-gray-800 px-6 py-3 text-gray-700 dark:text-gray-300 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-5 w-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Verificar Auth
+                <span class="font-medium">Verificar Auth</span>
               </button>
             </div>
           </div>
@@ -57,14 +62,16 @@
             <!-- Estadísticas principales -->
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <!-- Total de Artículos -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-blue-900/20 dark:to-indigo-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Artículos</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ stats.articles.total }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Total Artículos</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ stats.articles.total }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">En la plataforma</p>
                   </div>
-                  <div class="rounded-full bg-blue-100 p-3 dark:bg-blue-900/20">
-                    <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                   </div>
@@ -72,14 +79,16 @@
               </div>
 
               <!-- Artículos en Venta -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-green-900/20 dark:to-emerald-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">En Venta</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ stats.articles.enVenta }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">En Venta</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ stats.articles.enVenta }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Disponibles</p>
                   </div>
-                  <div class="rounded-full bg-green-100 p-3 dark:bg-green-900/20">
-                    <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                     </svg>
                   </div>
@@ -87,14 +96,16 @@
               </div>
 
               <!-- Artículos Canjeados -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-purple-900/20 dark:to-violet-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Canjeados</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ stats.articles.canjeados }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Canjeados</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ stats.articles.canjeados }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Completados</p>
                   </div>
-                  <div class="rounded-full bg-purple-100 p-3 dark:bg-purple-900/20">
-                    <svg class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
@@ -102,14 +113,16 @@
               </div>
 
               <!-- Artículos Pendientes -->
-              <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-                <div class="flex items-center justify-between">
+              <div class="group relative overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:border-strokedark dark:bg-boxdark">
+                <div class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-orange-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-yellow-900/20 dark:to-orange-900/20"></div>
+                <div class="relative flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pendientes</p>
-                    <p class="text-2xl font-bold text-black dark:text-white">{{ stats.articles.pendientes }}</p>
+                    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Pendientes</p>
+                    <p class="text-3xl font-bold text-black dark:text-white mt-2">{{ stats.articles.pendientes }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">En proceso</p>
                   </div>
-                  <div class="rounded-full bg-yellow-100 p-3 dark:bg-yellow-900/20">
-                    <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-600 p-4 shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
