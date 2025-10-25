@@ -18,6 +18,13 @@ const getApiBaseUrl = () => {
   return 'http://localhost:3001';
 };
 
+// Función de fallback para asegurar que siempre usemos la URL correcta
+const getApiUrl = () => {
+  const url = getApiBaseUrl();
+  console.log('🌐 Using API URL:', url);
+  return url;
+};
+
 const API_BASE_URL = getApiBaseUrl();
 
 console.log('🔧 API Configuration:', {
@@ -25,8 +32,9 @@ console.log('🔧 API Configuration:', {
   PROD: import.meta.env.PROD,
   DEV: import.meta.env.DEV,
   MODE: import.meta.env.MODE,
+  hostname: window.location.hostname,
   API_BASE_URL: API_BASE_URL,
   getApiBaseUrl: getApiBaseUrl()
 });
 
-export default getApiBaseUrl();
+export default getApiUrl();
