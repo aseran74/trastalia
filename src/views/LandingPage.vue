@@ -254,144 +254,211 @@
     </section>
 
     <!-- Comparison Section -->
-    <section class="py-20 px-6 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
-      <div class="mx-auto max-w-7xl">
-        <div class="text-center mb-16">
-          <h2 class="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            ¿Por qué elegir 
-            <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    <section class="py-24 px-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-slate-900 dark:to-gray-900 relative overflow-hidden">
+      <!-- Background decorations -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/20 dark:bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200/20 dark:bg-purple-500/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div class="mx-auto max-w-7xl relative z-10">
+        <!-- Header -->
+        <div class="text-center mb-20">
+          <div class="inline-block mb-4">
+            <span class="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full text-sm font-semibold text-blue-700 dark:text-blue-300">
+              La Diferencia
+            </span>
+          </div>
+          <h2 class="text-5xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
+            ¿Por qué 
+            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
               Trastalia
             </span>?
           </h2>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            La diferencia es clara: mientras otros te hacen esperar, nosotros te pagamos al instante
+          <p class="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto font-medium">
+            La revolución del comercio de segunda mano
           </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Problemas con otras apps -->
-          <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border-2 border-red-100 dark:border-red-900/30">
-            <div class="text-center mb-8">
-              <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="text-3xl">😤</span>
-              </div>
-              <h3 class="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-                Otras Apps
-              </h3>
-              <p class="text-gray-600 dark:text-gray-400">Wallapop, Milanuncios, etc.</p>
-            </div>
-            
-            <div class="space-y-6">
-              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-lg font-bold">✗</span>
-                </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Olvídate de los mensajes que nunca acaban</strong>
-                </div>
+        <!-- Comparison Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
+          <!-- Otras Apps - Problemas -->
+          <div class="group relative">
+            <div class="absolute -inset-0.5 bg-gradient-to-r from-rose-800 via-rose-900 to-rose-950 rounded-3xl opacity-25 group-hover:opacity-35 blur-2xl transition-opacity duration-300"></div>
+            <div class="relative bg-gray-900 dark:bg-gray-950 rounded-3xl p-8 lg:p-10 shadow-2xl border-2 border-rose-800/40 dark:border-rose-900/50 transform transition-all duration-300 hover:scale-[1.02] overflow-hidden">
+              <!-- Pattern overlay -->
+              <div class="absolute inset-0 opacity-5">
+                <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(190, 18, 60, 0.1) 10px, rgba(190, 18, 60, 0.1) 20px);"></div>
               </div>
               
-              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-lg font-bold">✗</span>
+              <!-- Header -->
+              <div class="text-center mb-10 relative z-10">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-rose-800 via-rose-900 to-rose-950 rounded-3xl mb-5 shadow-2xl ring-4 ring-rose-800/30 transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                  <span class="text-5xl">😤</span>
                 </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Chatear durante días para vender un artículo de 20€</strong>
-                </div>
+                <h3 class="text-3xl lg:text-4xl font-extrabold text-rose-400 mb-3 drop-shadow-lg">
+                  Otras Apps
+                </h3>
+                <p class="text-gray-400 text-lg font-medium">
+                  Wallapop, Milanuncios, etc.
+                </p>
               </div>
               
-              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-lg font-bold">✗</span>
+              <!-- Problems List -->
+              <div class="space-y-4 relative z-10">
+                <div class="flex items-start gap-4 p-5 bg-red-950/50 dark:bg-red-900/20 rounded-2xl border-2 border-rose-800/40 dark:border-rose-900/50 backdrop-blur-sm transform transition-all duration-300 hover:scale-[1.02] hover:border-rose-700/50 hover:shadow-lg hover:shadow-rose-900/30">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-rose-800 via-rose-900 to-rose-950 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-rose-800/40">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-bold text-rose-200 dark:text-rose-300 pt-2 leading-relaxed">
+                    Olvídate de los mensajes que nunca acaban
+                  </p>
                 </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Publicar y esperar que alguien se interese</strong>
+                
+                <div class="flex items-start gap-4 p-5 bg-red-950/50 dark:bg-red-900/20 rounded-2xl border-2 border-rose-800/40 dark:border-rose-900/50 backdrop-blur-sm transform transition-all duration-300 hover:scale-[1.02] hover:border-rose-700/50 hover:shadow-lg hover:shadow-rose-900/30">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-rose-800 via-rose-900 to-rose-950 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-rose-800/40">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-bold text-rose-200 dark:text-rose-300 pt-2 leading-relaxed">
+                    Chatear durante días para vender un artículo de 20€
+                  </p>
                 </div>
-              </div>
-              
-              <div class="flex items-start space-x-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span class="text-white text-lg font-bold">✗</span>
+                
+                <div class="flex items-start gap-4 p-5 bg-red-950/50 dark:bg-red-900/20 rounded-2xl border-2 border-rose-800/40 dark:border-rose-900/50 backdrop-blur-sm transform transition-all duration-300 hover:scale-[1.02] hover:border-rose-700/50 hover:shadow-lg hover:shadow-rose-900/30">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-rose-800 via-rose-900 to-rose-950 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-rose-800/40">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-bold text-rose-200 dark:text-rose-300 pt-2 leading-relaxed">
+                    Publicar y esperar que alguien se interese
+                  </p>
                 </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Regateos interminables y compradores fantasma</strong>
+                
+                <div class="flex items-start gap-4 p-5 bg-red-950/50 dark:bg-red-900/20 rounded-2xl border-2 border-rose-800/40 dark:border-rose-900/50 backdrop-blur-sm transform transition-all duration-300 hover:scale-[1.02] hover:border-rose-700/50 hover:shadow-lg hover:shadow-rose-900/30">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-rose-800 via-rose-900 to-rose-950 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-rose-800/40">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-bold text-rose-200 dark:text-rose-300 pt-2 leading-relaxed">
+                    Regateos interminables y compradores fantasma
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Solución de Trastalia -->
-          <div class="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-3xl p-8 shadow-xl border-2 border-green-200 dark:border-green-800/30 relative overflow-hidden">
-            <!-- Decoración de fondo -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400 to-blue-400 rounded-full opacity-10 -translate-y-16 translate-x-16"></div>
-            <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-blue-400 to-purple-400 rounded-full opacity-10 translate-y-12 -translate-x-12"></div>
-            
-            <div class="text-center mb-8 relative z-10">
-              <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <img src="/images/favi.png" alt="Trastalia" class="w-10 h-10 object-contain" />
-              </div>
-              <h3 class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-                Con Trastalia
-              </h3>
-              <p class="text-gray-600 dark:text-gray-400">La revolución del comercio de segunda mano</p>
-            </div>
-            
-            <div class="space-y-6 relative z-10">
-              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
-                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                  <span class="text-white text-lg font-bold">✓</span>
+          <!-- Trastalia - Solución -->
+          <div class="group relative">
+            <div class="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 rounded-3xl opacity-40 group-hover:opacity-50 blur-2xl transition-opacity duration-300 animate-pulse"></div>
+            <div class="relative bg-gradient-to-br from-green-50 via-emerald-50 via-blue-50 to-purple-50 dark:from-green-900/30 dark:via-emerald-900/20 dark:via-blue-900/30 dark:to-purple-900/20 rounded-3xl p-8 lg:p-10 shadow-2xl border-4 border-green-400/50 dark:border-green-500/50 transform transition-all duration-300 hover:scale-[1.02] overflow-hidden">
+              <!-- Decorative elements -->
+              <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-green-400/30 to-blue-400/30 rounded-full blur-3xl -translate-y-24 translate-x-24 animate-pulse"></div>
+              <div class="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-400/30 to-purple-400/30 rounded-full blur-3xl translate-y-20 -translate-x-20 animate-pulse" style="animation-delay: 1s;"></div>
+              <div class="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-r from-emerald-400/20 to-cyan-400/20 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
+              
+              <!-- Shine effect -->
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              
+              <!-- Header -->
+              <div class="text-center mb-10 relative z-10">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-500 via-blue-500 to-purple-500 rounded-3xl mb-5 shadow-2xl ring-4 ring-green-400/30 dark:ring-green-500/20 transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-green-500/50">
+                  <img src="/images/favi.png" alt="Trastalia" class="w-14 h-14 object-contain drop-shadow-lg" />
                 </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Rápido. Fácil. Sin chats.</strong>
-                </div>
+                <h3 class="text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 drop-shadow-lg">
+                  Con Trastalia
+                </h3>
+                <p class="text-gray-700 dark:text-gray-200 text-lg font-semibold">
+                  La revolución del comercio de segunda mano
+                </p>
               </div>
               
-              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
-                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                  <span class="text-white text-lg font-bold">✓</span>
+              <!-- Benefits List -->
+              <div class="space-y-4 relative z-10">
+                <div class="flex items-start gap-4 p-5 bg-white/90 dark:bg-white/10 backdrop-blur-md rounded-2xl border-3 border-green-400/60 dark:border-green-500/40 shadow-xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-green-500 dark:hover:border-green-400 hover:bg-white dark:hover:bg-white/15">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-500 via-emerald-500 to-blue-500 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-green-400/30 dark:ring-green-500/20">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-extrabold text-gray-900 dark:text-white pt-2 leading-relaxed">
+                    Rápido. Fácil. Sin chats.
+                  </p>
                 </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>De trastos a dinero en un clic</strong>
+                
+                <div class="flex items-start gap-4 p-5 bg-white/90 dark:bg-white/10 backdrop-blur-md rounded-2xl border-3 border-green-400/60 dark:border-green-500/40 shadow-xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-green-500 dark:hover:border-green-400 hover:bg-white dark:hover:bg-white/15">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-500 via-emerald-500 to-blue-500 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-green-400/30 dark:ring-green-500/20">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-extrabold text-gray-900 dark:text-white pt-2 leading-relaxed">
+                    De trastos a dinero en un clic
+                  </p>
                 </div>
-              </div>
-              
-              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
-                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                  <span class="text-white text-lg font-bold">✓</span>
+                
+                <div class="flex items-start gap-4 p-5 bg-white/90 dark:bg-white/10 backdrop-blur-md rounded-2xl border-3 border-green-400/60 dark:border-green-500/40 shadow-xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-green-500 dark:hover:border-green-400 hover:bg-white dark:hover:bg-white/15">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-500 via-emerald-500 to-blue-500 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-green-400/30 dark:ring-green-500/20">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-extrabold text-gray-900 dark:text-white pt-2 leading-relaxed">
+                    Menos espera, más espacio
+                  </p>
                 </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Menos espera, más espacio</strong>
-                </div>
-              </div>
-              
-              <div class="flex items-start space-x-4 p-4 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-green-200 dark:border-green-800/30">
-                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                  <span class="text-white text-lg font-bold">✓</span>
-                </div>
-                <div class="text-lg text-gray-700 dark:text-gray-300">
-                  <strong>Decides: dinero directo o puntos para canjear</strong>
+                
+                <div class="flex items-start gap-4 p-5 bg-white/90 dark:bg-white/10 backdrop-blur-md rounded-2xl border-3 border-green-400/60 dark:border-green-500/40 shadow-xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-green-500 dark:hover:border-green-400 hover:bg-white dark:hover:bg-white/15">
+                  <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-500 via-emerald-500 to-blue-500 rounded-xl flex items-center justify-center shadow-xl ring-2 ring-green-400/30 dark:ring-green-500/20">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <p class="text-lg font-extrabold text-gray-900 dark:text-white pt-2 leading-relaxed">
+                    Decides: dinero directo o puntos para canjear
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Call to action en la comparación -->
-        <div class="text-center mt-12">
-          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl max-w-4xl mx-auto">
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              ¿Listo para cambiar tu forma de vender?
-            </h3>
-            <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">
-              Únete a la revolución del comercio de segunda mano
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <router-link to="/signup" class="bg-gradient-to-r from-green-600 to-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                Empezar Ahora
-              </router-link>
-              <router-link to="/articulos" class="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-xl text-lg font-semibold hover:border-green-600 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300">
-                Ver Artículos
-              </router-link>
+        <!-- Call to Action -->
+        <div class="text-center mt-16">
+          <div class="relative inline-block">
+            <div class="absolute -inset-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+            <div class="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-3xl p-10 lg:p-12 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-4xl mx-auto">
+              <h3 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                ¿Listo para cambiar tu forma de vender?
+              </h3>
+              <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 font-medium">
+                Únete a la revolución del comercio de segunda mano
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <router-link 
+                  to="/signup" 
+                  class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transform transition-all duration-300 hover:scale-105 overflow-hidden"
+                >
+                  <span class="absolute inset-0 bg-gradient-to-r from-green-700 via-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span class="relative z-10 flex items-center gap-2">
+                    Empezar Ahora
+                    <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                  </span>
+                </router-link>
+                <router-link 
+                  to="/articulos" 
+                  class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:border-green-600 hover:text-green-600 dark:hover:border-green-500 dark:hover:text-green-400 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                >
+                  Ver Artículos
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
@@ -824,6 +891,15 @@ onUnmounted(() => {
   }
 }
 
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 /* Apply animations */
 .animate-money-bounce {
   animation: money-bounce 2s ease-in-out infinite;
@@ -895,6 +971,20 @@ onUnmounted(() => {
 
 .animate-phone-bounce {
   animation: phone-bounce 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 /* Feature card hover effects */

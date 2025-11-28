@@ -18,6 +18,8 @@
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
     "seed": "tsx scripts/seed-database.ts",
+    "load-pexels": "node scripts/load-pexels-photos.cjs",
+    "list-articles": "node scripts/list-articles.cjs",
     "mcp-server": "tsx scripts/start-mcp-server.ts",
     "mcp-atlas": "tsx scripts/start-atlas-mcp.ts",
     "dev:with-mcp": "concurrently \"npm run mcp-server\" \"npm run dev\"",

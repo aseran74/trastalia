@@ -173,7 +173,7 @@ const pagination = ref({
 
 // API base URL
 const getApiUrl = () => {
-  return import.meta.env.PROD ? 'https://trastalia.onrender.com' : 'http://localhost:3001'
+  return import.meta.env.PROD ? 'https://trastalia.onrender.com' : 'http://localhost:3002'
 }
 
 // Cargar categorías

@@ -2847,10 +2847,56 @@ app.get('/api/articles/public', async (req, res) => {
 
     console.log(`📦 Encontrados ${articles.length} artículos públicos disponibles`);
 
-    res.json({
-      success: true,
-      data: articles
-    });
+    // Obtener fotos de Pexels/Unsplash para cada artículo
+    try {
+      const ArticlePhoto = require('./models/ArticlePhoto.cjs');
+      const articlesWithPhotos = await Promise.all(
+        articles.map(async (article) => {
+          const articleObj = article.toObject();
+          const photos = await ArticlePhoto.find({ 
+            articleId: article._id 
+          })
+          .sort({ isPrimary: -1, createdAt: -1 })
+          .limit(5); // Limitar a 5 fotos por artículo para rendimiento
+          
+          if (photos && photos.length > 0) {
+            const photoUrls = photos.map(photo => photo.url);
+            const primaryPhoto = photos.find(p => p.isPrimary);
+            
+            // Añadir fotos de Pexels/Unsplash
+            if (articleObj.fotos && articleObj.fotos.length > 0) {
+              if (primaryPhoto) {
+                articleObj.fotos = [primaryPhoto.url, ...photoUrls.filter(url => url !== primaryPhoto.url), ...articleObj.fotos];
+              } else {
+                articleObj.fotos = [...photoUrls, ...articleObj.fotos];
+              }
+            } else {
+              articleObj.fotos = photoUrls;
+            }
+            
+            if (articleObj.images) {
+              articleObj.images = [...photoUrls, ...articleObj.images];
+            } else {
+              articleObj.images = photoUrls;
+            }
+          }
+          
+          return articleObj;
+        })
+      );
+
+      res.json({
+        success: true,
+        data: articlesWithPhotos
+      });
+    } catch (photoError) {
+      console.error('Error obteniendo fotos de artículos:', photoError);
+      // Si hay error, devolver artículos sin fotos
+      res.json({
+        success: true,
+        data: articles
+      });
+    }
 
   } catch (error) {
     console.error('Error obteniendo artículos públicos:', error);
@@ -2946,10 +2992,55 @@ app.get('/api/articles/:id', async (req, res) => {
       });
     }
     
-    res.json({
-      success: true,
-      data: article
-    });
+    // Obtener fotos de Pexels/Unsplash asociadas al artículo
+    try {
+      const ArticlePhoto = require('./models/ArticlePhoto.cjs');
+      const photos = await ArticlePhoto.find({ articleId: new mongoose.Types.ObjectId(id) })
+        .sort({ isPrimary: -1, createdAt: -1 });
+      
+      // Convertir artículo a objeto para poder modificarlo
+      const articleObj = article.toObject();
+      
+      // Añadir las fotos de Pexels/Unsplash a las imágenes del artículo
+      if (photos && photos.length > 0) {
+        const photoUrls = photos.map(photo => photo.url);
+        
+        // Si el artículo ya tiene fotos, combinarlas (poner las de Pexels primero si hay una principal)
+        if (articleObj.fotos && articleObj.fotos.length > 0) {
+          // Combinar: primero las de Pexels/Unsplash (principal primero), luego las originales
+          const primaryPhoto = photos.find(p => p.isPrimary);
+          if (primaryPhoto) {
+            articleObj.fotos = [primaryPhoto.url, ...photoUrls.filter(url => url !== primaryPhoto.url), ...articleObj.fotos];
+          } else {
+            articleObj.fotos = [...photoUrls, ...articleObj.fotos];
+          }
+        } else {
+          articleObj.fotos = photoUrls;
+        }
+        
+        // También añadir a images si existe
+        if (articleObj.images) {
+          articleObj.images = [...photoUrls, ...articleObj.images];
+        } else {
+          articleObj.images = photoUrls;
+        }
+        
+        // Añadir información de las fotos
+        articleObj.pexelsPhotos = photos;
+      }
+      
+      res.json({
+        success: true,
+        data: articleObj
+      });
+    } catch (photoError) {
+      // Si hay error obteniendo fotos, devolver el artículo sin fotos
+      console.error('Error obteniendo fotos del artículo:', photoError);
+      res.json({
+        success: true,
+        data: article
+      });
+    }
   } catch (error) {
     console.error('Error obteniendo artículo:', error);
     res.status(500).json({

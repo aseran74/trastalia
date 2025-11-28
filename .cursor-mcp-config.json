@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "mongodb-custom": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "tsx",
+        "scripts/start-mcp-server.ts"
+      ],
+      "cwd": "C:\\Proyectos\\trastalia\\vue-tailwind-admin-dashboard-main",
+      "env": {
+        "MONGODB_URI": "mongodb+srv://mikabodea:Mika1974%26@trastalia.ycg2lvb.mongodb.net/trastalia?retryWrites=true&w=majority&appName=Trastalia"
+      }
+    }
+  }
+}
+

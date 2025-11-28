@@ -71,7 +71,7 @@ onMounted(async () => {
       try {
         const apiBaseUrl = import.meta.env.PROD 
           ? 'https://trastalia.onrender.com' 
-          : 'http://localhost:3001'
+          : 'http://localhost:3002'
         
         console.log('🔍 AuthCallback - Llamando a API:', `${apiBaseUrl}/api/auth/me`)
         console.log('🔑 AuthCallback - Token:', token)
@@ -162,7 +162,7 @@ const retryAuth = () => {
   const apiBaseUrl = import.meta.env.VITE_API_URL || 
     (import.meta.env.PROD 
       ? 'https://trastalia.onrender.com' 
-      : 'http://localhost:3001')
+      : 'http://localhost:3002')
   
   window.location.href = `${apiBaseUrl}/auth/google`
 }

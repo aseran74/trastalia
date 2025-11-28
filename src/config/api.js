@@ -10,7 +10,7 @@ const getApiBaseUrl = () => {
   }
   
   // En desarrollo local, usar el backend local
-  return 'http://localhost:3001';
+  return 'http://localhost:3002';
 };
 
 // Función de fallback para asegurar que siempre usemos la URL correcta

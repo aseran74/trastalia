@@ -1,6 +1,17 @@
 {
   "mcpServers": {
-    "MongoDB": {
+    "mongodb-custom": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "tsx",
+        "scripts/start-mcp-server.ts"
+      ],
+      "env": {
+        "MONGODB_URI": "mongodb+srv://mikabodea:Mika1974%26@trastalia.ycg2lvb.mongodb.net/trastalia?retryWrites=true&w=majority&appName=Trastalia"
+      }
+    },
+    "MongoDB-Atlas": {
       "command": "npx",
       "args": [
         "-y", 
@@ -9,7 +20,7 @@
       "env": {
         "MDB_MCP_API_CLIENT_ID": "ipztqgwp",
         "MDB_MCP_API_CLIENT_SECRET": "b72dc085-75a3-4064-947a-bed99b4a07ac",
-        "MDB_MCP_CONNECTION_STRING": "mongodb+srv://alvaroserr:alvaro123@cluster0.8xqjq.mongodb.net/trastalia?retryWrites=true&w=majority&appName=Cluster0"
+        "MDB_MCP_CONNECTION_STRING": "mongodb+srv://mikabodea:Mika1974%26@trastalia.ycg2lvb.mongodb.net/trastalia?retryWrites=true&w=majority&appName=Trastalia"
       }
     }
   }

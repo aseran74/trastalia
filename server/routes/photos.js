@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ArticlePhoto = require('../models/ArticlePhoto');
 const unsplashService = require('../services/unsplashService');
+const pexelsService = require('../services/pexelsService');
 const { authMiddleware } = require('../middleware/auth');
 
 // Buscar fotos en Unsplash por categoría
@@ -78,7 +79,10 @@ router.post('/save', authMiddleware, async (req, res) => {
   try {
     const {
       articleId,
+      source = 'unsplash', // 'unsplash' o 'pexels'
       unsplashId,
+      pexelsId,
+      photoId, // ID genérico
       url,
       thumbUrl,
       altDescription,
@@ -90,8 +94,15 @@ router.post('/save', authMiddleware, async (req, res) => {
       isPrimary = false
     } = req.body;
 
+    // Determinar el ID según la fuente
+    const finalPhotoId = photoId || (source === 'pexels' ? pexelsId?.toString() : unsplashId);
+    const finalSource = source || (unsplashId ? 'unsplash' : 'pexels');
+
     // Verificar que no existe ya esta foto
-    const existingPhoto = await ArticlePhoto.findOne({ unsplashId });
+    const existingPhoto = await ArticlePhoto.findOne({ 
+      source: finalSource, 
+      photoId: finalPhotoId 
+    });
     if (existingPhoto) {
       return res.status(400).json({
         success: false,
@@ -109,7 +120,10 @@ router.post('/save', authMiddleware, async (req, res) => {
 
     const photo = new ArticlePhoto({
       articleId,
-      unsplashId,
+      source: finalSource,
+      unsplashId: finalSource === 'unsplash' ? finalPhotoId : undefined,
+      pexelsId: finalSource === 'pexels' ? parseInt(finalPhotoId) : undefined,
+      photoId: finalPhotoId,
       url,
       thumbUrl,
       altDescription,
@@ -221,12 +235,164 @@ router.delete('/:photoId', authMiddleware, async (req, res) => {
   }
 });
 
+// ===== ENDPOINTS DE PEXELS =====
+
+// Buscar fotos en Pexels por categoría
+router.get('/pexels/search/:category', async (req, res) => {
+  try {
+    const { category } = req.params;
+    const { page = 1, perPage = 10, orientation = 'all', color = 'all', size = 'all' } = req.query;
+
+    const result = await pexelsService.searchByCategory(category, {
+      page: parseInt(page),
+      perPage: parseInt(perPage),
+      orientation,
+      color,
+      size
+    });
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error buscando fotos en Pexels',
+        error: result.error
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: {
+        page: result.page || parseInt(page),
+        perPage: result.perPage || parseInt(perPage),
+        total: result.total,
+        totalPages: result.totalPages
+      }
+    });
+  } catch (error) {
+    console.error('Error in Pexels photo search:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Buscar fotos en Pexels por query personalizado
+router.get('/pexels/search', async (req, res) => {
+  try {
+    const { query, page = 1, perPage = 10, orientation = 'all', color = 'all', size = 'all' } = req.query;
+
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        message: 'El parámetro "query" es requerido'
+      });
+    }
+
+    const result = await pexelsService.searchPhotos(query, {
+      page: parseInt(page),
+      perPage: parseInt(perPage),
+      orientation,
+      color,
+      size
+    });
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error buscando fotos en Pexels',
+        error: result.error
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: {
+        page: result.page || parseInt(page),
+        perPage: result.perPage || parseInt(perPage),
+        total: result.total,
+        totalPages: result.totalPages
+      }
+    });
+  } catch (error) {
+    console.error('Error in Pexels photo search:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Obtener fotos populares/curated de Pexels
+router.get('/pexels/curated', async (req, res) => {
+  try {
+    const { count = 10, page = 1 } = req.query;
+
+    const result = await pexelsService.getCuratedPhotos(parseInt(count), parseInt(page));
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error obteniendo fotos populares de Pexels',
+        error: result.error
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: {
+        page: result.page || parseInt(page),
+        perPage: result.perPage || parseInt(count),
+        total: result.total
+      }
+    });
+  } catch (error) {
+    console.error('Error getting curated photos from Pexels:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Obtener foto de Pexels por ID
+router.get('/pexels/:photoId', async (req, res) => {
+  try {
+    const { photoId } = req.params;
+
+    const result = await pexelsService.getPhotoById(photoId);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error obteniendo foto de Pexels',
+        error: result.error
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.data
+    });
+  } catch (error) {
+    console.error('Error getting photo from Pexels:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
 // Obtener categorías disponibles
 router.get('/categories', async (req, res) => {
   try {
     const categories = [
       'electronica', 'ropa', 'hogar', 'deportes', 'libros', 'juegos',
-      'musica', 'arte', 'coches', 'muebles', 'herramientas', 'jardineria'
+      'musica', 'arte', 'coches', 'motos', 'bicicletas', 'muebles', 
+      'herramientas', 'jardineria', 'mascotas', 'antigüedades', 'otros'
     ];
 
     res.json({

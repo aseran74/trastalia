@@ -103,7 +103,7 @@ const handleLogin = async () => {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 
       (import.meta.env.PROD 
         ? 'https://trastalia.onrender.com' 
-        : 'http://localhost:3001')
+        : 'http://localhost:3002')
     
     const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
       method: 'POST',
