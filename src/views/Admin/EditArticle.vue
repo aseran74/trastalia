@@ -328,7 +328,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import API_BASE_URL from '@/config/api.js'
+import getApiUrl from '@/config/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -365,7 +365,9 @@ const loadArticle = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${API_BASE_URL}/api/articles/${articleId.value}`, {
+    const apiBaseUrl = getApiUrl()
+    console.log('🔍 EditArticle - Cargando artículo:', articleId.value, 'desde:', apiBaseUrl)
+    const response = await fetch(`${apiBaseUrl}/api/articles/${articleId.value}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -377,6 +379,8 @@ const loadArticle = async () => {
     if (response.ok) {
       const data = await response.json()
       article.value = data.data || data
+      
+      console.log('✅ Artículo cargado:', article.value)
       
       // Llenar formulario con datos del artículo
       formData.value = {
@@ -393,7 +397,13 @@ const loadArticle = async () => {
         images: article.value.images || article.value.fotos || []
       }
     } else {
-      console.error('Error cargando artículo:', response.status)
+      const errorText = await response.text()
+      console.error('❌ Error cargando artículo:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      })
+      alert(`Error al cargar el artículo (${response.status}): ${errorText || 'Error desconocido'}`)
     }
   } catch (error) {
     console.error('Error cargando artículo:', error)
@@ -407,6 +417,7 @@ const updateArticle = async () => {
   saving.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    const apiBaseUrl = getApiUrl()
     
     // Preparar datos para envío, incluyendo imágenes nuevas
     const updateData = {
@@ -414,9 +425,10 @@ const updateArticle = async () => {
       newImages: newImages.value.map(img => img.preview) // Incluir previews de imágenes nuevas
     }
     
-    console.log('📤 Enviando datos de actualización:', updateData)
+    console.log('📤 EditArticle - Enviando datos de actualización:', updateData)
+    console.log('🌐 EditArticle - Usando API URL:', apiBaseUrl)
     
-    const response = await fetch(`${API_BASE_URL}/api/articles/${articleId.value}`, {
+    const response = await fetch(`${apiBaseUrl}/api/articles/${articleId.value}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -428,14 +440,29 @@ const updateArticle = async () => {
     
     if (response.ok) {
       const data = await response.json()
-      console.log('Artículo actualizado:', data)
+      console.log('✅ Artículo actualizado:', data)
+      
+      // Mostrar mensaje de éxito
+      alert('Artículo actualizado exitosamente')
       
       // Redirigir a la vista del artículo
       router.push(`/articulos/${articleId.value}`)
     } else {
-      const errorData = await response.json()
-      console.error('Error actualizando artículo:', errorData)
-      alert('Error al actualizar el artículo: ' + (errorData.message || 'Error desconocido'))
+      const errorText = await response.text()
+      let errorData
+      try {
+        errorData = JSON.parse(errorText)
+      } catch (e) {
+        errorData = { message: errorText || 'Error desconocido' }
+      }
+      
+      console.error('❌ Error actualizando artículo:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      })
+      
+      alert(`Error al actualizar el artículo (${response.status}): ${errorData.message || 'Error desconocido'}`)
     }
   } catch (error) {
     console.error('Error actualizando artículo:', error)
