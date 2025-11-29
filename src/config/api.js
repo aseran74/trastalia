@@ -1,7 +1,13 @@
 // Configuración de la API
 const getApiBaseUrl = () => {
+  // Solo ejecutar en el cliente (navegador), no en el servidor
+  if (typeof window === 'undefined') {
+    // En el servidor (SSR/build), retornar URL de producción
+    return 'https://trastalia.onrender.com';
+  }
+  
   // Detectar si estamos en Vercel (producción)
-  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const hostname = window.location.hostname;
   const isVercel = hostname.includes('vercel.app') || 
                    hostname.includes('trastalia.vercel.app') ||
                    hostname.includes('trastalia');
