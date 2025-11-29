@@ -44,4 +44,6 @@ if (typeof window !== 'undefined') {
   });
 }
 
+// Exportar tanto la función como la constante para compatibilidad
 export default getApiUrl;
+export { API_BASE_URL, getApiUrl };

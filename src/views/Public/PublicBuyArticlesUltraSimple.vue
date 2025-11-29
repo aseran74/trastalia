@@ -438,7 +438,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import UserProfileMenu from '@/components/landing/UserProfileMenu.vue'
-import API_BASE_URL from '@/config/api'
+import getApiUrl from '@/config/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -464,10 +464,10 @@ const loadPublicArticles = async () => {
   loading.value = true
   
   try {
-    const baseUrl = API_BASE_URL ? `${API_BASE_URL}/api/articles/public` : '/api/articles/public'
-    const url = `${baseUrl}?t=${Date.now()}`
+    const apiBaseUrl = getApiUrl()
+    const url = `${apiBaseUrl}/api/articles/public?t=${Date.now()}`
     console.log('🔍 Cargando artículos desde:', url)
-    console.log('🔧 API_BASE_URL:', API_BASE_URL)
+    console.log('🔧 API Base URL:', apiBaseUrl)
     console.log('🔧 PROD:', import.meta.env.PROD)
     console.log('🔧 DEV:', import.meta.env.DEV)
     
