@@ -1,15 +1,19 @@
 // Configuración de la API
 const getApiBaseUrl = () => {
   // Detectar si estamos en Vercel (producción)
-  const isVercel = window.location.hostname.includes('vercel.app') || 
-                   window.location.hostname.includes('trastalia.vercel.app');
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isVercel = hostname.includes('vercel.app') || 
+                   hostname.includes('trastalia.vercel.app') ||
+                   hostname.includes('trastalia');
   
   // En producción (Vercel), SIEMPRE usar Render (forzar)
   if (import.meta.env.PROD || isVercel) {
+    console.log('🌐 Producción detectada - Usando Render:', hostname);
     return 'https://trastalia.onrender.com';
   }
   
   // En desarrollo local, usar el backend local
+  console.log('🌐 Desarrollo local - Usando localhost:3002');
   return 'http://localhost:3002';
 };
 
@@ -22,14 +26,16 @@ const getApiUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
-console.log('🔧 API Configuration:', {
-  VITE_API_URL: import.meta.env.VITE_API_URL,
-  PROD: import.meta.env.PROD,
-  DEV: import.meta.env.DEV,
-  MODE: import.meta.env.MODE,
-  hostname: window.location.hostname,
-  API_BASE_URL: API_BASE_URL,
-  getApiBaseUrl: getApiBaseUrl()
-});
+if (typeof window !== 'undefined') {
+  console.log('🔧 API Configuration:', {
+    VITE_API_URL: import.meta.env.VITE_API_URL,
+    PROD: import.meta.env.PROD,
+    DEV: import.meta.env.DEV,
+    MODE: import.meta.env.MODE,
+    hostname: window.location.hostname,
+    API_BASE_URL: API_BASE_URL,
+    getApiBaseUrl: getApiBaseUrl()
+  });
+}
 
-export default getApiUrl();
+export default getApiUrl;

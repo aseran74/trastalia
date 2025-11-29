@@ -100,10 +100,9 @@ const handleLogin = async () => {
   loading.value = true
   
   try {
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 
-      (import.meta.env.PROD 
-        ? 'https://trastalia.onrender.com' 
-        : 'http://localhost:3002')
+    const getApiUrl = (await import('@/config/api')).default
+    const apiBaseUrl = getApiUrl()
+    console.log('🔐 TestSignin - Usando API URL:', apiBaseUrl)
     
     const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
       method: 'POST',

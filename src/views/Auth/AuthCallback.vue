@@ -69,9 +69,8 @@ onMounted(async () => {
       
       // Obtener información del usuario desde el backend
       try {
-        const apiBaseUrl = import.meta.env.PROD 
-          ? 'https://trastalia.onrender.com' 
-          : 'http://localhost:3002'
+        const getApiUrl = (await import('@/config/api')).default
+        const apiBaseUrl = getApiUrl()
         
         console.log('🔍 AuthCallback - Llamando a API:', `${apiBaseUrl}/api/auth/me`)
         console.log('🔑 AuthCallback - Token:', token)
@@ -157,12 +156,10 @@ onMounted(async () => {
   }
 })
 
-const retryAuth = () => {
+const retryAuth = async () => {
   // Redirigir a Google OAuth de nuevo
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 
-    (import.meta.env.PROD 
-      ? 'https://trastalia.onrender.com' 
-      : 'http://localhost:3002')
+  const getApiUrl = (await import('@/config/api')).default
+  const apiBaseUrl = getApiUrl()
   
   window.location.href = `${apiBaseUrl}/auth/google`
 }

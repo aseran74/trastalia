@@ -117,6 +117,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import GoogleAuthButton from '@/components/auth/GoogleAuthButton.vue'
+import getApiUrl from '@/config/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -132,10 +133,8 @@ const handleLogin = async () => {
   loading.value = true
   
   try {
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 
-      (import.meta.env.PROD 
-        ? 'https://trastalia.onrender.com' 
-        : 'http://localhost:3002')
+    const apiBaseUrl = getApiUrl()
+    console.log('🔐 Login - Usando API URL:', apiBaseUrl)
     
     const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
       method: 'POST',
