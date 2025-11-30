@@ -262,12 +262,14 @@
           class="group bg-white rounded-lg shadow-md overflow-hidden flex flex-col transition-transform duration-300 hover:shadow-xl hover:-translate-y-1"
         >
           <div class="relative">
-            <div class="aspect-video w-full">
+            <div class="aspect-video w-full bg-gray-200">
               <img
                 :src="getArticleImage(article)"
                 :alt="article.title || article.nombre"
                 class="w-full h-full object-cover"
                 @error="handleImageError"
+                @load="console.log('✅ Imagen cargada:', getArticleImage(article))"
+                loading="lazy"
               />
             </div>
             <span class="absolute top-3 right-3 bg-white/90 text-gray-800 text-xs px-2 py-1 rounded-full font-semibold shadow">
@@ -486,7 +488,19 @@ const loadPublicArticles = async () => {
       allArticles.value = data.data || []
       articles.value = allArticles.value // Mostrar todos inicialmente
       console.log('✅ Artículos cargados:', articles.value.length)
-      console.log('📋 Primer artículo:', articles.value[0])
+      
+      // Log detallado del primer artículo para debug de imágenes
+      if (articles.value.length > 0) {
+        const firstArticle = articles.value[0]
+        console.log('📋 Primer artículo:', {
+          id: firstArticle._id,
+          title: firstArticle.title || firstArticle.nombre,
+          images: firstArticle.images,
+          fotos: firstArticle.fotos,
+          articlephotos: firstArticle.articlephotos,
+          imageUrl: getArticleImage(firstArticle)
+        })
+      }
     } else {
       console.error('❌ Error del servidor:', response.status, response.statusText)
       const errorText = await response.text()
@@ -536,20 +550,44 @@ const handleImageError = (event) => {
   const placeholderSrc = 'https://via.placeholder.com/400x300/cccccc/666666?text=Imagen+no+disponible'
   
   // ✅ CORRECCIÓN: Evita el bucle comprobando si ya estamos usando el placeholder
-  if (event.target.src !== placeholderSrc) {
+  if (event.target.src !== placeholderSrc && !event.target.src.includes('placeholder')) {
+    console.warn('⚠️ Error cargando imagen:', event.target.src)
     event.target.src = placeholderSrc
   }
 }
 
 // Obtener imagen del artículo
 const getArticleImage = (article) => {
+  // Prioridad 1: images array
   if (article.images && article.images.length > 0) {
-    return article.images[0]
-  }
-  if (article.fotos && article.fotos.length > 0) {
-    return article.fotos[0]
+    const imageUrl = article.images[0]
+    // Verificar que la URL sea válida (absoluta o relativa válida)
+    if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://') || imageUrl.startsWith('/'))) {
+      return imageUrl
+    }
   }
   
+  // Prioridad 2: fotos array
+  if (article.fotos && article.fotos.length > 0) {
+    const fotoUrl = article.fotos[0]
+    // Verificar que la URL sea válida
+    if (fotoUrl && (fotoUrl.startsWith('http://') || fotoUrl.startsWith('https://') || fotoUrl.startsWith('/'))) {
+      return fotoUrl
+    }
+  }
+  
+  // Prioridad 3: articlephotos (si viene del backend)
+  if (article.articlephotos && article.articlephotos.length > 0) {
+    const photo = article.articlephotos[0]
+    if (photo.url && (photo.url.startsWith('http://') || photo.url.startsWith('https://'))) {
+      return photo.url
+    }
+    if (photo.thumbUrl && (photo.thumbUrl.startsWith('http://') || photo.thumbUrl.startsWith('https://'))) {
+      return photo.thumbUrl
+    }
+  }
+  
+  // Fallback: placeholder
   const title = article.title || article.nombre || 'Artículo'
   return `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(title)}`
 }

@@ -13,6 +13,37 @@
       </button>
     </div>
 
+    <!-- Selector de fuente de fotos -->
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Fuente de fotos
+      </label>
+      <div class="flex gap-4 mb-4">
+        <button
+          @click="photoSource = 'unsplash'"
+          :class="[
+            'flex-1 px-4 py-3 rounded-xl font-medium transition-all duration-300',
+            photoSource === 'unsplash'
+              ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-lg'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          ]"
+        >
+          📷 Unsplash
+        </button>
+        <button
+          @click="photoSource = 'pexels'"
+          :class="[
+            'flex-1 px-4 py-3 rounded-xl font-medium transition-all duration-300',
+            photoSource === 'pexels'
+              ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          ]"
+        >
+          🎨 Pexels
+        </button>
+      </div>
+    </div>
+
     <!-- Selector de categoría -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -49,7 +80,7 @@
         </button>
       </div>
 
-      <!-- Grid de fotos de Unsplash -->
+      <!-- Grid de fotos -->
       <div v-if="unsplashPhotos.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
         <div
           v-for="photo in unsplashPhotos"
@@ -146,7 +177,7 @@
     <div v-if="!loading && articlePhotos.length === 0 && selectedCategory" class="text-center py-8 text-gray-500">
       <div class="text-4xl mb-4">📷</div>
       <p>No hay fotos guardadas para este artículo</p>
-      <p class="text-sm">Selecciona fotos de Unsplash para añadirlas</p>
+      <p class="text-sm">Selecciona fotos de {{ photoSource === 'pexels' ? 'Pexels' : 'Unsplash' }} para añadirlas</p>
     </div>
   </div>
 </template>
@@ -154,15 +185,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import getApiUrl from '@/config/api'
 
 const route = useRoute()
 const articleId = route.params.id || 'new'
 
 // Estado reactivo
 const loading = ref(false)
+const photoSource = ref('pexels') // 'unsplash' o 'pexels'
 const selectedCategory = ref('')
 const categories = ref([])
-const unsplashPhotos = ref([])
+const unsplashPhotos = ref([]) // Usado para ambas fuentes
 const articlePhotos = ref([])
 const pagination = ref({
   page: 1,
@@ -170,11 +203,6 @@ const pagination = ref({
   total: 0,
   totalPages: 0
 })
-
-// API base URL
-const getApiUrl = () => {
-  return import.meta.env.PROD ? 'https://trastalia.onrender.com' : 'http://localhost:3002'
-}
 
 // Cargar categorías
 const loadCategories = async () => {
@@ -189,20 +217,32 @@ const loadCategories = async () => {
   }
 }
 
-// Buscar fotos en Unsplash
+// Buscar fotos (Unsplash o Pexels)
 const searchPhotos = async () => {
   if (!selectedCategory.value) return
   
   loading.value = true
   try {
-    const response = await fetch(
-      `${getApiUrl()}/api/photos/search/${selectedCategory.value}?page=${pagination.value.page}&perPage=${pagination.value.perPage}`
-    )
+    let url
+    if (photoSource.value === 'pexels') {
+      // Buscar en Pexels por categoría
+      url = `${getApiUrl()}/api/photos/pexels/search/${selectedCategory.value}?page=${pagination.value.page}&perPage=${pagination.value.perPage}`
+    } else {
+      // Buscar en Unsplash por categoría
+      url = `${getApiUrl()}/api/photos/search/${selectedCategory.value}?page=${pagination.value.page}&perPage=${pagination.value.perPage}`
+    }
+    
+    const response = await fetch(url)
     const data = await response.json()
     
     if (data.success) {
       unsplashPhotos.value = data.data
-      pagination.value = data.pagination
+      pagination.value = data.pagination || {
+        page: data.page || pagination.value.page,
+        perPage: data.perPage || pagination.value.perPage,
+        total: data.total || 0,
+        totalPages: data.totalPages || Math.ceil((data.total || 0) / (data.perPage || pagination.value.perPage))
+      }
     }
   } catch (error) {
     console.error('Error searching photos:', error)
@@ -217,7 +257,16 @@ const getRandomPhotos = async () => {
   
   loading.value = true
   try {
-    const response = await fetch(`${getApiUrl()}/api/photos/random/${selectedCategory.value}?count=8`)
+    let url
+    if (photoSource.value === 'pexels') {
+      // Obtener fotos populares/curated de Pexels
+      url = `${getApiUrl()}/api/photos/pexels/curated?count=8&page=1`
+    } else {
+      // Obtener fotos aleatorias de Unsplash
+      url = `${getApiUrl()}/api/photos/random/${selectedCategory.value}?count=8`
+    }
+    
+    const response = await fetch(url)
     const data = await response.json()
     
     if (data.success) {
@@ -234,34 +283,52 @@ const getRandomPhotos = async () => {
 const selectPhoto = async (photo) => {
   loading.value = true
   try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    
+    // Preparar datos según la fuente
+    const photoData = {
+      articleId,
+      source: photoSource.value,
+      url: photo.url,
+      thumbUrl: photo.thumbUrl,
+      altDescription: photo.altDescription || photo.description || '',
+      photographer: photo.photographer,
+      dimensions: photo.dimensions,
+      color: photo.color || '#000000',
+      category: selectedCategory.value,
+      tags: photo.tags || [],
+      isPrimary: articlePhotos.value.length === 0 // Primera foto es principal
+    }
+    
+    // Añadir ID según la fuente
+    if (photoSource.value === 'pexels') {
+      photoData.pexelsId = parseInt(photo.id)
+      photoData.photoId = photo.id.toString()
+    } else {
+      photoData.unsplashId = photo.id
+      photoData.photoId = photo.id
+    }
+    
     const response = await fetch(`${getApiUrl()}/api/photos/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        articleId,
-        unsplashId: photo.id,
-        url: photo.url,
-        thumbUrl: photo.thumbUrl,
-        altDescription: photo.altDescription,
-        photographer: photo.photographer,
-        dimensions: photo.dimensions,
-        color: photo.color,
-        category: selectedCategory.value,
-        tags: photo.tags,
-        isPrimary: articlePhotos.value.length === 0 // Primera foto es principal
-      })
+      body: JSON.stringify(photoData)
     })
     
     const data = await response.json()
     if (data.success) {
       await loadArticlePhotos()
       unsplashPhotos.value = unsplashPhotos.value.filter(p => p.id !== photo.id)
+    } else {
+      console.error('Error saving photo:', data.message)
+      alert(data.message || 'Error al guardar la foto')
     }
   } catch (error) {
     console.error('Error saving photo:', error)
+    alert('Error al guardar la foto')
   } finally {
     loading.value = false
   }
@@ -286,10 +353,11 @@ const loadArticlePhotos = async () => {
 // Marcar como foto principal
 const setPrimaryPhoto = async (photoId) => {
   try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     const response = await fetch(`${getApiUrl()}/api/photos/${photoId}/primary`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        'Authorization': `Bearer ${token}`
       }
     })
     
@@ -307,10 +375,11 @@ const deletePhoto = async (photoId) => {
   if (!confirm('¿Estás seguro de que quieres eliminar esta foto?')) return
   
   try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     const response = await fetch(`${getApiUrl()}/api/photos/${photoId}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        'Authorization': `Bearer ${token}`
       }
     })
     
