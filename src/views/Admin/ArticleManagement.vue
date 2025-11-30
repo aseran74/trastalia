@@ -459,7 +459,8 @@ const handleImageError = (event) => {
 
 // Ver artículo
 const viewArticle = (article) => {
-  window.open(`/articulos/${article._id}`, '_blank')
+  // Usar router.push para navegación dentro de la app
+  router.push(`/articulos/${article._id}`)
 }
 
 // Editar artículo

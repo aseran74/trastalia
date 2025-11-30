@@ -329,7 +329,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
-import API_BASE_URL from '@/config/api.js'
+import getApiUrl from '@/config/api'
 import MessageToSellerModal from '@/components/modals/MessageToSellerModal.vue'
 import StripePaymentModal from '@/components/modals/StripePaymentModal.vue'
 import UserProfileMenu from '@/components/landing/UserProfileMenu.vue'
@@ -419,7 +419,8 @@ const loadArticle = async () => {
 
   loading.value = true
   try {
-    const apiUrl = `${API_BASE_URL}/api/articles/${articleId}`
+    const apiBaseUrl = getApiUrl()
+    const apiUrl = `${apiBaseUrl}/api/articles/${articleId}`
     console.log('🌐 Llamando a API:', apiUrl)
     
     const response = await fetch(apiUrl, {
@@ -489,7 +490,8 @@ const handlePaymentSuccess = async (paymentData) => {
   
   try {
     // Procesar la compra en el backend
-    const response = await fetch(`${API_BASE_URL}/api/articles/${article.value._id}/buy-money`, {
+    const apiBaseUrl = getApiUrl()
+    const response = await fetch(`${apiBaseUrl}/api/articles/${article.value._id}/buy-money`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -565,7 +567,8 @@ const buyWithPoints = async () => {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     console.log('🔑 Token presente:', !!token)
     
-    const response = await fetch(`${API_BASE_URL}/api/articles/${article.value._id}/buy-points`, {
+    const apiBaseUrl = getApiUrl()
+    const response = await fetch(`${apiBaseUrl}/api/articles/${article.value._id}/buy-points`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
