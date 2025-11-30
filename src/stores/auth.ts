@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { SignJWT, jwtVerify } from 'jose';
-import API_BASE_URL from '@/config/api';
+import getApiUrl from '@/config/api';
 
 interface User {
   id: string;
@@ -47,7 +47,8 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = true;
 
       // Llamada a API real
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const apiBaseUrl = getApiUrl();
+      const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +90,8 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = true;
 
       // Llamada a API real
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const apiBaseUrl = getApiUrl();
+      const response = await fetch(`${apiBaseUrl}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +174,8 @@ export const useAuthStore = defineStore('auth', () => {
           
           // Para usuarios de MongoDB, intentar verificar con API (pero no bloquear si falla)
           try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+            const apiBaseUrl = getApiUrl();
+            const response = await fetch(`${apiBaseUrl}/api/auth/me`, {
               headers: {
                 'Authorization': `Bearer ${storedToken}`
               }
@@ -252,7 +255,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       // Llamada a API real
-      const response = await fetch(`${API_BASE_URL}/api/users/${user.value.id}`, {
+      const apiBaseUrl = getApiUrl();
+      const response = await fetch(`${apiBaseUrl}/api/users/${user.value.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

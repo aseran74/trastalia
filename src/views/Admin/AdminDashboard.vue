@@ -326,7 +326,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
-import API_BASE_URL from '@/config/api'
+import getApiUrl from '@/config/api'
 
 // Estado reactivo
 const articles = ref([])
@@ -339,7 +339,8 @@ const selectedCategory = ref('')
       loading.value = true
       try {
         const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-        const response = await fetch(`/api/articles`, {
+        const apiBaseUrl = getApiUrl()
+        const response = await fetch(`${apiBaseUrl}/api/articles`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -424,7 +425,8 @@ const processDecision = async (article) => {
         notes: article.decisions.notes
       }
 
-      const response = await fetch(`/api/admin/process-article`, {
+      const apiBaseUrl = getApiUrl()
+      const response = await fetch(`${apiBaseUrl}/api/admin/process-article`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -450,7 +452,8 @@ const processDecision = async (article) => {
         notes: article.decisions.notes
       }
 
-      const response = await fetch(`/api/admin/process-article`, {
+      const apiBaseUrl = getApiUrl()
+      const response = await fetch(`${apiBaseUrl}/api/admin/process-article`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

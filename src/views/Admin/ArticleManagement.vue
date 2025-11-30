@@ -272,7 +272,7 @@ import { useSidebar } from '@/composables/useSidebar'
 // Sidebar logic
 const { isExpanded, isHovered } = useSidebar()
 import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
-import API_BASE_URL from '@/config/api'
+import getApiUrl from '@/config/api'
 
 const router = useRouter()
 const toast = useToast()
@@ -297,7 +297,8 @@ const loadArticles = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const url = `${API_BASE_URL}/api/articles`
+    const apiBaseUrl = getApiUrl()
+    const url = `${apiBaseUrl}/api/articles`
     console.log('🔍 Cargando todos los artículos desde:', url)
     console.log('🔑 Token:', token ? 'Presente' : 'Ausente')
     
@@ -474,7 +475,8 @@ const deleteArticle = async (article) => {
   
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${API_BASE_URL}/api/articles/${article._id}`, {
+    const apiBaseUrl = getApiUrl()
+    const response = await fetch(`${apiBaseUrl}/api/articles/${article._id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -525,7 +527,8 @@ const setStorePrice = async () => {
   
   try {
     const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-    const response = await fetch(`${API_BASE_URL}/api/articles/set-store-price`, {
+    const apiBaseUrl = getApiUrl()
+    const response = await fetch(`${apiBaseUrl}/api/articles/set-store-price`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

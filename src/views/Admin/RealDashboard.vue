@@ -445,7 +445,7 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import Backdrop from '@/components/layout/Backdrop.vue'
 import { useSidebar } from '@/composables/useSidebar'
-import API_BASE_URL from '@/config/api.js'
+import getApiUrl from '@/config/api'
 
 const authStore = useAuthStore()
 const { isExpanded, isHovered } = useSidebar()
@@ -469,7 +469,8 @@ const loadStats = async () => {
   error.value = null
   
   try {
-    const url = `${API_BASE_URL}/api/admin/dashboard-stats`
+    const apiBaseUrl = getApiUrl()
+    const url = `${apiBaseUrl}/api/admin/dashboard-stats`
     console.log('🔍 Cargando estadísticas desde:', url)
     console.log('🔑 Token:', authStore.token ? 'Presente' : 'Ausente')
     console.log('👤 Usuario:', authStore.user?.email, 'Rol:', authStore.user?.role)
