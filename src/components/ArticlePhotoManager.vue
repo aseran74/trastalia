@@ -179,7 +179,7 @@ const getApiUrl = () => {
 // Cargar categorías
 const loadCategories = async () => {
   try {
-    const response = await fetch(`${getApiUrl()}/api/photos/categories')
+    const response = await fetch(`${getApiUrl()}/api/photos/categories`)
     const data = await response.json()
     if (data.success) {
       categories.value = data.data
