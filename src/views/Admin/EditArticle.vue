@@ -175,6 +175,11 @@
           <div class="border-b border-gray-200 pb-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Imágenes del Artículo</h2>
             
+            <!-- Gestor de Fotos desde Unsplash/Pexels -->
+            <div class="mb-8">
+              <ArticlePhotoManager />
+            </div>
+            
             <!-- Imágenes actuales -->
             <div v-if="formData.images && formData.images.length > 0" class="mb-6">
               <h3 class="text-sm font-medium text-gray-700 mb-3">Imágenes actuales:</h3>
@@ -329,6 +334,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import getApiUrl from '@/config/api'
+import ArticlePhotoManager from '@/components/ArticlePhotoManager.vue'
 
 const router = useRouter()
 const route = useRoute()
